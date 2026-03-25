@@ -7,16 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-import type { Startup } from "@/lib/mock-data";
 
 const sectors = ["Artificial Intelligence", "CleanTech", "HealthTech", "FinTech", "AgriTech", "EdTech", "CyberSecurity", "Real Estate"];
 const stages = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C"] as const;
 
 interface NewInvestmentDialogProps {
-  onAdd: (startup: Startup) => void;
+  onAdd: (data: { name: string; sector: string; stage: string; invested: number; description: string }) => void;
+  isSubmitting?: boolean;
 }
 
-export default function NewInvestmentDialog({ onAdd }: NewInvestmentDialogProps) {
+export default function NewInvestmentDialog({ onAdd, isSubmitting }: NewInvestmentDialogProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [sector, setSector] = useState("");
@@ -38,21 +38,14 @@ export default function NewInvestmentDialog({ onAdd }: NewInvestmentDialogProps)
       return;
     }
 
-    const newStartup: Startup = {
-      id: `st-${Date.now()}`,
+    onAdd({
       name: name.trim(),
       sector,
-      stage: stage as Startup["stage"],
+      stage,
       invested: parsedAmount,
-      currentValue: parsedAmount,
-      progress: 0,
-      status: "on-track",
-      founded: new Date().toISOString().slice(0, 7),
-      description: description.trim() || `${name.trim()} — ${sector}`,
-      investorIds: [],
-    };
+      description: description.trim(),
+    });
 
-    onAdd(newStartup);
     toast.success(`Investment in "${name.trim()}" added successfully`);
     setName("");
     setSector("");
@@ -144,7 +137,9 @@ export default function NewInvestmentDialog({ onAdd }: NewInvestmentDialogProps)
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit">Add Investment</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Adding..." : "Add Investment"}
+            </Button>
           </div>
         </form>
       </DialogContent>
