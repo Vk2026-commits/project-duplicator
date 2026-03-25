@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      startups: {
+        Row: {
+          created_at: string
+          current_value: number
+          description: string | null
+          founded: string | null
+          id: string
+          invested: number
+          name: string
+          progress: number
+          sector: string
+          stage: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number
+          description?: string | null
+          founded?: string | null
+          id?: string
+          invested: number
+          name: string
+          progress?: number
+          sector: string
+          stage: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: number
+          description?: string | null
+          founded?: string | null
+          id?: string
+          invested?: number
+          name?: string
+          progress?: number
+          sector?: string
+          stage?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
