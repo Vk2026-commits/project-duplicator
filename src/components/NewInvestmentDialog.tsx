@@ -7,11 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
+import type { Startup } from "@/lib/mock-data";
 
 const sectors = ["Artificial Intelligence", "CleanTech", "HealthTech", "FinTech", "AgriTech", "EdTech", "CyberSecurity", "Real Estate"];
 const stages = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C"] as const;
 
-export default function NewInvestmentDialog() {
+interface NewInvestmentDialogProps {
+  onAdd: (startup: Startup) => void;
+}
+
+export default function NewInvestmentDialog({ onAdd }: NewInvestmentDialogProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [sector, setSector] = useState("");
@@ -33,6 +38,21 @@ export default function NewInvestmentDialog() {
       return;
     }
 
+    const newStartup: Startup = {
+      id: `st-${Date.now()}`,
+      name: name.trim(),
+      sector,
+      stage: stage as Startup["stage"],
+      invested: parsedAmount,
+      currentValue: parsedAmount,
+      progress: 0,
+      status: "on-track",
+      founded: new Date().toISOString().slice(0, 7),
+      description: description.trim() || `${name.trim()} — ${sector}`,
+      investorIds: [],
+    };
+
+    onAdd(newStartup);
     toast.success(`Investment in "${name.trim()}" added successfully`);
     setName("");
     setSector("");
