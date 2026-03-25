@@ -104,7 +104,7 @@ export default function NewInvestmentDialog() {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="e.g. 500000"
               min="1"
-              step="1000"
+              step="any"
             />
           </div>
 
