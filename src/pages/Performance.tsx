@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import PortfolioChart from "@/components/PortfolioChart";
 import SectorChart from "@/components/SectorChart";
 import { startups, formatCurrency } from "@/lib/mock-data";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 const roiData = startups.map((s) => ({
   name: s.name.split(" ")[0],
