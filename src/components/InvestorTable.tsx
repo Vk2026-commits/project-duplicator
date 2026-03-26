@@ -71,15 +71,15 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
               {display.map((inv) => (
                 <tr key={inv.name} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
+                    <Link to={`/investors/${encodeURIComponent(inv.name)}`} className="flex items-center gap-3 group">
                       <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
                         {inv.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">{inv.name}</p>
+                        <p className="font-medium text-sm group-hover:text-primary transition-colors">{inv.name}</p>
                         {inv.email && <p className="text-xs text-muted-foreground">{inv.email}</p>}
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(inv.totalInvested)}</td>
                   <td className="px-6 py-4 text-right text-sm">{inv.startupCount}</td>
