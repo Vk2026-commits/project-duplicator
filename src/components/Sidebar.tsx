@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, Settings, LogIn } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, Settings } from "lucide-react";
 
 const navItems = [
   { icon: BarChart3, label: "Dashboard", path: "/" },
@@ -39,13 +39,6 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-border space-y-1">
-        <Link
-          to="/login"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
-        >
-          <LogIn className="w-4 h-4" />
-          Investor Login
-        </Link>
         <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full">
           <Settings className="w-4 h-4" />
           Settings
