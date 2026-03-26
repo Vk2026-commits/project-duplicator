@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      startup_investors: {
+        Row: {
+          amount_invested: number
+          created_at: string
+          email: string | null
+          equity_percentage: number
+          id: string
+          investment_date: string
+          investor_name: string
+          notes: string | null
+          startup_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_invested: number
+          created_at?: string
+          email?: string | null
+          equity_percentage: number
+          id?: string
+          investment_date?: string
+          investor_name: string
+          notes?: string | null
+          startup_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_invested?: number
+          created_at?: string
+          email?: string | null
+          equity_percentage?: number
+          id?: string
+          investment_date?: string
+          investor_name?: string
+          notes?: string | null
+          startup_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_investors_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       startups: {
         Row: {
           created_at: string
