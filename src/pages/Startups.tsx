@@ -4,8 +4,10 @@ import Layout from "@/components/Layout";
 import StartupCard from "@/components/StartupCard";
 import NewInvestmentDialog from "@/components/NewInvestmentDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { startups as mockStartups } from "@/lib/mock-data";
 import type { Startup } from "@/lib/mock-data";
+import { Briefcase } from "lucide-react";
 
 function mapDbToStartup(row: any): Startup {
   return {
@@ -25,6 +27,7 @@ function mapDbToStartup(row: any): Startup {
 
 export default function Startups() {
   const queryClient = useQueryClient();
+  const { user, isAdmin } = useAuth();
 
   const { data: startups = mockStartups, isLoading } = useQuery({
     queryKey: ["startups"],
@@ -37,6 +40,23 @@ export default function Startups() {
       return data.map(mapDbToStartup);
     },
   });
+
+  // Fetch user's linked startups
+  const { data: myLinks = [] } = useQuery({
+    queryKey: ["my-startup-links", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("profile_startup_links" as any)
+        .select("startup_id")
+        .eq("profile_id", user.id);
+      if (error) throw error;
+      return (data as unknown as { startup_id: string }[]).map((d) => d.startup_id);
+    },
+    enabled: !!user,
+  });
+
+  const myStartupIds = new Set(myLinks);
 
   const addMutation = useMutation({
     mutationFn: async (startup: {
@@ -68,15 +88,29 @@ export default function Startups() {
           <h2 className="font-display text-2xl font-bold">Startup Investments</h2>
           <p className="text-sm text-muted-foreground mt-1">Track all startup investments and their progress</p>
         </div>
-        <NewInvestmentDialog onAdd={(s) => addMutation.mutate(s)} isSubmitting={addMutation.isPending} />
+        {isAdmin && <NewInvestmentDialog onAdd={(s) => addMutation.mutate(s)} isSubmitting={addMutation.isPending} />}
       </div>
       {isLoading ? (
         <p className="text-muted-foreground">Loading startups...</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {startups.map((s) => (
-            <StartupCard key={s.id} startup={s} />
-          ))}
+          {startups.map((s) => {
+            const canSeeDetails = isAdmin || myStartupIds.has(s.id);
+            if (canSeeDetails) {
+              return <StartupCard key={s.id} startup={s} />;
+            }
+            // Non-linked users see name only
+            return (
+              <div key={s.id} className="glass-card rounded-xl p-6 animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                    <Briefcase className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-display font-semibold">{s.name}</h3>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </Layout>

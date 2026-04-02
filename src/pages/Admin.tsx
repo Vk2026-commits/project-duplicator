@@ -11,7 +11,8 @@ import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
 import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound } from "lucide-react";
+import AssignStartupsDialog from "@/components/AssignStartupsDialog";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
@@ -204,6 +205,7 @@ function DirectoryAdmin() {
   const qc = useQueryClient();
   const [editProfile, setEditProfile] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [assignProfile, setAssignProfile] = useState<any | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles-dir"],
@@ -249,7 +251,7 @@ function DirectoryAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[140px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[170px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -263,8 +265,9 @@ function DirectoryAdmin() {
                 <TableCell className="text-sm max-w-[200px] truncate">{p.bio || "—"}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">{socials || "—"}</TableCell>
                 <TableCell>
-                  <div className="flex gap-1">
+                   <div className="flex gap-1">
                     <Button size="icon" variant="ghost" onClick={() => setEditProfile(p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setAssignProfile(p)} title="Assign startups"><Link2 className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => sendPasswordReset(p.email)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
                   </div>
@@ -279,6 +282,9 @@ function DirectoryAdmin() {
         <AdminProfileEditDialog open={!!editProfile} onOpenChange={(o) => { if (!o) setEditProfile(null); }} profile={editProfile} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Profile" description="This will delete this user's profile and roles. The auth account will remain." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      {assignProfile && (
+        <AssignStartupsDialog open={!!assignProfile} onOpenChange={(o) => { if (!o) setAssignProfile(null); }} profileId={assignProfile.id} profileName={assignProfile.full_name || "Unnamed"} />
+      )}
     </>
   );
 }
