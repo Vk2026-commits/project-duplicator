@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { icon: BarChart3, label: "Dashboard", path: "/" },
+  { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
   { icon: Users, label: "Investors", path: "/investors" },
   { icon: Contact, label: "Directory", path: "/directory" },
   { icon: Briefcase, label: "Startups", path: "/startups" },

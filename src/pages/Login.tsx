@@ -33,7 +33,7 @@ export default function Login() {
         if (error) throw error;
         toast.success("Signed in successfully!");
       }
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -118,7 +118,7 @@ export default function Login() {
         </div>
 
         <p className="text-center mt-6">
-          <Link to="/" className="text-sm text-primary hover:underline">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="text-sm text-primary hover:underline">← Back to Dashboard</Link>
         </p>
       </div>
     </div>
