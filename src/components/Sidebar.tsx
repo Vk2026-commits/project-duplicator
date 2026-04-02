@@ -47,6 +47,17 @@ export default function Sidebar() {
       <div className="p-4 border-t border-border space-y-1">
         {!loading && user ? (
           <>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  location.pathname === "/admin" ? "bg-primary/10 text-primary glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                } w-full`}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Admin
+              </Link>
+            )}
             <Link
               to={`/profile/${user.id}`}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
