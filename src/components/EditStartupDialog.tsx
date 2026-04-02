@@ -42,25 +42,47 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setFundingGoal(String(startup.funding_goal));
   }, [startup]);
 
+  const [showInvestorWarning, setShowInvestorWarning] = useState(false);
+  const [pendingData, setPendingData] = useState<any>(null);
+
+  const buildData = () => ({
+    id: startup.id,
+    name: name.trim(),
+    sector,
+    stage,
+    invested: parseFloat(invested) || 0,
+    current_value: parseFloat(currentValue) || 0,
+    description: description.trim(),
+    progress: parseInt(progress) || 0,
+    funding_goal: parseFloat(fundingGoal) || 0,
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !sector || !stage) {
       toast.error("Please fill in all required fields");
       return;
     }
-    onSave({
-      id: startup.id,
-      name: name.trim(),
-      sector,
-      stage,
-      invested: parseFloat(invested),
-      current_value: parseFloat(currentValue) || 0,
-      description: description.trim(),
-      progress: parseInt(progress) || 0,
-      funding_goal: parseFloat(fundingGoal) || 0,
-    });
+    const data = buildData();
+    // Warn if setting invested lower than what investors have contributed
+    if (data.invested < investorTotal && investorTotal > 0) {
+      setPendingData(data);
+      setShowInvestorWarning(true);
+      return;
+    }
+    onSave(data);
     toast.success("Startup updated");
     onOpenChange(false);
+  };
+
+  const confirmSave = () => {
+    if (pendingData) {
+      onSave(pendingData);
+      toast.success("Startup updated");
+      onOpenChange(false);
+    }
+    setShowInvestorWarning(false);
+    setPendingData(null);
   };
 
   return (
