@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      disclaimer_acceptances: {
+        Row: {
+          accepted_at: string
+          full_name: string
+          id: string
+          ip_address: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          full_name: string
+          id?: string
+          ip_address?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          full_name?: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profile_startup_links: {
         Row: {
           created_at: string
