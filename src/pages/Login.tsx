@@ -118,7 +118,7 @@ export default function Login() {
         </div>
 
         <p className="text-center mt-6">
-          <Link to="/" className="text-sm text-primary hover:underline">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="text-sm text-primary hover:underline">← Back to Dashboard</Link>
         </p>
       </div>
     </div>
