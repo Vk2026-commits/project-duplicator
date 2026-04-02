@@ -13,6 +13,7 @@ import Startups from "./pages/Startups";
 import StartupDetail from "./pages/StartupDetail";
 import Performance from "./pages/Performance";
 import Mission from "./pages/Mission";
+import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
