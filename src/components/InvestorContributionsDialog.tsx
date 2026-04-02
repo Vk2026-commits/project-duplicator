@@ -68,8 +68,14 @@ export default function InvestorContributionsDialog({ open, onOpenChange, invest
       } as any);
       if (error) throw error;
 
-      // Update the investor's total amount_invested
-      const newTotal = Number(investorRecord.amount_invested) + parsedAmount;
+      // Recalculate total from all contributions for this investor-startup record
+      const { data: allContribs, error: fetchErr } = await supabase
+        .from("investor_contributions")
+        .select("amount")
+        .eq("startup_investor_id", investorRecord.id);
+      if (fetchErr) throw fetchErr;
+
+      const newTotal = (allContribs || []).reduce((sum: number, c: any) => sum + Number(c.amount), 0) + parsedAmount;
       const { error: updateErr } = await supabase
         .from("startup_investors")
         .update({ amount_invested: newTotal })
