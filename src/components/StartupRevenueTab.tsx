@@ -174,14 +174,13 @@ export default function StartupRevenueTab({ startupId, startupName }: StartupRev
   });
 
   const addMutation = useMutation({
-    mutationFn: async (d: { entry_date: string; gross_sales: number; profit_margin: number; notes: string }) => {
-      const profit = d.gross_sales * (d.profit_margin / 100);
+    mutationFn: async (d: { entry_date: string; gross_sales: number; profit_margin: number; profit: number; notes: string }) => {
       const { error } = await supabase.from("startup_revenue").insert({
         startup_id: startupId,
         entry_date: d.entry_date,
         gross_sales: d.gross_sales,
         profit_margin: d.profit_margin,
-        profit,
+        profit: d.profit,
         notes: d.notes || null,
       });
       if (error) throw error;
@@ -194,13 +193,12 @@ export default function StartupRevenueTab({ startupId, startupName }: StartupRev
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (d: { id: string; entry_date: string; gross_sales: number; profit_margin: number; notes: string }) => {
-      const profit = d.gross_sales * (d.profit_margin / 100);
+    mutationFn: async (d: { id: string; entry_date: string; gross_sales: number; profit_margin: number; profit: number; notes: string }) => {
       const { error } = await supabase.from("startup_revenue").update({
         entry_date: d.entry_date,
         gross_sales: d.gross_sales,
         profit_margin: d.profit_margin,
-        profit,
+        profit: d.profit,
         notes: d.notes || null,
       }).eq("id", d.id);
       if (error) throw error;
