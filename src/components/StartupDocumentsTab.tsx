@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { FileText, Plus, Trash2, Download, CheckCircle2, AlertCircle, Eye } from "lucide-react";
 import { toast } from "sonner";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 const DOC_TYPES = [
   { value: "mou", label: "MOU" },
