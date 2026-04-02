@@ -321,6 +321,72 @@ export default function InvestorProfile() {
           </CardContent>
         </Card>
       )}
+
+      {/* Pending & Signed Documents */}
+      {(isOwnProfile || isAdmin) && allDocs.length > 0 && (
+        <Card className="glass-card border-border mt-6 animate-fade-in">
+          <CardContent className="p-6">
+            <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              Startup Documents
+            </h3>
+
+            {pendingDocs.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {pendingDocs.length} document{pendingDocs.length !== 1 ? "s" : ""} pending acknowledgment
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {pendingDocs.map((doc: any) => (
+                    <div key={doc.id} className="flex items-center justify-between bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <FileText className="w-4 h-4 text-amber-600 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{doc.title}</p>
+                          <p className="text-xs text-muted-foreground">{startupNameMap[doc.startup_id]} • {doc.document_type?.toUpperCase()}</p>
+                        </div>
+                      </div>
+                      <Link to={`/startups/${doc.startup_id}`}>
+                        <Button size="sm" variant="outline" className="shrink-0">Review & Sign</Button>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {signedDocs.length > 0 && (
+              <div>
+                {pendingDocs.length > 0 && <div className="border-t border-border my-4" />}
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                    {signedDocs.length} document{signedDocs.length !== 1 ? "s" : ""} acknowledged
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {signedDocs.map((doc: any) => (
+                    <div key={doc.id} className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{doc.title}</p>
+                        <p className="text-xs text-muted-foreground">{startupNameMap[doc.startup_id]} • {doc.document_type?.toUpperCase()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {pendingDocs.length === 0 && signedDocs.length === 0 && (
+              <p className="text-sm text-muted-foreground">No documents to display.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </Layout>
   );
 }
