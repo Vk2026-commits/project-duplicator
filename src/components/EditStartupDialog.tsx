@@ -26,6 +26,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
   const [currentValue, setCurrentValue] = useState(String(startup.current_value));
   const [description, setDescription] = useState(startup.description || "");
   const [progress, setProgress] = useState(String(startup.progress));
+  const [fundingGoal, setFundingGoal] = useState(String(startup.funding_goal));
 
   useEffect(() => {
     setName(startup.name);
@@ -35,6 +36,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setCurrentValue(String(startup.current_value));
     setDescription(startup.description || "");
     setProgress(String(startup.progress));
+    setFundingGoal(String(startup.funding_goal));
   }, [startup]);
 
   const handleSubmit = (e: React.FormEvent) => {
