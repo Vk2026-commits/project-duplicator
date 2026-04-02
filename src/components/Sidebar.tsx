@@ -10,6 +10,7 @@ const navItems = [
   { icon: Briefcase, label: "Startups", path: "/startups" },
   { icon: TrendingUp, label: "Performance", path: "/performance" },
   { icon: ScrollText, label: "Mission & Values", path: "/mission" },
+  { icon: Info, label: "Information", path: "/information" },
 ];
 
 export default function Sidebar() {
