@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -15,7 +15,7 @@ const navItems = [
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, isAdmin } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-50">
@@ -47,6 +47,17 @@ export default function Sidebar() {
       <div className="p-4 border-t border-border space-y-1">
         {!loading && user ? (
           <>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  location.pathname === "/admin" ? "bg-primary/10 text-primary glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                } w-full`}
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Admin
+              </Link>
+            )}
             <Link
               to={`/profile/${user.id}`}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
