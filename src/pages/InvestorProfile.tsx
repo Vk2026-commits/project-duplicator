@@ -173,7 +173,7 @@ export default function InvestorProfile() {
 
       {/* Complete Profile Prompt */}
       {showCompletePrompt && (
-        <div className="mb-6 flex items-center gap-4 bg-primary/10 border border-primary/20 rounded-xl p-5 animate-fade-in">
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-primary/10 border border-primary/20 rounded-xl p-4 sm:p-5 animate-fade-in">
           <User className="w-8 h-8 text-primary flex-shrink-0" />
           <div className="flex-1">
             <h3 className="font-display font-semibold text-foreground">Complete Your Profile</h3>
@@ -181,7 +181,7 @@ export default function InvestorProfile() {
               Welcome! Please fill out your profile information so other members can get to know you.
             </p>
           </div>
-          <Button onClick={() => setEditing(true)} className="gap-1.5 shrink-0">
+          <Button onClick={() => setEditing(true)} className="gap-1.5 shrink-0 w-full sm:w-auto">
             <Pencil className="w-3.5 h-3.5" /> Complete Profile
           </Button>
         </div>
