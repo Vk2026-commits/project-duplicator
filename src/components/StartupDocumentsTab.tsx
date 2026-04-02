@@ -311,6 +311,24 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           </p>
         </div>
       )}
+
+      {/* PDF Viewer Dialog */}
+      <Dialog open={!!viewUrl} onOpenChange={(open) => !open && setViewUrl(null)}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[85vh] flex flex-col p-0">
+          <DialogHeader className="p-4 pb-2">
+            <DialogTitle>Document Viewer</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 px-4 pb-4">
+            {viewUrl && (
+              <iframe
+                src={viewUrl}
+                className="w-full h-full rounded-lg border border-border"
+                title="Document preview"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
