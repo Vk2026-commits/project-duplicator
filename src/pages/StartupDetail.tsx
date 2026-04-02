@@ -56,7 +56,7 @@ export default function StartupDetail() {
       const { error } = await supabase.from("startup_investors").insert({ startup_id: id!, ...investor, email: investor.email || null, notes: investor.notes || null });
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); },
   });
 
   const updateStartupMutation = useMutation({
@@ -86,7 +86,7 @@ export default function StartupDetail() {
       const { error } = await supabase.from("startup_investors").update({ investor_name: data.investor_name, email: data.email, amount_invested: data.amount_invested, equity_percentage: data.equity_percentage, investment_date: data.investment_date, notes: data.notes }).eq("id", data.id);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); setEditingInvestor(null); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); setEditingInvestor(null); },
   });
 
   const updateEquityMutation = useMutation({
@@ -96,6 +96,7 @@ export default function StartupDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+      queryClient.invalidateQueries({ queryKey: ["startup", id] });
       setEditingEquityId(null);
       toast.success("Equity updated");
     },
@@ -106,7 +107,7 @@ export default function StartupDetail() {
       const { error } = await supabase.from("startup_investors").delete().eq("id", investorId);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); toast.success("Investor deleted"); setDeletingInvestorId(null); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); toast.success("Investor deleted"); setDeletingInvestorId(null); },
   });
 
   const handleEquitySave = (investorId: string) => {
