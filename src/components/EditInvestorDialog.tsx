@@ -88,12 +88,33 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Amount ($) *</Label>
-              <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="1" step="any" />
+              <Label>Amount ($)</Label>
+              <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
-              <Label>Equity (%) *</Label>
-              <Input type="number" value={equity} onChange={(e) => setEquity(e.target.value)} min="0.01" max="100" step="any" />
+              <Label>Equity (%)</Label>
+              <Input type="number" value={equity} onChange={(e) => setEquity(e.target.value)} min="0" max="100" step="any" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Pledge Amount ($)</Label>
+              <Input type="number" value={pledgeAmount} onChange={(e) => setPledgeAmount(e.target.value)} min="0" step="any" placeholder="Amount pledged" />
+            </div>
+            <div className="space-y-2">
+              <Label>Investment Round</Label>
+              <Select value={investmentRound} onValueChange={setInvestmentRound}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select round" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pre-seed">Pre-Seed</SelectItem>
+                  <SelectItem value="seed">Seed</SelectItem>
+                  <SelectItem value="series-a">Series A</SelectItem>
+                  <SelectItem value="series-b">Series B</SelectItem>
+                  <SelectItem value="series-c">Series C</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-2">
