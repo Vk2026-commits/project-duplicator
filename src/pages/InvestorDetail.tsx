@@ -75,7 +75,9 @@ export default function InvestorDetail() {
         equity_percentage: data.equity_percentage,
         investment_date: data.investment_date,
         notes: data.notes,
-      }).eq("id", data.id);
+        pledge_amount: data.pledge_amount,
+        investment_round: data.investment_round,
+      } as any).eq("id", data.id);
       if (error) throw error;
     },
     onSuccess: () => {
