@@ -575,17 +575,41 @@ function ComplianceAdmin() {
   const { data: onboardingAgreements = [] } = useQuery({
     queryKey: ["all-onboarding-agreements"],
     queryFn: async () => {
-      const { data } = await supabase.from("onboarding_agreements").select("user_id, agreement_type, signed_at, full_name");
+      const { data } = await supabase.from("onboarding_agreements").select("user_id, agreement_type, signed_at, full_name, startup_id");
+      return data || [];
+    },
+  });
+
+  const { data: startups = [] } = useQuery({
+    queryKey: ["all-startups-compliance"],
+    queryFn: async () => {
+      const { data } = await supabase.from("startups").select("id, name");
+      return data || [];
+    },
+  });
+
+  const { data: profileLinks = [] } = useQuery({
+    queryKey: ["all-profile-startup-links"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profile_startup_links").select("profile_id, startup_id");
       return data || [];
     },
   });
 
   const disclaimerMap = new Map(disclaimers.map((d: any) => [d.user_id, d]));
-  const onboardingMap = new Map<string, any[]>();
-  onboardingAgreements.forEach((a: any) => {
-    if (!onboardingMap.has(a.user_id)) onboardingMap.set(a.user_id, []);
-    onboardingMap.get(a.user_id)!.push(a);
-  });
+  const startupMap = new Map(startups.map((s: any) => [s.id, s.name]));
+
+  // Group onboarding agreements by user_id + startup_id
+  const getAgreements = (userId: string, startupId: string | null) => {
+    return onboardingAgreements.filter((a: any) =>
+      a.user_id === userId && (startupId ? a.startup_id === startupId : !a.startup_id)
+    );
+  };
+
+  // Get startups assigned to each profile
+  const getAssignedStartups = (profileId: string) => {
+    return profileLinks.filter((l: any) => l.profile_id === profileId).map((l: any) => l.startup_id);
+  };
 
   return (
     <>
@@ -593,6 +617,9 @@ function ComplianceAdmin() {
         <FileText className="w-5 h-5 text-primary" />
         <h3 className="font-display font-semibold text-lg">Member Compliance Tracker</h3>
       </div>
+
+      {/* Global Agreements */}
+      <h4 className="text-sm font-semibold text-muted-foreground mb-2 mt-4">Global Agreements</h4>
       <Table>
         <TableHeader>
           <TableRow>
@@ -605,7 +632,7 @@ function ComplianceAdmin() {
         <TableBody>
           {profiles.map((p: any) => {
             const disc = disclaimerMap.get(p.id);
-            const agreements = onboardingMap.get(p.id) || [];
+            const agreements = getAgreements(p.id, null);
             const opAgreement = agreements.find((a: any) => a.agreement_type === "operating_agreement");
             const onbPacket = agreements.find((a: any) => a.agreement_type === "onboarding_packet");
             return (
@@ -641,6 +668,61 @@ function ComplianceAdmin() {
               </TableRow>
             );
           })}
+        </TableBody>
+      </Table>
+
+      {/* Per-Startup Agreements */}
+      <h4 className="text-sm font-semibold text-muted-foreground mb-2 mt-8">Per-Startup Onboarding</h4>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Member</TableHead>
+            <TableHead>Startup</TableHead>
+            <TableHead>Operating Agreement</TableHead>
+            <TableHead>Onboarding Packet</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {profiles.flatMap((p: any) => {
+            const assignedStartups = getAssignedStartups(p.id);
+            if (assignedStartups.length === 0) return [];
+            return assignedStartups.map((sId: string) => {
+              const agreements = getAgreements(p.id, sId);
+              const opAgreement = agreements.find((a: any) => a.agreement_type === "operating_agreement");
+              const onbPacket = agreements.find((a: any) => a.agreement_type === "onboarding_packet");
+              return (
+                <TableRow key={`${p.id}-${sId}`}>
+                  <TableCell className="font-medium">{p.full_name || p.email || "—"}</TableCell>
+                  <TableCell className="text-sm">{startupMap.get(sId) || sId.slice(0, 8)}</TableCell>
+                  <TableCell>
+                    {opAgreement ? (
+                      <Badge variant="default" className="bg-green-600/20 text-green-700 dark:text-green-400 border-green-600/30">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Signed {new Date(opAgreement.signed_at).toLocaleDateString()}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-amber-600 border-amber-500/30">Pending</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {onbPacket ? (
+                      <Badge variant="default" className="bg-green-600/20 text-green-700 dark:text-green-400 border-green-600/30">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Signed {new Date(onbPacket.signed_at).toLocaleDateString()}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-amber-600 border-amber-500/30">Pending</Badge>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            });
+          })}
+          {profiles.every((p: any) => getAssignedStartups(p.id).length === 0) && (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center text-muted-foreground text-sm py-6">
+                No startup assignments yet. Assign members to startups from the Directory tab.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </>
