@@ -70,32 +70,39 @@ export default function StartupAboutTab({ startup }: StartupAboutTabProps) {
       </div>
 
       {/* Funding Goal Progress */}
-      {fundingGoal > 0 && (
-        <div className="glass-card rounded-xl p-6">
-          <h3 className="font-display font-semibold text-lg mb-4">Capital Raise — {startup.stage}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            <div className="p-4 rounded-lg bg-secondary/30">
-              <span className="text-xs text-muted-foreground">Funding Goal</span>
-              <p className="text-lg font-bold mt-1">{formatCurrency(fundingGoal)}</p>
+      <div className="glass-card rounded-xl p-6">
+        <h3 className="font-display font-semibold text-lg mb-4">Capital Raise — {startup.stage}</h3>
+        {fundingGoal > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <span className="text-xs text-muted-foreground">Funding Goal</span>
+                <p className="text-lg font-bold mt-1">{formatCurrency(fundingGoal)}</p>
+              </div>
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <span className="text-xs text-muted-foreground">Raised So Far</span>
+                <p className="text-lg font-bold mt-1 text-primary">{formatCurrency(invested)}</p>
+              </div>
+              <div className="p-4 rounded-lg bg-secondary/30">
+                <span className="text-xs text-muted-foreground">Remaining</span>
+                <p className="text-lg font-bold mt-1">{formatCurrency(remaining)}</p>
+              </div>
             </div>
-            <div className="p-4 rounded-lg bg-secondary/30">
-              <span className="text-xs text-muted-foreground">Raised So Far</span>
-              <p className="text-lg font-bold mt-1 text-primary">{formatCurrency(invested)}</p>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{raisedPercent.toFixed(1)}% raised</span>
+                <span className="font-medium">{formatCurrency(invested)} / {formatCurrency(fundingGoal)}</span>
+              </div>
+              <Progress value={raisedPercent} className="h-3" />
             </div>
-            <div className="p-4 rounded-lg bg-secondary/30">
-              <span className="text-xs text-muted-foreground">Remaining</span>
-              <p className="text-lg font-bold mt-1">{formatCurrency(remaining)}</p>
-            </div>
+          </>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-sm text-muted-foreground">No funding goal has been set for this startup yet.</p>
+            <p className="text-xs text-muted-foreground mt-1">Use the <span className="font-semibold">Edit</span> button to set a funding goal and track capital raise progress.</p>
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{raisedPercent.toFixed(1)}% raised</span>
-              <span className="font-medium">{formatCurrency(invested)} / {formatCurrency(fundingGoal)}</span>
-            </div>
-            <Progress value={raisedPercent} className="h-3" />
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="glass-card rounded-xl p-6">
         <h3 className="font-display font-semibold text-lg mb-4">Financial Summary</h3>
