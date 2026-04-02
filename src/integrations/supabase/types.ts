@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      deal_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          deal_id: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          deal_id: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          deal_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_comments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_votes: {
         Row: {
           created_at: string
@@ -115,6 +147,74 @@ export type Database = {
           id?: string
           ip_address?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      meeting_notes: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          meeting_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          meeting_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          meeting_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_notes_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          agenda: string | null
+          created_at: string
+          created_by: string
+          id: string
+          location: string | null
+          meeting_date: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agenda?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          location?: string | null
+          meeting_date: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agenda?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          location?: string | null
+          meeting_date?: string
+          status?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
