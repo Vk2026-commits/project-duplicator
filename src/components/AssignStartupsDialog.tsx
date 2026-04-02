@@ -97,22 +97,6 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
   const newlySelected = Array.from(selected).filter((id) => !existingInvestorSet.has(id));
 
   const handleSave = async () => {
-    // Validate new selections have amount & equity
-    for (const startupId of newlySelected) {
-      const data = newStartupData.get(startupId);
-      const amount = parseFloat(data?.amount || "");
-      const equity = parseFloat(data?.equity || "");
-      if (isNaN(amount) || amount <= 0) {
-        const name = startups.find((s) => s.id === startupId)?.name;
-        toast.error(`Enter a valid amount for ${name}`);
-        return;
-      }
-      if (isNaN(equity) || equity <= 0 || equity > 100) {
-        const name = startups.find((s) => s.id === startupId)?.name;
-        toast.error(`Enter valid equity (0-100%) for ${name}`);
-        return;
-      }
-    }
 
     setSaving(true);
     try {
