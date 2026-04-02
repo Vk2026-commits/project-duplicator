@@ -258,7 +258,7 @@ function DirectoryAdmin() {
   const [assignProfile, setAssignProfile] = useState<any | null>(null);
 
   // Password-gated action state
-  const [pendingAction, setPendingAction] = useState<{ type: "edit" | "assign" | "reset" | "delete"; profile: any } | null>(null);
+  const [pendingAction, setPendingAction] = useState<{ type: "edit" | "assign" | "reset" | "delete" | "archive"; profile: any } | null>(null);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
