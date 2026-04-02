@@ -220,7 +220,7 @@ export default function MyPortfolioCard() {
                         return `$${v}`;
                       }}
                     />
-                    <Tooltip
+                    <RechartsTooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--card))",
                         border: "1px solid hsl(var(--border))",
