@@ -13,8 +13,8 @@ const stages = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C"] as const
 interface EditStartupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  startup: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string | null; progress: number };
-  onSave: (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number }) => void;
+  startup: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string | null; progress: number; funding_goal: number };
+  onSave: (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number; funding_goal: number }) => void;
   isSubmitting?: boolean;
 }
 
