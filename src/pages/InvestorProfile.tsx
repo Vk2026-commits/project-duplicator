@@ -131,6 +131,18 @@ export default function InvestorProfile() {
             }
             updateMutation.mutate(form);
           }} className="space-y-5">
+            {!disclaimerAcceptance && (
+              <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                <Shield className="w-5 h-5 text-destructive flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">Disclaimer Required</p>
+                  <p className="text-xs text-muted-foreground">You must sign the Investment Disclosure & Risk Disclaimer before saving your profile.</p>
+                </div>
+                <Link to="/disclosures">
+                  <Button size="sm" variant="outline" type="button">Sign Now</Button>
+                </Link>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Full Name</Label>
