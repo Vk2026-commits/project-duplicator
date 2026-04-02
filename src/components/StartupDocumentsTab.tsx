@@ -350,6 +350,14 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+      <ConfirmDeleteDialog
+        open={!!deletingDocId}
+        onOpenChange={(o) => { if (!o) setDeletingDocId(null); }}
+        title="Delete Document"
+        description="Are you sure you want to delete this document? This action cannot be undone."
+        onConfirm={() => deletingDocId && deleteMutation.mutate(deletingDocId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

@@ -307,6 +307,14 @@ export default function Contributions() {
           All members actively participate in investment decisions and are not passive investors.
         </p>
       </div>
+      <ConfirmDeleteDialog
+        open={!!deletingContribId}
+        onOpenChange={(o) => { if (!o) setDeletingContribId(null); }}
+        title="Delete Contribution"
+        description="Are you sure you want to delete this contribution? This action cannot be undone."
+        onConfirm={() => deletingContribId && deleteMutation.mutate(deletingContribId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </Layout>
   );
 }
