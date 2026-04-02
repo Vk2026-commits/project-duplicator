@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/lib/mock-data";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import AvatarUpload from "@/components/AvatarUpload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart, UserCheck, HeartHandshake } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart, UserCheck, HeartHandshake, DollarSign, Calendar } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 const INTEREST_OPTIONS = [
@@ -103,6 +106,38 @@ export default function InvestorProfile() {
       return data;
     },
     enabled: !!id && (isOwnProfile || isAdmin),
+  });
+
+  // Fetch investor records and contributions for this profile
+  const { data: investorRecords = [] } = useQuery({
+    queryKey: ["profile-investor-records", profile?.full_name],
+    queryFn: async () => {
+      if (!profile?.full_name) return [];
+      const { data, error } = await supabase
+        .from("startup_investors")
+        .select("*, startups(name)")
+        .eq("investor_name", profile.full_name)
+        .eq("archived", false);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!profile?.full_name && (isOwnProfile || isAdmin),
+  });
+
+  const investorIds = investorRecords.map((r: any) => r.id);
+  const { data: allContributions = [] } = useQuery({
+    queryKey: ["profile-contributions", investorIds],
+    queryFn: async () => {
+      if (investorIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from("investor_contributions")
+        .select("*")
+        .in("startup_investor_id", investorIds)
+        .order("contribution_date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: investorIds.length > 0 && (isOwnProfile || isAdmin),
   });
 
   const ackedDocIds = new Set(userAcks.map((a: any) => a.document_id));
@@ -602,6 +637,74 @@ export default function InvestorProfile() {
             {pendingDocs.length === 0 && signedDocs.length === 0 && (
               <p className="text-sm text-muted-foreground">No documents to display.</p>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Investment Contributions */}
+      {(isOwnProfile || isAdmin) && investorRecords.length > 0 && (
+        <Card className="glass-card border-border mt-6 animate-fade-in">
+          <CardContent className="p-6">
+            <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-primary" />
+              Investment Contributions
+            </h3>
+
+            {investorRecords.map((rec: any) => {
+              const contribs = allContributions.filter((c: any) => c.startup_investor_id === rec.id);
+              const totalContributed = contribs.reduce((sum: number, c: any) => sum + Number(c.amount), 0);
+              const pledgeAmt = Number(rec.pledge_amount) || 0;
+              const progressPct = pledgeAmt > 0 ? Math.min((totalContributed / pledgeAmt) * 100, 100) : 0;
+
+              return (
+                <div key={rec.id} className="mb-5 last:mb-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-semibold">{rec.startups?.name || "Unknown Startup"}</h4>
+                    <span className="text-sm text-muted-foreground">
+                      Total: {formatCurrency(Number(rec.amount_invested))}
+                    </span>
+                  </div>
+
+                  {pledgeAmt > 0 && (
+                    <div className="mb-3 space-y-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Pledge: {formatCurrency(pledgeAmt)}</span>
+                        <span>{progressPct.toFixed(0)}% contributed</span>
+                      </div>
+                      <Progress value={progressPct} className="h-2" />
+                    </div>
+                  )}
+
+                  {contribs.length > 0 ? (
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-secondary/30">
+                            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">Date</th>
+                            <th className="text-right text-xs font-medium text-muted-foreground px-4 py-2">Amount</th>
+                            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {contribs.map((c: any) => (
+                            <tr key={c.id} className="border-b border-border/50">
+                              <td className="px-4 py-2 text-sm flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                                {format(new Date(c.contribution_date), "MMM d, yyyy")}
+                              </td>
+                              <td className="px-4 py-2 text-right text-sm font-medium">{formatCurrency(Number(c.amount))}</td>
+                              <td className="px-4 py-2 text-sm text-muted-foreground">{c.notes || "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">No contributions recorded yet.</p>
+                  )}
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}

@@ -16,7 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
-import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X } from "lucide-react";
+import InvestorContributionsDialog from "@/components/InvestorContributionsDialog";
+import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X, HandCoins } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StartupDetail() {
@@ -31,6 +32,7 @@ export default function StartupDetail() {
   const [deletingInvestorId, setDeletingInvestorId] = useState<string | null>(null);
   const [editingEquityId, setEditingEquityId] = useState<string | null>(null);
   const [editingEquityValue, setEditingEquityValue] = useState("");
+  const [contributionsInvestor, setContributionsInvestor] = useState<any | null>(null);
 
   const { data: startup, isLoading: loadingStartup } = useQuery({
     queryKey: ["startup", id],
@@ -267,6 +269,7 @@ export default function StartupDetail() {
                     <tr className="border-b border-border">
                       <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Pledge</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
@@ -288,6 +291,9 @@ export default function StartupDetail() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
+                        <td className="px-6 py-4 text-right text-sm text-muted-foreground">
+                          {Number(inv.pledge_amount) > 0 ? formatCurrency(Number(inv.pledge_amount)) : "—"}
+                        </td>
                         <td className="px-6 py-4 text-right text-sm">
                           {editingEquityId === inv.id ? (
                             <div className="flex items-center justify-end gap-1">
@@ -339,6 +345,9 @@ export default function StartupDetail() {
                         {isAdmin && (
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-1">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setContributionsInvestor(inv)} title="Contributions">
+                                <HandCoins className="w-3.5 h-3.5" />
+                              </Button>
                               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
                                 <Pencil className="w-3.5 h-3.5" />
                               </Button>
@@ -400,6 +409,18 @@ export default function StartupDetail() {
         onConfirm={() => deletingInvestorId && deleteInvestorMutation.mutate(deletingInvestorId)}
         isDeleting={deleteInvestorMutation.isPending}
       />
+      {contributionsInvestor && (
+        <InvestorContributionsDialog
+          open={!!contributionsInvestor}
+          onOpenChange={(open) => { if (!open) setContributionsInvestor(null); }}
+          investorRecord={contributionsInvestor}
+          startupName={startup.name}
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+            queryClient.invalidateQueries({ queryKey: ["startup", id] });
+          }}
+        />
+      )}
     </Layout>
   );
 }
