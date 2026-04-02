@@ -57,8 +57,8 @@ export default function StartupDetail() {
   });
 
   const updateStartupMutation = useMutation({
-    mutationFn: async (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number }) => {
-      const { error } = await supabase.from("startups").update({ name: data.name, sector: data.sector, stage: data.stage, invested: data.invested, current_value: data.current_value, description: data.description || null, progress: data.progress }).eq("id", data.id);
+    mutationFn: async (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number; funding_goal: number }) => {
+      const { error } = await supabase.from("startups").update({ name: data.name, sector: data.sector, stage: data.stage, invested: data.invested, current_value: data.current_value, description: data.description || null, progress: data.progress, funding_goal: data.funding_goal }).eq("id", data.id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["startup", id] }),
