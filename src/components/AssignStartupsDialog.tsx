@@ -141,6 +141,26 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
         });
         const { error } = await supabase.from("startup_investors").insert(investorRows);
         if (error) throw error;
+
+        // Send assignment notification emails for each newly assigned startup
+        for (const startupId of newlySelected) {
+          const startupName = startups.find((s) => s.id === startupId)?.name || "a new group";
+          const siteUrl = window.location.origin;
+          const onboardingUrl = `${siteUrl}/onboarding/${startupId}`;
+
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "startup-assignment",
+              recipientEmail: profileEmail,
+              idempotencyKey: `startup-assign-${profileId}-${startupId}`,
+              templateData: {
+                memberName: profileName,
+                startupName,
+                onboardingUrl,
+              },
+            },
+          });
+        }
       }
 
       qc.invalidateQueries({ queryKey: ["profile-startup-links"] });
