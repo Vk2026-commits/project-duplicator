@@ -24,6 +24,7 @@ import Contributions from "./pages/Contributions";
 import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Onboarding from "./pages/Onboarding";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
