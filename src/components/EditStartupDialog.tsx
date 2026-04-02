@@ -95,7 +95,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Invested ($) *</Label>
-              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="1" step="any" />
+              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
               <Label>Current Value ($)</Label>
