@@ -14,7 +14,7 @@ import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
