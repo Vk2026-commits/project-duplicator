@@ -409,6 +409,18 @@ export default function StartupDetail() {
         onConfirm={() => deletingInvestorId && deleteInvestorMutation.mutate(deletingInvestorId)}
         isDeleting={deleteInvestorMutation.isPending}
       />
+      {contributionsInvestor && (
+        <InvestorContributionsDialog
+          open={!!contributionsInvestor}
+          onOpenChange={(open) => { if (!open) setContributionsInvestor(null); }}
+          investorRecord={contributionsInvestor}
+          startupName={startup.name}
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+            queryClient.invalidateQueries({ queryKey: ["startup", id] });
+          }}
+        />
+      )}
     </Layout>
   );
 }
