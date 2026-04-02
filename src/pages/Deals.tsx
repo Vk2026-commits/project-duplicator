@@ -339,6 +339,9 @@ export default function Deals() {
                     </div>
                   </div>
                 )}
+
+                {/* Discussion thread */}
+                <DealDiscussionThread dealId={deal.id} profileMap={profileMap} />
               </Card>
             );
           })}
