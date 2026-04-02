@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import AvatarUpload from "@/components/AvatarUpload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart, UserCheck, HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 
 const INTEREST_OPTIONS = [
@@ -139,6 +139,12 @@ export default function InvestorProfile() {
         location: data.location,
         investment_focus: data.investment_focus,
         interests: data.interests || [],
+        emergency_contact_name: data.emergency_contact_name || null,
+        emergency_contact_phone: data.emergency_contact_phone || null,
+        emergency_contact_relationship: data.emergency_contact_relationship || null,
+        beneficiary_name: data.beneficiary_name || null,
+        beneficiary_relationship: data.beneficiary_relationship || null,
+        beneficiary_contact: data.beneficiary_contact || null,
         profile_completed: true,
       } as any).eq("id", id!);
       if (error) throw error;
@@ -235,6 +241,14 @@ export default function InvestorProfile() {
               navigate("/disclosures");
               return;
             }
+            if (!form.full_name?.trim()) {
+              toast.error("Full name is required");
+              return;
+            }
+            if (!form.phone?.trim()) {
+              toast.error("Phone number is required");
+              return;
+            }
             updateMutation.mutate(form);
           }} className="space-y-6">
             {!disclaimerAcceptance && (
@@ -255,12 +269,52 @@ export default function InvestorProfile() {
               <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Basic Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Full Name</Label>
-                  <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                  <Label>Full Name <span className="text-destructive">*</span></Label>
+                  <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+                  <Label>Phone <span className="text-destructive">*</span></Label>
+                  <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" required />
+                </div>
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div>
+              <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><UserCheck className="w-4 h-4 text-primary" /> Emergency Contact</h3>
+              <p className="text-xs text-muted-foreground mb-3">Someone we can reach if there's an emergency.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Contact Name</Label>
+                  <Input value={form.emergency_contact_name || ""} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} placeholder="e.g. Jane Smith" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact Phone</Label>
+                  <Input value={form.emergency_contact_phone || ""} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Relationship</Label>
+                  <Input value={form.emergency_contact_relationship || ""} onChange={(e) => setForm({ ...form, emergency_contact_relationship: e.target.value })} placeholder="e.g. Spouse, Parent, Sibling" />
+                </div>
+              </div>
+            </div>
+
+            {/* Beneficiary */}
+            <div>
+              <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><HeartHandshake className="w-4 h-4 text-primary" /> Beneficiary Information</h3>
+              <p className="text-xs text-muted-foreground mb-3">Designate who should receive your portfolio in the event something happens to you.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Beneficiary Name</Label>
+                  <Input value={form.beneficiary_name || ""} onChange={(e) => setForm({ ...form, beneficiary_name: e.target.value })} placeholder="e.g. Jane Smith" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Relationship</Label>
+                  <Input value={form.beneficiary_relationship || ""} onChange={(e) => setForm({ ...form, beneficiary_relationship: e.target.value })} placeholder="e.g. Spouse, Child, Trust" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact (Phone or Email)</Label>
+                  <Input value={form.beneficiary_contact || ""} onChange={(e) => setForm({ ...form, beneficiary_contact: e.target.value })} placeholder="Phone or email" />
                 </div>
               </div>
             </div>
@@ -382,6 +436,32 @@ export default function InvestorProfile() {
                     </Badge>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Emergency Contact & Beneficiary (view mode - private) */}
+            {canSeePrivate && (profileData.emergency_contact_name || profileData.beneficiary_name) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {profileData.emergency_contact_name && (
+                  <div>
+                    <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><UserCheck className="w-4 h-4 text-primary" /> Emergency Contact</h3>
+                    <div className="bg-secondary/30 rounded-lg p-4 space-y-1">
+                      <p className="text-sm font-medium">{profileData.emergency_contact_name}</p>
+                      {profileData.emergency_contact_relationship && <p className="text-xs text-muted-foreground">{profileData.emergency_contact_relationship}</p>}
+                      {profileData.emergency_contact_phone && <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {profileData.emergency_contact_phone}</p>}
+                    </div>
+                  </div>
+                )}
+                {profileData.beneficiary_name && (
+                  <div>
+                    <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><HeartHandshake className="w-4 h-4 text-primary" /> Beneficiary</h3>
+                    <div className="bg-secondary/30 rounded-lg p-4 space-y-1">
+                      <p className="text-sm font-medium">{profileData.beneficiary_name}</p>
+                      {profileData.beneficiary_relationship && <p className="text-xs text-muted-foreground">{profileData.beneficiary_relationship}</p>}
+                      {profileData.beneficiary_contact && <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {profileData.beneficiary_contact}</p>}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
