@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, Settings } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, Settings, ScrollText } from "lucide-react";
 
 const navItems = [
   { icon: BarChart3, label: "Dashboard", path: "/" },
   { icon: Users, label: "Investors", path: "/investors" },
   { icon: Briefcase, label: "Startups", path: "/startups" },
   { icon: TrendingUp, label: "Performance", path: "/performance" },
+  { icon: ScrollText, label: "Mission & Values", path: "/mission" },
 ];
 
 export default function Sidebar() {
