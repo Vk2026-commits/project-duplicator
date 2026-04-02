@@ -439,6 +439,32 @@ export default function InvestorProfile() {
               </div>
             )}
 
+            {/* Emergency Contact & Beneficiary (view mode - private) */}
+            {canSeePrivate && (profileData.emergency_contact_name || profileData.beneficiary_name) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {profileData.emergency_contact_name && (
+                  <div>
+                    <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><UserCheck className="w-4 h-4 text-primary" /> Emergency Contact</h3>
+                    <div className="bg-secondary/30 rounded-lg p-4 space-y-1">
+                      <p className="text-sm font-medium">{profileData.emergency_contact_name}</p>
+                      {profileData.emergency_contact_relationship && <p className="text-xs text-muted-foreground">{profileData.emergency_contact_relationship}</p>}
+                      {profileData.emergency_contact_phone && <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {profileData.emergency_contact_phone}</p>}
+                    </div>
+                  </div>
+                )}
+                {profileData.beneficiary_name && (
+                  <div>
+                    <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><HeartHandshake className="w-4 h-4 text-primary" /> Beneficiary</h3>
+                    <div className="bg-secondary/30 rounded-lg p-4 space-y-1">
+                      <p className="text-sm font-medium">{profileData.beneficiary_name}</p>
+                      {profileData.beneficiary_relationship && <p className="text-xs text-muted-foreground">{profileData.beneficiary_relationship}</p>}
+                      {profileData.beneficiary_contact && <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {profileData.beneficiary_contact}</p>}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Social Links */}
             {(profile.linkedin || profile.twitter || profile.instagram || profile.facebook) && (
               <div>
