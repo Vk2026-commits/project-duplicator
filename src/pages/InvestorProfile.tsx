@@ -15,6 +15,7 @@ import AvatarUpload from "@/components/AvatarUpload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart, UserCheck, HeartHandshake, DollarSign, Calendar } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 const INTEREST_OPTIONS = [
