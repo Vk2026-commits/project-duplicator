@@ -199,6 +199,15 @@ function InvestorsAdmin() {
         <EditInvestorDialog open={!!editInvestor} onOpenChange={(o) => { if (!o) setEditInvestor(null); }} investor={editInvestor} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Investor" description="This will permanently delete this investor record." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      {assignInvestor && (
+        <AssignInvestorStartupsDialog
+          open={!!assignInvestor}
+          onOpenChange={(o) => { if (!o) setAssignInvestor(null); }}
+          investorName={assignInvestor.investor_name}
+          investorEmail={assignInvestor.email}
+          onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
+        />
+      )}
     </>
   );
 }
