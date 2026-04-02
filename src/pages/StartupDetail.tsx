@@ -345,6 +345,9 @@ export default function StartupDetail() {
                         {isAdmin && (
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-1">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setContributionsInvestor(inv)} title="Contributions">
+                                <HandCoins className="w-3.5 h-3.5" />
+                              </Button>
                               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
                                 <Pencil className="w-3.5 h-3.5" />
                               </Button>
