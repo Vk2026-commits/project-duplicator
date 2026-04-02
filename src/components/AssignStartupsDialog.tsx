@@ -97,22 +97,6 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
   const newlySelected = Array.from(selected).filter((id) => !existingInvestorSet.has(id));
 
   const handleSave = async () => {
-    // Validate new selections have amount & equity
-    for (const startupId of newlySelected) {
-      const data = newStartupData.get(startupId);
-      const amount = parseFloat(data?.amount || "");
-      const equity = parseFloat(data?.equity || "");
-      if (isNaN(amount) || amount <= 0) {
-        const name = startups.find((s) => s.id === startupId)?.name;
-        toast.error(`Enter a valid amount for ${name}`);
-        return;
-      }
-      if (isNaN(equity) || equity <= 0 || equity > 100) {
-        const name = startups.find((s) => s.id === startupId)?.name;
-        toast.error(`Enter valid equity (0-100%) for ${name}`);
-        return;
-      }
-    }
 
     setSaving(true);
     try {
@@ -130,13 +114,13 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
       // 2. Create startup_investors records for newly added startups
       if (newlySelected.length > 0) {
         const investorRows = newlySelected.map((startup_id) => {
-          const data = newStartupData.get(startup_id)!;
+          const data = newStartupData.get(startup_id);
           return {
             investor_name: profileName,
             email: profileEmail || null,
             startup_id,
-            amount_invested: parseFloat(data.amount),
-            equity_percentage: parseFloat(data.equity),
+            amount_invested: parseFloat(data?.amount || "0") || 0,
+            equity_percentage: parseFloat(data?.equity || "0") || 0,
           };
         });
         const { error } = await supabase.from("startup_investors").insert(investorRows);
@@ -206,25 +190,25 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
                   {isNew && (
                     <div className="grid grid-cols-2 gap-3 mt-3 ml-8">
                       <div className="space-y-1">
-                        <Label className="text-xs">Amount ($)</Label>
+                        <Label className="text-xs">Amount ($) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 50000"
                           value={newStartupData.get(s.id)?.amount || ""}
                           onChange={(e) => updateField(s.id, "amount", e.target.value)}
-                          min="1"
+                          min="0"
                           step="any"
                           className="h-8 text-sm"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Equity (%)</Label>
+                        <Label className="text-xs">Equity (%) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 5"
                           value={newStartupData.get(s.id)?.equity || ""}
                           onChange={(e) => updateField(s.id, "equity", e.target.value)}
-                          min="0.01"
+                          min="0"
                           max="100"
                           step="any"
                           className="h-8 text-sm"
