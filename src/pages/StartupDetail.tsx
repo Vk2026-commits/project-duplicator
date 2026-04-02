@@ -107,7 +107,7 @@ export default function StartupDetail() {
       const { error } = await supabase.from("startup_investors").delete().eq("id", investorId);
       if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); toast.success("Investor deleted"); setDeletingInvestorId(null); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); toast.success("Investor deleted"); setDeletingInvestorId(null); },
   });
 
   const handleEquitySave = (investorId: string) => {
