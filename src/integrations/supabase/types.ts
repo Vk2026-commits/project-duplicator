@@ -145,6 +145,50 @@ export type Database = {
           },
         ]
       }
+      startup_revenue: {
+        Row: {
+          created_at: string
+          entry_date: string
+          gross_sales: number
+          id: string
+          notes: string | null
+          profit: number
+          profit_margin: number
+          startup_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          gross_sales?: number
+          id?: string
+          notes?: string | null
+          profit?: number
+          profit_margin?: number
+          startup_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          gross_sales?: number
+          id?: string
+          notes?: string | null
+          profit?: number
+          profit_margin?: number
+          startup_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_revenue_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       startups: {
         Row: {
           created_at: string
