@@ -41,8 +41,6 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setFundingGoal(String(startup.funding_goal));
   }, [startup]);
 
-  const [showInvestorWarning, setShowInvestorWarning] = useState(false);
-  const [pendingData, setPendingData] = useState<any>(null);
 
   const buildData = () => ({
     id: startup.id,
