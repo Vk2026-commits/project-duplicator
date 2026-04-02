@@ -11,7 +11,7 @@ const navItems = [
   { icon: TrendingUp, label: "Performance", path: "/performance" },
   { icon: ScrollText, label: "Mission & Values", path: "/mission" },
   { icon: Handshake, label: "Deal Review", path: "/deals" },
-  { icon: PiggyBank, label: "Capital Pool", path: "/contributions" },
+  { icon: PiggyBank, label: "Capital Pool", path: "/contributions", adminOnly: true },
   { icon: CalendarDays, label: "Meetings", path: "/meetings" },
   { icon: Info, label: "Information", path: "/information" },
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
@@ -30,7 +30,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => {
+        {navItems.filter((item) => !(item as any).adminOnly || isAdmin).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
