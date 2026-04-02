@@ -265,8 +265,9 @@ function DirectoryAdmin() {
                 <TableCell className="text-sm max-w-[200px] truncate">{p.bio || "—"}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">{socials || "—"}</TableCell>
                 <TableCell>
-                  <div className="flex gap-1">
+                   <div className="flex gap-1">
                     <Button size="icon" variant="ghost" onClick={() => setEditProfile(p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setAssignProfile(p)} title="Assign startups"><Link2 className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => sendPasswordReset(p.email)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
                   </div>
