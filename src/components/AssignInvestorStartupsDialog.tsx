@@ -75,18 +75,18 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
       return;
     }
 
-    // Validate all entries have amount & equity
+    // Validate entries - allow zero/empty for amount & equity
     for (const [startupId, data] of selected) {
-      const amount = parseFloat(data.amount);
-      const equity = parseFloat(data.equity);
-      if (isNaN(amount) || amount <= 0) {
+      const amount = parseFloat(data.amount) || 0;
+      const equity = parseFloat(data.equity) || 0;
+      if (amount < 0) {
         const startup = startups.find((s) => s.id === startupId);
-        toast.error(`Enter a valid amount for ${startup?.name || "selected startup"}`);
+        toast.error(`Amount cannot be negative for ${startup?.name || "selected startup"}`);
         return;
       }
-      if (isNaN(equity) || equity <= 0 || equity > 100) {
+      if (equity < 0 || equity > 100) {
         const startup = startups.find((s) => s.id === startupId);
-        toast.error(`Enter valid equity (0-100%) for ${startup?.name || "selected startup"}`);
+        toast.error(`Equity must be 0-100% for ${startup?.name || "selected startup"}`);
         return;
       }
     }
