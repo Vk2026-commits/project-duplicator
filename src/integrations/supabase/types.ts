@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      deal_votes: {
+        Row: {
+          created_at: string
+          deal_id: string
+          id: string
+          user_id: string
+          vote: Database["public"]["Enums"]["deal_vote_type"]
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          id?: string
+          user_id: string
+          vote: Database["public"]["Enums"]["deal_vote_type"]
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          id?: string
+          user_id?: string
+          vote?: Database["public"]["Enums"]["deal_vote_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_votes_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          created_at: string
+          description: string
+          expected_return: string | null
+          id: string
+          investment_required: number
+          risk_factors: string | null
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          status: Database["public"]["Enums"]["deal_status"]
+          submitted_by: string
+          supporting_docs: string | null
+          title: string
+          updated_at: string
+          vote_deadline: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          expected_return?: string | null
+          id?: string
+          investment_required?: number
+          risk_factors?: string | null
+          risk_level?: Database["public"]["Enums"]["risk_level"]
+          status?: Database["public"]["Enums"]["deal_status"]
+          submitted_by: string
+          supporting_docs?: string | null
+          title: string
+          updated_at?: string
+          vote_deadline?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          expected_return?: string | null
+          id?: string
+          investment_required?: number
+          risk_factors?: string | null
+          risk_level?: Database["public"]["Enums"]["risk_level"]
+          status?: Database["public"]["Enums"]["deal_status"]
+          submitted_by?: string
+          supporting_docs?: string | null
+          title?: string
+          updated_at?: string
+          vote_deadline?: string | null
+        }
+        Relationships: []
+      }
       disclaimer_acceptances: {
         Row: {
           accepted_at: string
@@ -34,6 +114,33 @@ export type Database = {
           full_name?: string
           id?: string
           ip_address?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      member_contributions: {
+        Row: {
+          amount: number
+          contribution_date: string
+          created_at: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          contribution_date?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          contribution_date?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
           user_id?: string
         }
         Relationships: []
@@ -294,6 +401,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      deal_status: "pending" | "approved" | "rejected"
+      deal_vote_type: "approve" | "decline"
+      risk_level: "low" | "medium" | "high" | "very_high"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -422,6 +532,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      deal_status: ["pending", "approved", "rejected"],
+      deal_vote_type: ["approve", "decline"],
+      risk_level: ["low", "medium", "high", "very_high"],
     },
   },
 } as const
