@@ -52,7 +52,7 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
       if (next.has(startupId)) {
         next.delete(startupId);
       } else {
-        next.set(startupId, { amount: "", equity: "" });
+        next.set(startupId, { amount: "0", equity: "0" });
       }
       return next;
     });
@@ -75,18 +75,18 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
       return;
     }
 
-    // Validate all entries have amount & equity
+    // Validate entries - allow zero/empty for amount & equity
     for (const [startupId, data] of selected) {
-      const amount = parseFloat(data.amount);
-      const equity = parseFloat(data.equity);
-      if (isNaN(amount) || amount <= 0) {
+      const amount = parseFloat(data.amount) || 0;
+      const equity = parseFloat(data.equity) || 0;
+      if (amount < 0) {
         const startup = startups.find((s) => s.id === startupId);
-        toast.error(`Enter a valid amount for ${startup?.name || "selected startup"}`);
+        toast.error(`Amount cannot be negative for ${startup?.name || "selected startup"}`);
         return;
       }
-      if (isNaN(equity) || equity <= 0 || equity > 100) {
+      if (equity < 0 || equity > 100) {
         const startup = startups.find((s) => s.id === startupId);
-        toast.error(`Enter valid equity (0-100%) for ${startup?.name || "selected startup"}`);
+        toast.error(`Equity must be 0-100% for ${startup?.name || "selected startup"}`);
         return;
       }
     }
@@ -97,8 +97,8 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
         investor_name: investorName,
         email: investorEmail || null,
         startup_id,
-        amount_invested: parseFloat(data.amount),
-        equity_percentage: parseFloat(data.equity),
+        amount_invested: parseFloat(data.amount) || 0,
+        equity_percentage: parseFloat(data.equity) || 0,
       }));
 
       const { error } = await supabase.from("startup_investors").insert(rows);
@@ -154,25 +154,25 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
                   {isSelected && (
                     <div className="grid grid-cols-2 gap-3 mt-3 ml-8">
                       <div className="space-y-1">
-                        <Label className="text-xs">Amount ($)</Label>
+                        <Label className="text-xs">Amount ($) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 50000"
-                          value={selected.get(s.id)?.amount || ""}
-                          onChange={(e) => updateField(s.id, "amount", e.target.value)}
-                          min="1"
+                          value={selected.get(s.id)?.amount === "0" ? "" : selected.get(s.id)?.amount || ""}
+                          onChange={(e) => updateField(s.id, "amount", e.target.value || "0")}
+                          min="0"
                           step="any"
                           className="h-8 text-sm"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Equity (%)</Label>
+                        <Label className="text-xs">Equity (%) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 5"
-                          value={selected.get(s.id)?.equity || ""}
-                          onChange={(e) => updateField(s.id, "equity", e.target.value)}
-                          min="0.01"
+                          value={selected.get(s.id)?.equity === "0" ? "" : selected.get(s.id)?.equity || ""}
+                          onChange={(e) => updateField(s.id, "equity", e.target.value || "0")}
+                          min="0"
                           max="100"
                           step="any"
                           className="h-8 text-sm"
