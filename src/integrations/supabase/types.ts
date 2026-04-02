@@ -195,6 +195,7 @@ export type Database = {
           current_value: number
           description: string | null
           founded: string | null
+          funding_goal: number
           id: string
           invested: number
           name: string
@@ -209,6 +210,7 @@ export type Database = {
           current_value?: number
           description?: string | null
           founded?: string | null
+          funding_goal?: number
           id?: string
           invested: number
           name: string
@@ -223,6 +225,7 @@ export type Database = {
           current_value?: number
           description?: string | null
           founded?: string | null
+          funding_goal?: number
           id?: string
           invested?: number
           name?: string

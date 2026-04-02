@@ -13,8 +13,8 @@ const stages = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C"] as const
 interface EditStartupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  startup: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string | null; progress: number };
-  onSave: (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number }) => void;
+  startup: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string | null; progress: number; funding_goal: number };
+  onSave: (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number; funding_goal: number }) => void;
   isSubmitting?: boolean;
 }
 
@@ -26,6 +26,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
   const [currentValue, setCurrentValue] = useState(String(startup.current_value));
   const [description, setDescription] = useState(startup.description || "");
   const [progress, setProgress] = useState(String(startup.progress));
+  const [fundingGoal, setFundingGoal] = useState(String(startup.funding_goal));
 
   useEffect(() => {
     setName(startup.name);
@@ -35,6 +36,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setCurrentValue(String(startup.current_value));
     setDescription(startup.description || "");
     setProgress(String(startup.progress));
+    setFundingGoal(String(startup.funding_goal));
   }, [startup]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -52,6 +54,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
       current_value: parseFloat(currentValue) || 0,
       description: description.trim(),
       progress: parseInt(progress) || 0,
+      funding_goal: parseFloat(fundingGoal) || 0,
     });
     toast.success("Startup updated");
     onOpenChange(false);
@@ -83,6 +86,11 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
                 <SelectContent>{stages.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Funding Goal ($)</Label>
+            <Input type="number" value={fundingGoal} onChange={(e) => setFundingGoal(e.target.value)} min="0" step="any" placeholder="e.g. 50000" />
+            <p className="text-xs text-muted-foreground">Capital target for this round. Investor contributions subtract from this.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

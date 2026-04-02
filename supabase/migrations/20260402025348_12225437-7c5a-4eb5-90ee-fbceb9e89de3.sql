@@ -1,0 +1,1 @@
+ALTER TABLE public.startups ADD COLUMN funding_goal numeric NOT NULL DEFAULT 0;
