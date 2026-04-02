@@ -177,7 +177,33 @@ export default function StartupDetail() {
         <TabsContent value="investors">
           <div className="space-y-4 animate-fade-in">
             {isAdmin && (
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                {fundingGoal > 0 && investors.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={async () => {
+                      const updates = investors.map(inv => ({
+                        id: inv.id,
+                        equity: Math.round(((Number(inv.amount_invested) / fundingGoal) * 100) * 100) / 100,
+                      }));
+                      const totalCalc = updates.reduce((s, u) => s + u.equity, 0);
+                      if (totalCalc > 100) {
+                        toast.error("Recalculated equity exceeds 100%. Adjust funding goal or investments.");
+                        return;
+                      }
+                      for (const u of updates) {
+                        const { error } = await supabase.from("startup_investors").update({ equity_percentage: u.equity }).eq("id", u.id);
+                        if (error) { toast.error("Failed to update equity"); return; }
+                      }
+                      queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+                      toast.success("All equity recalculated from investments vs funding goal");
+                    }}
+                  >
+                    <Percent className="w-3.5 h-3.5" /> Recalculate Equity
+                  </Button>
+                )}
                 <AddInvestorDialog
                   onAdd={(data) => addInvestorMutation.mutate(data)}
                   isSubmitting={addInvestorMutation.isPending}
