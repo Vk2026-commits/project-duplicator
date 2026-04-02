@@ -66,15 +66,6 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     onOpenChange(false);
   };
 
-  const confirmSave = () => {
-    if (pendingData) {
-      onSave(pendingData);
-      toast.success("Startup updated");
-      onOpenChange(false);
-    }
-    setShowInvestorWarning(false);
-    setPendingData(null);
-  };
 
   return (
     <>
