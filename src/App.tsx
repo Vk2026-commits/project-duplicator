@@ -17,6 +17,7 @@ import Information from "./pages/Information";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import Disclosures from "./pages/Disclosures";
+import Meetings from "./pages/Meetings";
 import Deals from "./pages/Deals";
 import Contributions from "./pages/Contributions";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/information" element={<Information />} />
             <Route path="/disclosures" element={<Disclosures />} />
             <Route path="/deals" element={<Deals />} />
+            <Route path="/meetings" element={<Meetings />} />
             <Route path="/contributions" element={<Contributions />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
