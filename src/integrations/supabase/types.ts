@@ -150,6 +150,35 @@ export type Database = {
         }
         Relationships: []
       }
+      document_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          document_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          document_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          document_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_acknowledgments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "startup_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_notes: {
         Row: {
           author_id: string
@@ -325,6 +354,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      startup_documents: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          document_type: string
+          file_url: string | null
+          id: string
+          startup_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          document_type?: string
+          file_url?: string | null
+          id?: string
+          startup_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          document_type?: string
+          file_url?: string | null
+          id?: string
+          startup_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_documents_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       startup_info_requests: {
         Row: {

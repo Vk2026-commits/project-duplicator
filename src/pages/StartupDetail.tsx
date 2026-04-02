@@ -9,6 +9,7 @@ import EditInvestorDialog from "@/components/EditInvestorDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import StartupAboutTab from "@/components/StartupAboutTab";
 import StartupRevenueTab from "@/components/StartupRevenueTab";
+import StartupDocumentsTab from "@/components/StartupDocumentsTab";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -165,10 +166,11 @@ export default function StartupDetail() {
 
       {/* Tabs */}
       <Tabs defaultValue="about" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
         <TabsContent value="about">
@@ -326,6 +328,10 @@ export default function StartupDetail() {
 
         <TabsContent value="revenue">
           <StartupRevenueTab startupId={id!} startupName={startup.name} />
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <StartupDocumentsTab startupId={id!} startupName={startup.name} />
         </TabsContent>
       </Tabs>
 
