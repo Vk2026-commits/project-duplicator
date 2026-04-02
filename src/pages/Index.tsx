@@ -4,8 +4,10 @@ import StatCard from "@/components/StatCard";
 import PortfolioChart from "@/components/PortfolioChart";
 import SectorChart from "@/components/SectorChart";
 import InvestorTable from "@/components/InvestorTable";
+import MyPortfolioCard from "@/components/MyPortfolioCard";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/mock-data";
+import { useAuth } from "@/hooks/useAuth";
 import { DollarSign, TrendingUp, Users, Briefcase } from "lucide-react";
 
 export default function Index() {
