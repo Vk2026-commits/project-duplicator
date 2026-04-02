@@ -9,6 +9,7 @@ import EditInvestorDialog from "@/components/EditInvestorDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
