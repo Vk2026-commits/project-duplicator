@@ -12,6 +12,7 @@ import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
 import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
+import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -124,6 +125,7 @@ function InvestorsAdmin() {
   const qc = useQueryClient();
   const [editInvestor, setEditInvestor] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [assignInvestor, setAssignInvestor] = useState<any | null>(null);
 
   const { data: investors = [], isLoading } = useQuery({
     queryKey: ["admin-investors"],
@@ -167,7 +169,7 @@ function InvestorsAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Investor</TableHead><TableHead>Startup</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Equity %</TableHead><TableHead>Status</TableHead><TableHead className="w-[120px]">Actions</TableHead>
+            <TableHead>Investor</TableHead><TableHead>Startup</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Equity %</TableHead><TableHead>Status</TableHead><TableHead className="w-[160px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -181,6 +183,7 @@ function InvestorsAdmin() {
               <TableCell>
                 <div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => setEditInvestor(inv)}><Pencil className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAssignInvestor(inv); }} title="Assign startups"><Link2 className="w-4 h-4 text-primary" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => toggleArchive.mutate({ id: inv.id, archived: !inv.archived })}>
                     {inv.archived ? <ShieldCheck className="w-4 h-4 text-primary" /> : <ShieldOff className="w-4 h-4 text-muted-foreground" />}
                   </Button>
@@ -196,6 +199,15 @@ function InvestorsAdmin() {
         <EditInvestorDialog open={!!editInvestor} onOpenChange={(o) => { if (!o) setEditInvestor(null); }} investor={editInvestor} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Investor" description="This will permanently delete this investor record." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      {assignInvestor && (
+        <AssignInvestorStartupsDialog
+          open={!!assignInvestor}
+          onOpenChange={(o) => { if (!o) setAssignInvestor(null); }}
+          investorName={assignInvestor.investor_name}
+          investorEmail={assignInvestor.email}
+          onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
+        />
+      )}
     </>
   );
 }
