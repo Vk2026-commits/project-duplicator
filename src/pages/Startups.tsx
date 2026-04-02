@@ -75,6 +75,7 @@ export default function Startups() {
 
   const myStartupIds = new Set(myLinks);
   const requestMap = new Map(myRequests.map((r) => [r.startup_id, r.status]));
+  const approvedRequestIds = new Set(myRequests.filter((r) => r.status === "approved").map((r) => r.startup_id));
 
   const requestInfoMutation = useMutation({
     mutationFn: async (startupId: string) => {
