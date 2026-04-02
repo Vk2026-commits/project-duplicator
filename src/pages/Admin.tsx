@@ -183,7 +183,7 @@ function InvestorsAdmin() {
               <TableCell className="text-right">{inv.equity_percentage}%</TableCell>
               <TableCell>{inv.archived ? <span className="text-muted-foreground text-xs">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
               <TableCell>
-                <div className="flex gap-1">
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button size="icon" variant="ghost" onClick={() => setEditInvestor(inv)}><Pencil className="w-4 h-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAssignInvestor(inv); }} title="Assign startups"><Link2 className="w-4 h-4 text-primary" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => toggleArchive.mutate({ id: inv.id, archived: !inv.archived })}>
