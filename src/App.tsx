@@ -9,7 +9,7 @@ import InvestorDetail from "./pages/InvestorDetail";
 import Startups from "./pages/Startups";
 import StartupDetail from "./pages/StartupDetail";
 import Performance from "./pages/Performance";
-import Login from "./pages/Login";
+import Mission from "./pages/Mission";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
