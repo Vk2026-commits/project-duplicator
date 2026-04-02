@@ -128,6 +128,16 @@ export default function MyPortfolioCard() {
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <Briefcase className="w-3 h-3" /> Portfolio Value
+              <TooltipProvider>
+                <UITooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[220px] text-xs">
+                    Portfolio Value = your equity % × each startup's current value. It may differ from Total Invested.
+                  </TooltipContent>
+                </UITooltip>
+              </TooltipProvider>
             </p>
             <p className="text-lg font-bold">{formatCurrency(myTotalEquityValue)}</p>
           </div>
