@@ -437,10 +437,16 @@ export type Database = {
       }
       profiles: {
         Row: {
+          beneficiary_contact: string | null
+          beneficiary_name: string | null
+          beneficiary_relationship: string | null
           bio: string | null
           company: string | null
           created_at: string
           email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
           facebook: string | null
           full_name: string | null
           id: string
@@ -457,10 +463,16 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          beneficiary_contact?: string | null
+          beneficiary_name?: string | null
+          beneficiary_relationship?: string | null
           bio?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
           facebook?: string | null
           full_name?: string | null
           id: string
@@ -477,10 +489,16 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          beneficiary_contact?: string | null
+          beneficiary_name?: string | null
+          beneficiary_relationship?: string | null
           bio?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
           facebook?: string | null
           full_name?: string | null
           id?: string
