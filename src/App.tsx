@@ -34,7 +34,8 @@ const App = () => (
         <AuthProvider>
           <DisclaimerModal />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/dashboard" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/investors" element={<Investors />} />
             <Route path="/investors/:id" element={<InvestorDetail />} />
