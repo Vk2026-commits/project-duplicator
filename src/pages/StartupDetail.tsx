@@ -37,7 +37,7 @@ export default function StartupDetail() {
   const { data: investors = [], isLoading: loadingInvestors } = useQuery({
     queryKey: ["startup-investors", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("startup_investors").select("*").eq("startup_id", id!).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("startup_investors").select("*").eq("startup_id", id!).eq("archived", false).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },

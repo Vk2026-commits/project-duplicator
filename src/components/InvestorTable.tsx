@@ -15,6 +15,7 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
       const { data, error } = await supabase
         .from("startup_investors")
         .select("*, startups(name, sector)")
+        .eq("archived", false)
         .order("amount_invested", { ascending: false });
       if (error) throw error;
       return data;
