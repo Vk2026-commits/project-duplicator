@@ -4,8 +4,10 @@ import StatCard from "@/components/StatCard";
 import PortfolioChart from "@/components/PortfolioChart";
 import SectorChart from "@/components/SectorChart";
 import InvestorTable from "@/components/InvestorTable";
+import MyPortfolioCard from "@/components/MyPortfolioCard";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/mock-data";
+import { useAuth } from "@/hooks/useAuth";
 import { DollarSign, TrendingUp, Users, Briefcase } from "lucide-react";
 
 export default function Index() {
@@ -51,6 +53,10 @@ export default function Index() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
         <PortfolioChart />
         <SectorChart />
+      </div>
+
+      <div className="mb-8">
+        <MyPortfolioCard />
       </div>
 
       <InvestorTable limit={5} />
