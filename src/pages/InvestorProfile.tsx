@@ -34,6 +34,19 @@ export default function InvestorProfile() {
     enabled: !!id,
   });
 
+  const { data: disclaimerAcceptance } = useQuery({
+    queryKey: ["disclaimer-acceptance", id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("disclaimer_acceptances")
+        .select("accepted_at, full_name")
+        .eq("user_id", id!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id && (isOwnProfile || isAdmin),
+  });
+
   useEffect(() => {
     if (profile) setForm(profile);
   }, [profile]);
