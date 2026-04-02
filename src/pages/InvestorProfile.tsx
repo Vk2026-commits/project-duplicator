@@ -263,12 +263,52 @@ export default function InvestorProfile() {
               <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Basic Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Full Name</Label>
-                  <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                  <Label>Full Name <span className="text-destructive">*</span></Label>
+                  <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+                  <Label>Phone <span className="text-destructive">*</span></Label>
+                  <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" required />
+                </div>
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            <div>
+              <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><UserCheck className="w-4 h-4 text-primary" /> Emergency Contact</h3>
+              <p className="text-xs text-muted-foreground mb-3">Someone we can reach if there's an emergency.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Contact Name</Label>
+                  <Input value={form.emergency_contact_name || ""} onChange={(e) => setForm({ ...form, emergency_contact_name: e.target.value })} placeholder="e.g. Jane Smith" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact Phone</Label>
+                  <Input value={form.emergency_contact_phone || ""} onChange={(e) => setForm({ ...form, emergency_contact_phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Relationship</Label>
+                  <Input value={form.emergency_contact_relationship || ""} onChange={(e) => setForm({ ...form, emergency_contact_relationship: e.target.value })} placeholder="e.g. Spouse, Parent, Sibling" />
+                </div>
+              </div>
+            </div>
+
+            {/* Beneficiary */}
+            <div>
+              <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><HeartHandshake className="w-4 h-4 text-primary" /> Beneficiary Information</h3>
+              <p className="text-xs text-muted-foreground mb-3">Designate who should receive your portfolio in the event something happens to you.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Beneficiary Name</Label>
+                  <Input value={form.beneficiary_name || ""} onChange={(e) => setForm({ ...form, beneficiary_name: e.target.value })} placeholder="e.g. Jane Smith" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Relationship</Label>
+                  <Input value={form.beneficiary_relationship || ""} onChange={(e) => setForm({ ...form, beneficiary_relationship: e.target.value })} placeholder="e.g. Spouse, Child, Trust" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Contact (Phone or Email)</Label>
+                  <Input value={form.beneficiary_contact || ""} onChange={(e) => setForm({ ...form, beneficiary_contact: e.target.value })} placeholder="Phone or email" />
                 </div>
               </div>
             </div>
