@@ -166,10 +166,11 @@ export default function StartupDetail() {
 
       {/* Tabs */}
       <Tabs defaultValue="about" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
         <TabsContent value="about">
