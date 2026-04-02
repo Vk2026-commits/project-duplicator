@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface Investor {
@@ -14,6 +15,8 @@ interface Investor {
   equity_percentage: number;
   investment_date: string;
   notes: string | null;
+  pledge_amount?: number | null;
+  investment_round?: string | null;
 }
 
 interface EditInvestorDialogProps {
@@ -31,6 +34,8 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
   const [equity, setEquity] = useState(String(investor.equity_percentage));
   const [date, setDate] = useState(investor.investment_date);
   const [notes, setNotes] = useState(investor.notes || "");
+  const [pledgeAmount, setPledgeAmount] = useState(String(investor.pledge_amount ?? ""));
+  const [investmentRound, setInvestmentRound] = useState(investor.investment_round || "");
 
   useEffect(() => {
     setName(investor.investor_name);
@@ -39,22 +44,26 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
     setEquity(String(investor.equity_percentage));
     setDate(investor.investment_date);
     setNotes(investor.notes || "");
+    setPledgeAmount(String(investor.pledge_amount ?? ""));
+    setInvestmentRound(investor.investment_round || "");
   }, [investor]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !amount || !equity) {
-      toast.error("Please fill in name, amount, and equity");
+    if (!name.trim()) {
+      toast.error("Please fill in the investor name");
       return;
     }
     onSave({
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: parseFloat(amount),
-      equity_percentage: parseFloat(equity),
+      amount_invested: parseFloat(amount) || 0,
+      equity_percentage: parseFloat(equity) || 0,
       investment_date: date,
       notes: notes.trim() || null,
+      pledge_amount: pledgeAmount ? parseFloat(pledgeAmount) : null,
+      investment_round: investmentRound || null,
     });
     toast.success("Investor updated");
     onOpenChange(false);
@@ -79,12 +88,33 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Amount ($) *</Label>
-              <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="1" step="any" />
+              <Label>Amount ($)</Label>
+              <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
-              <Label>Equity (%) *</Label>
-              <Input type="number" value={equity} onChange={(e) => setEquity(e.target.value)} min="0.01" max="100" step="any" />
+              <Label>Equity (%)</Label>
+              <Input type="number" value={equity} onChange={(e) => setEquity(e.target.value)} min="0" max="100" step="any" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Pledge Amount ($)</Label>
+              <Input type="number" value={pledgeAmount} onChange={(e) => setPledgeAmount(e.target.value)} min="0" step="any" placeholder="Amount pledged" />
+            </div>
+            <div className="space-y-2">
+              <Label>Investment Round</Label>
+              <Select value={investmentRound} onValueChange={setInvestmentRound}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select round" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pre-seed">Pre-Seed</SelectItem>
+                  <SelectItem value="seed">Seed</SelectItem>
+                  <SelectItem value="series-a">Series A</SelectItem>
+                  <SelectItem value="series-b">Series B</SelectItem>
+                  <SelectItem value="series-c">Series C</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-2">
