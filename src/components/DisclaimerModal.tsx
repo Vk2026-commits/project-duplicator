@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
@@ -9,12 +9,15 @@ import { supabase } from "@/integrations/supabase/client";
 export default function DisclaimerModal() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (loading || !user) {
+    const excludedPaths = ["/login", "/disclosures"];
+    if (loading || !user || excludedPaths.includes(location.pathname)) {
       setChecking(false);
+      setOpen(false);
       return;
     }
 
