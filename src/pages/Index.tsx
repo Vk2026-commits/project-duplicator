@@ -55,6 +55,10 @@ export default function Index() {
         <SectorChart />
       </div>
 
+      <div className="mb-8">
+        <MyPortfolioCard />
+      </div>
+
       <InvestorTable limit={5} />
     </Layout>
   );
