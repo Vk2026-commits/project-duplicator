@@ -95,7 +95,7 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
                     <p className="text-sm whitespace-pre-wrap">{c.content}</p>
                   </div>
                   {(c.author_id === user?.id || isAdmin) && (
-                    <Button size="sm" variant="ghost" className="text-destructive shrink-0 mt-1" onClick={() => deleteMutation.mutate(c.id)}>
+                    <Button size="sm" variant="ghost" className="text-destructive shrink-0 mt-1" onClick={() => setDeletingCommentId(c.id)}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   )}
