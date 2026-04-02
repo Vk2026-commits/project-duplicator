@@ -36,16 +36,18 @@ function AddEditRevenueDialog({
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  onSave: (d: { entry_date: string; gross_sales: number; profit_margin: number; notes: string }) => void;
+  onSave: (d: { entry_date: string; gross_sales: number; profit_margin: number; profit: number; notes: string }) => void;
   isSubmitting: boolean;
   initial?: RevenueEntry | null;
 }) {
   const [date, setDate] = useState(initial?.entry_date || new Date().toISOString().split("T")[0]);
   const [grossSales, setGrossSales] = useState(String(initial?.gross_sales ?? ""));
-  const [profitMargin, setProfitMargin] = useState(String(initial?.profit_margin ?? "33"));
+  const [profit, setProfit] = useState(String(initial?.profit ?? ""));
   const [notes, setNotes] = useState(initial?.notes || "");
 
-  const calculatedProfit = (Number(grossSales) || 0) * ((Number(profitMargin) || 0) / 100);
+  const grossNum = Number(grossSales) || 0;
+  const profitNum = Number(profit) || 0;
+  const calculatedMargin = grossNum > 0 ? (profitNum / grossNum) * 100 : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -63,12 +65,12 @@ function AddEditRevenueDialog({
             <Input type="number" min="0" step="0.01" value={grossSales} onChange={(e) => setGrossSales(e.target.value)} placeholder="0.00" />
           </div>
           <div>
-            <Label>Profit Margin (%)</Label>
-            <Input type="number" min="0" max="100" step="0.1" value={profitMargin} onChange={(e) => setProfitMargin(e.target.value)} placeholder="33" />
+            <Label>Profit ($)</Label>
+            <Input type="number" step="0.01" value={profit} onChange={(e) => setProfit(e.target.value)} placeholder="0.00" />
           </div>
           <div className="p-3 rounded-lg bg-secondary/30">
-            <span className="text-xs text-muted-foreground">Calculated Profit</span>
-            <p className="text-lg font-bold text-primary">{formatCurrency(calculatedProfit)}</p>
+            <span className="text-xs text-muted-foreground">Calculated Profit Margin</span>
+            <p className="text-lg font-bold text-primary">{calculatedMargin.toFixed(1)}%</p>
           </div>
           <div>
             <Label>Notes</Label>
@@ -79,7 +81,7 @@ function AddEditRevenueDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button
             disabled={isSubmitting || !date || !grossSales}
-            onClick={() => onSave({ entry_date: date, gross_sales: Number(grossSales), profit_margin: Number(profitMargin), notes })}
+            onClick={() => onSave({ entry_date: date, gross_sales: grossNum, profit_margin: Number(calculatedMargin.toFixed(2)), profit: profitNum, notes })}
           >
             {isSubmitting ? "Saving..." : "Save"}
           </Button>
