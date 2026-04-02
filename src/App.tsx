@@ -23,6 +23,7 @@ import Deals from "./pages/Deals";
 import Contributions from "./pages/Contributions";
 import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
