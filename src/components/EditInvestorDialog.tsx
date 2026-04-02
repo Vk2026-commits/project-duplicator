@@ -50,18 +50,20 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !amount || !equity) {
-      toast.error("Please fill in name, amount, and equity");
+    if (!name.trim()) {
+      toast.error("Please fill in the investor name");
       return;
     }
     onSave({
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: parseFloat(amount),
-      equity_percentage: parseFloat(equity),
+      amount_invested: parseFloat(amount) || 0,
+      equity_percentage: parseFloat(equity) || 0,
       investment_date: date,
       notes: notes.trim() || null,
+      pledge_amount: pledgeAmount ? parseFloat(pledgeAmount) : null,
+      investment_round: investmentRound || null,
     });
     toast.success("Investor updated");
     onOpenChange(false);
