@@ -7,7 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { startups as mockStartups } from "@/lib/mock-data";
 import type { Startup } from "@/lib/mock-data";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Send, CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function mapDbToStartup(row: any): Startup {
   return {
