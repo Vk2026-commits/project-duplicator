@@ -175,7 +175,7 @@ export default function MyPortfolioCard() {
               })(),
             };
           });
-          if (chartData.length > 1) {
+          if (chartData.length > 0) {
             chartData.unshift({ month: "Start", invested: 0, value: 0 });
           }
 
