@@ -86,6 +86,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
