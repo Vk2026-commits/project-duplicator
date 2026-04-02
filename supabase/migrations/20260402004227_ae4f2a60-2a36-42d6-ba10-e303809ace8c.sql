@@ -1,0 +1,1 @@
+ALTER TABLE public.startup_investors ADD COLUMN archived BOOLEAN NOT NULL DEFAULT false;

@@ -62,6 +62,7 @@ export type Database = {
       startup_investors: {
         Row: {
           amount_invested: number
+          archived: boolean
           created_at: string
           email: string | null
           equity_percentage: number
@@ -74,6 +75,7 @@ export type Database = {
         }
         Insert: {
           amount_invested: number
+          archived?: boolean
           created_at?: string
           email?: string | null
           equity_percentage: number
@@ -86,6 +88,7 @@ export type Database = {
         }
         Update: {
           amount_invested?: number
+          archived?: boolean
           created_at?: string
           email?: string | null
           equity_percentage?: number
