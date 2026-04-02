@@ -10,11 +10,12 @@ import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import StartupAboutTab from "@/components/StartupAboutTab";
 import StartupRevenueTab from "@/components/StartupRevenueTab";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
-import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2 } from "lucide-react";
+import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StartupDetail() {
@@ -27,6 +28,8 @@ export default function StartupDetail() {
   const [deleteStartupOpen, setDeleteStartupOpen] = useState(false);
   const [editingInvestor, setEditingInvestor] = useState<any | null>(null);
   const [deletingInvestorId, setDeletingInvestorId] = useState<string | null>(null);
+  const [editingEquityId, setEditingEquityId] = useState<string | null>(null);
+  const [editingEquityValue, setEditingEquityValue] = useState("");
 
   const { data: startup, isLoading: loadingStartup } = useQuery({
     queryKey: ["startup", id],
@@ -86,6 +89,18 @@ export default function StartupDetail() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); setEditingInvestor(null); },
   });
 
+  const updateEquityMutation = useMutation({
+    mutationFn: async ({ investorId, equity }: { investorId: string; equity: number }) => {
+      const { error } = await supabase.from("startup_investors").update({ equity_percentage: equity }).eq("id", investorId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+      setEditingEquityId(null);
+      toast.success("Equity updated");
+    },
+  });
+
   const deleteInvestorMutation = useMutation({
     mutationFn: async (investorId: string) => {
       const { error } = await supabase.from("startup_investors").delete().eq("id", investorId);
@@ -94,12 +109,27 @@ export default function StartupDetail() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); toast.success("Investor deleted"); setDeletingInvestorId(null); },
   });
 
+  const handleEquitySave = (investorId: string) => {
+    const val = parseFloat(editingEquityValue);
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error("Equity must be between 0 and 100%");
+      return;
+    }
+    const otherEquity = investors.filter(i => i.id !== investorId).reduce((s, i) => s + Number(i.equity_percentage), 0);
+    if (otherEquity + val > 100) {
+      toast.error(`Only ${(100 - otherEquity).toFixed(2)}% equity remaining`);
+      return;
+    }
+    updateEquityMutation.mutate({ investorId, equity: val });
+  };
+
   if (loadingStartup) return <Layout><p className="text-muted-foreground">Loading...</p></Layout>;
   if (!startup) return <Layout><p className="text-muted-foreground">Startup not found.</p></Layout>;
 
   const roi = ((Number(startup.current_value) - Number(startup.invested)) / Number(startup.invested)) * 100;
   const totalFromInvestors = investors.reduce((sum, inv) => sum + Number(inv.amount_invested), 0);
   const totalEquity = investors.reduce((sum, inv) => sum + Number(inv.equity_percentage), 0);
+  const fundingGoal = Number(startup.funding_goal);
 
   return (
     <Layout>
@@ -129,7 +159,7 @@ export default function StartupDetail() {
         <StatCard icon={DollarSign} title="Total Invested" value={formatCurrency(Number(startup.invested))} />
         <StatCard icon={TrendingUp} title="Current Value" value={formatCurrency(Number(startup.current_value))} change={`ROI: ${roi >= 0 ? "+" : ""}${roi.toFixed(1)}%`} changeType={roi >= 0 ? "positive" : "negative"} />
         <StatCard icon={Users} title="Investors" value={String(investors.length)} />
-        <StatCard icon={Percent} title="Total Equity Allocated" value={`${totalEquity.toFixed(1)}%`} change={totalEquity > 0 ? `${(100 - totalEquity).toFixed(1)}% remaining` : "No equity allocated"} changeType="neutral" />
+        <StatCard icon={Percent} title="Equity Allocated" value={`${totalEquity.toFixed(1)}% / 100%`} change={`${(100 - totalEquity).toFixed(1)}% available`} changeType={totalEquity > 100 ? "negative" : "neutral"} />
       </div>
 
       {/* Tabs */}
@@ -140,23 +170,29 @@ export default function StartupDetail() {
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
         </TabsList>
 
-        {/* About Tab */}
         <TabsContent value="about">
           <StartupAboutTab startup={startup} />
         </TabsContent>
 
-        {/* Investors Tab */}
         <TabsContent value="investors">
           <div className="space-y-4 animate-fade-in">
             {isAdmin && (
               <div className="flex justify-end">
-                <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
+                <AddInvestorDialog
+                  onAdd={(data) => addInvestorMutation.mutate(data)}
+                  isSubmitting={addInvestorMutation.isPending}
+                  fundingGoal={fundingGoal}
+                  totalEquityAllocated={totalEquity}
+                />
               </div>
             )}
             <div className="glass-card rounded-xl overflow-hidden">
               <div className="p-6 border-b border-border flex items-center justify-between">
                 <h3 className="font-display font-semibold">Investor Breakdown</h3>
-                {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
+                <div className="flex items-center gap-4">
+                  {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
+                  <span className="text-sm font-medium text-primary">{(100 - totalEquity).toFixed(1)}% equity available</span>
+                </div>
               </div>
               {loadingInvestors ? (
                 <p className="p-6 text-muted-foreground text-sm">Loading investors...</p>
@@ -192,7 +228,50 @@ export default function StartupDetail() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
-                        <td className="px-6 py-4 text-right text-sm">{Number(inv.equity_percentage)}%</td>
+                        <td className="px-6 py-4 text-right text-sm">
+                          {editingEquityId === inv.id ? (
+                            <div className="flex items-center justify-end gap-1">
+                              <Input
+                                type="number"
+                                value={editingEquityValue}
+                                onChange={(e) => setEditingEquityValue(e.target.value)}
+                                className="w-20 h-7 text-right text-sm"
+                                min="0"
+                                max="100"
+                                step="any"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") handleEquitySave(inv.id);
+                                  if (e.key === "Escape") setEditingEquityId(null);
+                                }}
+                              />
+                              <span className="text-xs">%</span>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-green-600" onClick={() => handleEquitySave(inv.id)}>
+                                <Check className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setEditingEquityId(null)}>
+                                <X className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1">
+                              <span>{Number(inv.equity_percentage)}%</span>
+                              {isAdmin && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6"
+                                  onClick={() => {
+                                    setEditingEquityId(inv.id);
+                                    setEditingEquityValue(String(inv.equity_percentage));
+                                  }}
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-4 text-right text-sm text-muted-foreground">
                           {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </td>
@@ -218,7 +297,6 @@ export default function StartupDetail() {
           </div>
         </TabsContent>
 
-        {/* Revenue Tab */}
         <TabsContent value="revenue">
           <StartupRevenueTab startupId={id!} startupName={startup.name} />
         </TabsContent>
