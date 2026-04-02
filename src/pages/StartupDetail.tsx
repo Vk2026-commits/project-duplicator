@@ -19,6 +19,7 @@ export default function StartupDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
 
   const [editStartupOpen, setEditStartupOpen] = useState(false);
   const [deleteStartupOpen, setDeleteStartupOpen] = useState(false);
