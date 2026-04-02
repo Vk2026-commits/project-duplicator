@@ -11,6 +11,7 @@ import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
 import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
+import AdminPasswordDialog from "@/components/AdminPasswordDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
