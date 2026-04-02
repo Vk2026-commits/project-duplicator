@@ -49,6 +49,56 @@ export default function InvestorProfile() {
     enabled: !!id && (isOwnProfile || isAdmin),
   });
 
+  // Fetch startups linked to this profile
+  const { data: linkedStartups = [] } = useQuery({
+    queryKey: ["profile-startup-links", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profile_startup_links")
+        .select("startup_id, startups(id, name)")
+        .eq("profile_id", id!);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && (isOwnProfile || isAdmin),
+  });
+
+  // Fetch all documents for linked startups
+  const startupIds = linkedStartups.map((l: any) => l.startup_id);
+  const { data: allDocs = [] } = useQuery({
+    queryKey: ["profile-startup-documents", startupIds],
+    queryFn: async () => {
+      if (startupIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from("startup_documents")
+        .select("*")
+        .in("startup_id", startupIds);
+      if (error) throw error;
+      return data;
+    },
+    enabled: startupIds.length > 0 && (isOwnProfile || isAdmin),
+  });
+
+  // Fetch acknowledgments for this user
+  const { data: userAcks = [] } = useQuery({
+    queryKey: ["profile-doc-acknowledgments", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("document_acknowledgments")
+        .select("document_id")
+        .eq("user_id", id!);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && (isOwnProfile || isAdmin),
+  });
+
+  const ackedDocIds = new Set(userAcks.map((a: any) => a.document_id));
+  const pendingDocs = allDocs.filter((d: any) => !ackedDocIds.has(d.id));
+  const signedDocs = allDocs.filter((d: any) => ackedDocIds.has(d.id));
+  const startupNameMap = Object.fromEntries(linkedStartups.map((l: any) => [l.startup_id, (l as any).startups?.name || "Unknown"]));
+
+
   useEffect(() => {
     if (profile) setForm(profile);
   }, [profile]);
