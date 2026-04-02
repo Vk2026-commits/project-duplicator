@@ -9,6 +9,7 @@ import EditInvestorDialog from "@/components/EditInvestorDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -18,6 +19,7 @@ export default function StartupDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
 
   const [editStartupOpen, setEditStartupOpen] = useState(false);
   const [deleteStartupOpen, setDeleteStartupOpen] = useState(false);
@@ -120,15 +122,17 @@ export default function StartupDetail() {
           <p className="text-sm text-muted-foreground">{startup.sector} · {startup.stage}</p>
           {startup.description && <p className="text-sm text-muted-foreground mt-2">{startup.description}</p>}
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditStartupOpen(true)}>
-            <Pencil className="w-3.5 h-3.5" /> Edit
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteStartupOpen(true)}>
-            <Trash2 className="w-3.5 h-3.5" /> Delete
-          </Button>
-          <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
-        </div>
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditStartupOpen(true)}>
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteStartupOpen(true)}>
+              <Trash2 className="w-3.5 h-3.5" /> Delete
+            </Button>
+            <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -168,7 +172,7 @@ export default function StartupDetail() {
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>
+                {isAdmin && <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -191,16 +195,18 @@ export default function StartupDetail() {
                     {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </td>
                   <td className="px-6 py-4 text-right text-sm text-muted-foreground max-w-[200px] truncate">{inv.notes || "—"}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingInvestorId(inv.id)}>
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </td>
+                  {isAdmin && (
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingInvestorId(inv.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
