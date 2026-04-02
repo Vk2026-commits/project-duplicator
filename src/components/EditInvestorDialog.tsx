@@ -44,6 +44,8 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
     setEquity(String(investor.equity_percentage));
     setDate(investor.investment_date);
     setNotes(investor.notes || "");
+    setPledgeAmount(String(investor.pledge_amount ?? ""));
+    setInvestmentRound(investor.investment_round || "");
   }, [investor]);
 
   const handleSubmit = (e: React.FormEvent) => {
