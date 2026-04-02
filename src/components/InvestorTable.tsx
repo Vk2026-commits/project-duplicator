@@ -35,7 +35,17 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
   });
 
 
-  const display = limit ? investments.slice(0, limit) : investments;
+  const filtered = investments.filter((inv: any) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      inv.investor_name?.toLowerCase().includes(q) ||
+      inv.email?.toLowerCase().includes(q) ||
+      inv.startups?.name?.toLowerCase().includes(q)
+    );
+  });
+
+  const display = limit ? filtered.slice(0, limit) : filtered;
 
   return (
     <div className="glass-card rounded-xl overflow-hidden animate-fade-in">
