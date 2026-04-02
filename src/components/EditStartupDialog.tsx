@@ -41,7 +41,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !sector || !stage || !invested) {
+    if (!name.trim() || !sector || !stage) {
       toast.error("Please fill in all required fields");
       return;
     }
