@@ -3,12 +3,21 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/mock-data";
 import { ArrowUpRight } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface InvestorTableProps {
   limit?: number;
 }
 
+function maskName(name: string): string {
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0][0] + ".";
+  return parts[0][0] + ". " + parts[parts.length - 1];
+}
+
 export default function InvestorTable({ limit }: InvestorTableProps) {
+  const { user, isAdmin } = useAuth();
+
   const { data: investments = [], isLoading } = useQuery({
     queryKey: ["all-startup-investors-with-startups"],
     queryFn: async () => {
@@ -21,6 +30,27 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
       return data;
     },
   });
+
+  // Fetch profile_startup_links to determine co-investor status
+  const { data: allLinks = [] } = useQuery({
+    queryKey: ["all-profile-startup-links"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profile_startup_links")
+        .select("profile_id, startup_id");
+      if (error) throw error;
+      return data as { profile_id: string; startup_id: string }[];
+    },
+  });
+
+  // Get the startups the current user is invested in
+  const myStartupIds = new Set(
+    allLinks.filter((l) => l.profile_id === user?.id).map((l) => l.startup_id)
+  );
+
+  // Build a set of startup_ids where this investor record is a co-investor
+  // An investment is "co-invested" if the current user is linked to the same startup_id
+  const isCoInvestor = (startupId: string) => myStartupIds.has(startupId);
 
   const display = limit ? investments.slice(0, limit) : investments;
 
@@ -50,34 +80,61 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
               <tr className="border-b border-border">
                 <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
                 <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Startup</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
+                {isAdmin && (
+                  <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
+                )}
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
               </tr>
             </thead>
             <tbody>
-              {display.map((inv: any) => (
-                <tr key={inv.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <Link to={`/investors/${encodeURIComponent(inv.investor_name)}`} className="flex items-center gap-3 group">
-                      <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
-                        {inv.investor_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm group-hover:text-primary transition-colors">{inv.investor_name}</p>
-                        {inv.email && <p className="text-xs text-muted-foreground">{inv.email}</p>}
-                      </div>
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link to={`/startups/${inv.startup_id}`} className="text-sm hover:text-primary transition-colors">
-                      {inv.startups?.name || "Unknown"}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">{inv.startups?.sector}</p>
-                  </td>
-                  <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
-                  <td className="px-6 py-4 text-right text-sm">{Number(inv.equity_percentage)}%</td>
-                </tr>
-              ))}
+              {display.map((inv: any) => {
+                const coInvested = isAdmin || isCoInvestor(inv.startup_id);
+                const displayName = coInvested ? inv.investor_name : maskName(inv.investor_name);
+                const initials = displayName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+
+                return (
+                  <tr key={inv.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+                    <td className="px-6 py-4">
+                      {coInvested ? (
+                        <Link to={`/investors/${encodeURIComponent(inv.investor_name)}`} className="flex items-center gap-3 group">
+                          <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
+                            {initials}
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm group-hover:text-primary transition-colors">{displayName}</p>
+                            {inv.email && <p className="text-xs text-muted-foreground">{inv.email}</p>}
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                            {initials}
+                          </div>
+                          <p className="font-medium text-sm text-muted-foreground">{displayName}</p>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {coInvested ? (
+                        <>
+                          <Link to={`/startups/${inv.startup_id}`} className="text-sm hover:text-primary transition-colors">
+                            {inv.startups?.name || "Unknown"}
+                          </Link>
+                          <p className="text-xs text-muted-foreground">{inv.startups?.sector}</p>
+                        </>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{inv.startups?.name || "Unknown"}</span>
+                      )}
+                    </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
+                    )}
+                    <td className="px-6 py-4 text-right text-sm">
+                      {coInvested ? `${Number(inv.equity_percentage)}%` : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
