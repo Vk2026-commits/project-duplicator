@@ -9,6 +9,7 @@ import EditInvestorDialog from "@/components/EditInvestorDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import StartupAboutTab from "@/components/StartupAboutTab";
 import StartupRevenueTab from "@/components/StartupRevenueTab";
+import StartupDocumentsTab from "@/components/StartupDocumentsTab";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
