@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { MessageSquare, Send, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 interface Props {
   dealId: string;
