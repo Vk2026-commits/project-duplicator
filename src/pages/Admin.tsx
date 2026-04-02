@@ -11,7 +11,8 @@ import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
 import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound } from "lucide-react";
+import AssignStartupsDialog from "@/components/AssignStartupsDialog";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
