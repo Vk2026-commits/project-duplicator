@@ -34,6 +34,8 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
   const [equity, setEquity] = useState(String(investor.equity_percentage));
   const [date, setDate] = useState(investor.investment_date);
   const [notes, setNotes] = useState(investor.notes || "");
+  const [pledgeAmount, setPledgeAmount] = useState(String(investor.pledge_amount ?? ""));
+  const [investmentRound, setInvestmentRound] = useState(investor.investment_round || "");
 
   useEffect(() => {
     setName(investor.investor_name);
