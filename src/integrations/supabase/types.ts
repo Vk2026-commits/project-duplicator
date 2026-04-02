@@ -266,6 +266,54 @@ export type Database = {
         }
         Relationships: []
       }
+      investor_contributions: {
+        Row: {
+          amount: number
+          contribution_date: string
+          created_at: string
+          id: string
+          investor_name: string
+          notes: string | null
+          startup_id: string
+          startup_investor_id: string
+        }
+        Insert: {
+          amount: number
+          contribution_date?: string
+          created_at?: string
+          id?: string
+          investor_name: string
+          notes?: string | null
+          startup_id: string
+          startup_investor_id: string
+        }
+        Update: {
+          amount?: number
+          contribution_date?: string
+          created_at?: string
+          id?: string
+          investor_name?: string
+          notes?: string | null
+          startup_id?: string
+          startup_investor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_contributions_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "investor_contributions_startup_investor_id_fkey"
+            columns: ["startup_investor_id"]
+            isOneToOne: false
+            referencedRelation: "startup_investors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_notes: {
         Row: {
           author_id: string
