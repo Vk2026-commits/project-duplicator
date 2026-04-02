@@ -87,6 +87,11 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
               </Select>
             </div>
           </div>
+          <div className="space-y-2">
+            <Label>Funding Goal ($)</Label>
+            <Input type="number" value={fundingGoal} onChange={(e) => setFundingGoal(e.target.value)} min="0" step="any" placeholder="e.g. 50000" />
+            <p className="text-xs text-muted-foreground">Capital target for this round. Investor contributions subtract from this.</p>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Invested ($) *</Label>
