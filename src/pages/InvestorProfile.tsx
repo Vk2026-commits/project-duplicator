@@ -187,10 +187,10 @@ export default function InvestorProfile() {
         </div>
       )}
 
-      <div className="glass-card rounded-xl p-8 animate-fade-in">
+      <div className="glass-card rounded-xl p-4 sm:p-6 md:p-8 animate-fade-in">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
-          <div className="flex items-center gap-5">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
             <div className="relative group">
               {profile.photo_url ? (
                 <img src={profile.photo_url} alt={profile.full_name || ""} className="w-20 h-20 rounded-full object-cover border-2 border-primary/30" />
