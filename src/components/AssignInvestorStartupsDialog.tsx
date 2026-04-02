@@ -52,7 +52,7 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
       if (next.has(startupId)) {
         next.delete(startupId);
       } else {
-        next.set(startupId, { amount: "", equity: "" });
+        next.set(startupId, { amount: "0", equity: "0" });
       }
       return next;
     });
