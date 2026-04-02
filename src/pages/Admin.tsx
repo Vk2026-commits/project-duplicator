@@ -176,7 +176,7 @@ function InvestorsAdmin() {
         </TableHeader>
         <TableBody>
           {investors.map((inv: any) => (
-            <TableRow key={inv.id} className={inv.archived ? "opacity-50" : ""}>
+            <TableRow key={inv.id} className={`${inv.archived ? "opacity-50" : ""} cursor-pointer hover:bg-muted/50`} onClick={() => setLedgerInvestor(inv)}>
               <TableCell className="font-medium">{inv.investor_name}</TableCell>
               <TableCell>{inv.startups?.name || "—"}</TableCell>
               <TableCell className="text-right">${Number(inv.amount_invested).toLocaleString()}</TableCell>
