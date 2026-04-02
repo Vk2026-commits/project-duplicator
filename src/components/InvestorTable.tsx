@@ -16,7 +16,7 @@ function maskName(name: string): string {
 }
 
 export default function InvestorTable({ limit }: InvestorTableProps) {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   const { data: investments = [], isLoading } = useQuery({
     queryKey: ["all-startup-investors-with-startups"],
