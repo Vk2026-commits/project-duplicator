@@ -108,6 +108,38 @@ export default function InvestorProfile() {
     enabled: !!id && (isOwnProfile || isAdmin),
   });
 
+  // Fetch investor records and contributions for this profile
+  const { data: investorRecords = [] } = useQuery({
+    queryKey: ["profile-investor-records", profile?.full_name],
+    queryFn: async () => {
+      if (!profile?.full_name) return [];
+      const { data, error } = await supabase
+        .from("startup_investors")
+        .select("*, startups(name)")
+        .eq("investor_name", profile.full_name)
+        .eq("archived", false);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!profile?.full_name && (isOwnProfile || isAdmin),
+  });
+
+  const investorIds = investorRecords.map((r: any) => r.id);
+  const { data: allContributions = [] } = useQuery({
+    queryKey: ["profile-contributions", investorIds],
+    queryFn: async () => {
+      if (investorIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from("investor_contributions")
+        .select("*")
+        .in("startup_investor_id", investorIds)
+        .order("contribution_date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: investorIds.length > 0 && (isOwnProfile || isAdmin),
+  });
+
   const ackedDocIds = new Set(userAcks.map((a: any) => a.document_id));
   const pendingDocs = allDocs.filter((d: any) => !ackedDocIds.has(d.id));
   const signedDocs = allDocs.filter((d: any) => ackedDocIds.has(d.id));
