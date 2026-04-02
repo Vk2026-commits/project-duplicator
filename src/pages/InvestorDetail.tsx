@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import StatCard from "@/components/StatCard";
@@ -16,6 +17,18 @@ export default function InvestorDetail() {
   const queryClient = useQueryClient();
   const [showArchived, setShowArchived] = useState(false);
   const [editingInvestor, setEditingInvestor] = useState<any | null>(null);
+  const { isAdmin } = useAuth();
+
+  if (!isAdmin) {
+    return (
+      <Layout>
+        <div className="text-center py-16">
+          <p className="text-muted-foreground">You don't have permission to view this page.</p>
+          <Link to="/investors" className="text-primary hover:underline text-sm mt-2 inline-block">Back to Investors</Link>
+        </div>
+      </Layout>
+    );
+  }
 
   const { data: investments = [], isLoading } = useQuery({
     queryKey: ["investor-investments", investorName],
