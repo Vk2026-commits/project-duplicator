@@ -321,11 +321,18 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           <div className="flex-1 min-h-0 px-4 pb-4">
             {viewUrl && (
               <iframe
-                src={viewUrl}
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(viewUrl)}&embedded=true`}
                 className="w-full h-full rounded-lg border border-border"
                 title="Document preview"
               />
             )}
+          </div>
+          <div className="px-4 pb-4 flex justify-end">
+            <Button variant="outline" size="sm" className="gap-1.5" asChild>
+              <a href={viewUrl || "#"} target="_blank" rel="noopener noreferrer">
+                <Download className="w-3.5 h-3.5" /> Download
+              </a>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
