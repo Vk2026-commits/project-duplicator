@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, DollarSign, Briefcase } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function MyPortfolioCard() {
   const { user } = useAuth();
