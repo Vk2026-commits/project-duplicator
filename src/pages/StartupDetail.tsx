@@ -7,12 +7,14 @@ import AddInvestorDialog from "@/components/AddInvestorDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import StartupAboutTab from "@/components/StartupAboutTab";
+import StartupRevenueTab from "@/components/StartupRevenueTab";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 export default function StartupDetail() {
@@ -99,12 +101,6 @@ export default function StartupDetail() {
   const totalFromInvestors = investors.reduce((sum, inv) => sum + Number(inv.amount_invested), 0);
   const totalEquity = investors.reduce((sum, inv) => sum + Number(inv.equity_percentage), 0);
 
-  const statusStyles: Record<string, string> = {
-    "on-track": "bg-primary/10 text-primary",
-    "at-risk": "bg-warning/10 text-warning",
-    outperforming: "bg-accent/10 text-accent",
-  };
-
   return (
     <Layout>
       <Link to="/startups" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
@@ -113,14 +109,8 @@ export default function StartupDetail() {
 
       <div className="flex items-start justify-between mb-8">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h2 className="font-display text-2xl font-bold">{startup.name}</h2>
-            <span className={`text-xs px-2.5 py-1 rounded-full ${statusStyles[startup.status] || ""}`}>
-              {startup.status.replace("-", " ")}
-            </span>
-          </div>
+          <h2 className="font-display text-2xl font-bold">{startup.name}</h2>
           <p className="text-sm text-muted-foreground">{startup.sector} · {startup.stage}</p>
-          {startup.description && <p className="text-sm text-muted-foreground mt-2">{startup.description}</p>}
         </div>
         {isAdmin && (
           <div className="flex items-center gap-2">
@@ -130,11 +120,11 @@ export default function StartupDetail() {
             <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteStartupOpen(true)}>
               <Trash2 className="w-3.5 h-3.5" /> Delete
             </Button>
-            <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
           </div>
         )}
       </div>
 
+      {/* Stat cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={DollarSign} title="Total Invested" value={formatCurrency(Number(startup.invested))} />
         <StatCard icon={TrendingUp} title="Current Value" value={formatCurrency(Number(startup.current_value))} change={`ROI: ${roi >= 0 ? "+" : ""}${roi.toFixed(1)}%`} changeType={roi >= 0 ? "positive" : "negative"} />
@@ -142,79 +132,99 @@ export default function StartupDetail() {
         <StatCard icon={Percent} title="Total Equity Allocated" value={`${totalEquity.toFixed(1)}%`} change={totalEquity > 0 ? `${(100 - totalEquity).toFixed(1)}% remaining` : "No equity allocated"} changeType="neutral" />
       </div>
 
-      <div className="glass-card rounded-xl p-6 mb-8 animate-fade-in">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-display font-semibold">Milestone Progress</h3>
-          <span className="text-sm font-medium">{startup.progress}%</span>
-        </div>
-        <Progress value={startup.progress} className="h-2" />
-      </div>
+      {/* Tabs */}
+      <Tabs defaultValue="about" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="about">About</TabsTrigger>
+          <TabsTrigger value="investors">Investors</TabsTrigger>
+          <TabsTrigger value="revenue">Revenue</TabsTrigger>
+        </TabsList>
 
-      <div className="glass-card rounded-xl overflow-hidden animate-fade-in">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <h3 className="font-display font-semibold">Investor Breakdown</h3>
-          {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
-        </div>
-        {loadingInvestors ? (
-          <p className="p-6 text-muted-foreground text-sm">Loading investors...</p>
-        ) : investors.length === 0 ? (
-          <div className="p-8 text-center">
-            <Users className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-muted-foreground text-sm">No investors added yet.</p>
-            <p className="text-muted-foreground text-xs mt-1">Click "Add Investor" to track who has invested.</p>
+        {/* About Tab */}
+        <TabsContent value="about">
+          <StartupAboutTab startup={startup} />
+        </TabsContent>
+
+        {/* Investors Tab */}
+        <TabsContent value="investors">
+          <div className="space-y-4 animate-fade-in">
+            {isAdmin && (
+              <div className="flex justify-end">
+                <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
+              </div>
+            )}
+            <div className="glass-card rounded-xl overflow-hidden">
+              <div className="p-6 border-b border-border flex items-center justify-between">
+                <h3 className="font-display font-semibold">Investor Breakdown</h3>
+                {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
+              </div>
+              {loadingInvestors ? (
+                <p className="p-6 text-muted-foreground text-sm">Loading investors...</p>
+              ) : investors.length === 0 ? (
+                <div className="p-8 text-center">
+                  <Users className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-muted-foreground text-sm">No investors added yet.</p>
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
+                      {isAdmin && <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {investors.map((inv) => (
+                      <tr key={inv.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
+                              {inv.investor_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <span className="text-sm font-medium">{inv.investor_name}</span>
+                              {inv.email && <p className="text-xs text-muted-foreground">{inv.email}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
+                        <td className="px-6 py-4 text-right text-sm">{Number(inv.equity_percentage)}%</td>
+                        <td className="px-6 py-4 text-right text-sm text-muted-foreground">
+                          {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        </td>
+                        <td className="px-6 py-4 text-right text-sm text-muted-foreground max-w-[200px] truncate">{inv.notes || "—"}</td>
+                        {isAdmin && (
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
+                                <Pencil className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingInvestorId(inv.id)}>
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-        ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
-                {isAdmin && <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {investors.map((inv) => (
-                <tr key={inv.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
-                        {inv.investor_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium">{inv.investor_name}</span>
-                        {inv.email && <p className="text-xs text-muted-foreground">{inv.email}</p>}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
-                  <td className="px-6 py-4 text-right text-sm">{Number(inv.equity_percentage)}%</td>
-                  <td className="px-6 py-4 text-right text-sm text-muted-foreground">
-                    {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  </td>
-                  <td className="px-6 py-4 text-right text-sm text-muted-foreground max-w-[200px] truncate">{inv.notes || "—"}</td>
-                  {isAdmin && (
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)}>
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingInvestorId(inv.id)}>
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+        </TabsContent>
 
-      {/* Edit Startup Dialog */}
+        {/* Revenue Tab */}
+        <TabsContent value="revenue">
+          <StartupRevenueTab startupId={id!} startupName={startup.name} />
+        </TabsContent>
+      </Tabs>
+
+      {/* Dialogs */}
       <EditStartupDialog
         open={editStartupOpen}
         onOpenChange={setEditStartupOpen}
@@ -222,8 +232,6 @@ export default function StartupDetail() {
         onSave={(data) => updateStartupMutation.mutate(data)}
         isSubmitting={updateStartupMutation.isPending}
       />
-
-      {/* Delete Startup Dialog */}
       <ConfirmDeleteDialog
         open={deleteStartupOpen}
         onOpenChange={setDeleteStartupOpen}
@@ -232,8 +240,6 @@ export default function StartupDetail() {
         onConfirm={() => deleteStartupMutation.mutate()}
         isDeleting={deleteStartupMutation.isPending}
       />
-
-      {/* Edit Investor Dialog */}
       {editingInvestor && (
         <EditInvestorDialog
           open={!!editingInvestor}
@@ -243,8 +249,6 @@ export default function StartupDetail() {
           isSubmitting={updateInvestorMutation.isPending}
         />
       )}
-
-      {/* Delete Investor Dialog */}
       <ConfirmDeleteDialog
         open={!!deletingInvestorId}
         onOpenChange={(open) => { if (!open) setDeletingInvestorId(null); }}
