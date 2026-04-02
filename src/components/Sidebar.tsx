@@ -24,6 +24,19 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { user, signOut, loading, isAdmin } = useAuth();
 
+  const { data: pendingCount = 0 } = useQuery({
+    queryKey: ["info-requests-pending-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      if (error) return 0;
+      return count || 0;
+    },
+    enabled: isAdmin,
+  });
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-50">
       <div className="p-6 border-b border-border">
