@@ -15,6 +15,8 @@ interface Investor {
   equity_percentage: number;
   investment_date: string;
   notes: string | null;
+  pledge_amount?: number | null;
+  investment_round?: string | null;
 }
 
 interface EditInvestorDialogProps {
