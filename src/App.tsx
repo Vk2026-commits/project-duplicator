@@ -21,6 +21,7 @@ import Disclosures from "./pages/Disclosures";
 import Meetings from "./pages/Meetings";
 import Deals from "./pages/Deals";
 import Contributions from "./pages/Contributions";
+import CalendarPage from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Onboarding from "./pages/Onboarding";
