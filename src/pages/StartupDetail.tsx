@@ -122,15 +122,17 @@ export default function StartupDetail() {
           <p className="text-sm text-muted-foreground">{startup.sector} · {startup.stage}</p>
           {startup.description && <p className="text-sm text-muted-foreground mt-2">{startup.description}</p>}
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditStartupOpen(true)}>
-            <Pencil className="w-3.5 h-3.5" /> Edit
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteStartupOpen(true)}>
-            <Trash2 className="w-3.5 h-3.5" /> Delete
-          </Button>
-          <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
-        </div>
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditStartupOpen(true)}>
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteStartupOpen(true)}>
+              <Trash2 className="w-3.5 h-3.5" /> Delete
+            </Button>
+            <AddInvestorDialog onAdd={(data) => addInvestorMutation.mutate(data)} isSubmitting={addInvestorMutation.isPending} />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
