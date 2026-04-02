@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, ThumbsUp, ThumbsDown, Clock, CheckCircle, XCircle, FileText, AlertTriangle, Shield } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import DealDiscussionThread from "@/components/DealDiscussionThread";
 
 const APPROVAL_THRESHOLD = 0.7;
 
