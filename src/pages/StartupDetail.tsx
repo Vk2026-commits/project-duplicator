@@ -172,7 +172,7 @@ export default function StartupDetail() {
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>
+                {isAdmin && <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>}
               </tr>
             </thead>
             <tbody>
