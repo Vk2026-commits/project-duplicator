@@ -240,6 +240,10 @@ function DirectoryAdmin() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [assignProfile, setAssignProfile] = useState<any | null>(null);
 
+  // Password-gated action state
+  const [pendingAction, setPendingAction] = useState<{ type: "edit" | "assign" | "reset" | "delete"; profile: any } | null>(null);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles-dir"],
     queryFn: async () => {
@@ -276,6 +280,33 @@ function DirectoryAdmin() {
     else toast.success(`Password reset email sent to ${email}`);
   };
 
+  const requestAction = (type: "edit" | "assign" | "reset" | "delete", profile: any) => {
+    setPendingAction({ type, profile });
+    setShowPasswordDialog(true);
+  };
+
+  const handlePasswordConfirmed = () => {
+    setShowPasswordDialog(false);
+    if (!pendingAction) return;
+    const { type, profile } = pendingAction;
+    setPendingAction(null);
+
+    switch (type) {
+      case "edit":
+        setEditProfile(profile);
+        break;
+      case "assign":
+        setAssignProfile(profile);
+        break;
+      case "reset":
+        sendPasswordReset(profile.email);
+        break;
+      case "delete":
+        setDeleteId(profile.id);
+        break;
+    }
+  };
+
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
@@ -299,10 +330,10 @@ function DirectoryAdmin() {
                 <TableCell className="text-xs text-muted-foreground">{socials || "—"}</TableCell>
                 <TableCell>
                    <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => setEditProfile(p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => setAssignProfile(p)} title="Assign startups"><Link2 className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => sendPasswordReset(p.email)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => requestAction("edit", p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => requestAction("assign", p)} title="Assign startups"><Link2 className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => requestAction("reset", p)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => requestAction("delete", p)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -310,6 +341,14 @@ function DirectoryAdmin() {
           })}
         </TableBody>
       </Table>
+
+      <AdminPasswordDialog
+        open={showPasswordDialog}
+        onOpenChange={setShowPasswordDialog}
+        title="Admin Verification"
+        description="Enter your admin password to perform this action."
+        onConfirmed={handlePasswordConfirmed}
+      />
 
       {editProfile && (
         <AdminProfileEditDialog open={!!editProfile} onOpenChange={(o) => { if (!o) setEditProfile(null); }} profile={editProfile} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
