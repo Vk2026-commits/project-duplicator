@@ -15,7 +15,7 @@ import AdminPasswordDialog from "@/components/AdminPasswordDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users, Archive, ArchiveRestore } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -95,6 +95,14 @@ function StartupsAdmin() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-startups"] }); qc.invalidateQueries({ queryKey: ["startups"] }); },
   });
 
+  const toggleArchiveStartup = useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase.from("startups").update({ archived } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-startups"] }); qc.invalidateQueries({ queryKey: ["startups"] }); toast.success("Startup updated"); },
+  });
+
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
@@ -102,21 +110,27 @@ function StartupsAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Sector</TableHead><TableHead>Stage</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Value</TableHead><TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Sector</TableHead><TableHead>Stage</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Value</TableHead><TableHead>Status</TableHead><TableHead className="w-[130px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {startups.map((s) => (
-            <TableRow key={s.id}>
+          {startups.map((s: any) => (
+            <TableRow key={s.id} className={s.archived ? "opacity-50" : ""}>
               <TableCell className="font-medium">{s.name}</TableCell>
               <TableCell>{s.sector}</TableCell>
               <TableCell>{s.stage}</TableCell>
               <TableCell className="text-right">${Number(s.invested).toLocaleString()}</TableCell>
               <TableCell className="text-right">${Number(s.current_value).toLocaleString()}</TableCell>
+              <TableCell>{s.archived ? <span className="text-xs text-muted-foreground">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
               <TableCell>
                 <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => setEditStartup(s)}><Pencil className="w-4 h-4" /></Button>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(s.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => setEditStartup(s)} title="Edit"><Pencil className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => toggleArchiveStartup.mutate({ id: s.id, archived: !s.archived })} title={s.archived ? "Restore" : "Archive"}>
+                    {s.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
+                  </Button>
+                  {s.archived && (
+                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(s.id)} title="Delete"><Trash2 className="w-4 h-4" /></Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -127,7 +141,7 @@ function StartupsAdmin() {
       {editStartup && (
         <EditStartupDialog open={!!editStartup} onOpenChange={(o) => { if (!o) setEditStartup(null); }} startup={editStartup} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
-      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Startup" description="This will permanently delete this startup and all its investors." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Startup" description="This will permanently delete this startup and all its investors. Make sure it is archived first." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
     </>
   );
 }
@@ -197,10 +211,12 @@ function InvestorsAdmin() {
                 <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button size="icon" variant="ghost" onClick={() => setEditInvestor(inv)}><Pencil className="w-4 h-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAssignInvestor(inv); }} title="Assign startups"><Link2 className="w-4 h-4 text-primary" /></Button>
-                  <Button size="icon" variant="ghost" onClick={() => toggleArchive.mutate({ id: inv.id, archived: !inv.archived })}>
-                    {inv.archived ? <ShieldCheck className="w-4 h-4 text-primary" /> : <ShieldOff className="w-4 h-4 text-muted-foreground" />}
+                  <Button size="icon" variant="ghost" onClick={() => toggleArchive.mutate({ id: inv.id, archived: !inv.archived })} title={inv.archived ? "Restore" : "Archive"}>
+                    {inv.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
                   </Button>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(inv.id)}><Trash2 className="w-4 h-4" /></Button>
+                  {inv.archived && (
+                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(inv.id)} title="Delete"><Trash2 className="w-4 h-4" /></Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -242,7 +258,7 @@ function DirectoryAdmin() {
   const [assignProfile, setAssignProfile] = useState<any | null>(null);
 
   // Password-gated action state
-  const [pendingAction, setPendingAction] = useState<{ type: "edit" | "assign" | "reset" | "delete"; profile: any } | null>(null);
+  const [pendingAction, setPendingAction] = useState<{ type: "edit" | "assign" | "reset" | "delete" | "archive"; profile: any } | null>(null);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
@@ -281,7 +297,15 @@ function DirectoryAdmin() {
     else toast.success(`Password reset email sent to ${email}`);
   };
 
-  const requestAction = (type: "edit" | "assign" | "reset" | "delete", profile: any) => {
+  const toggleArchiveProfile = useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase.from("profiles").update({ archived } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profiles-dir"] }); toast.success("Profile updated"); },
+  });
+
+  const requestAction = (type: "edit" | "assign" | "reset" | "delete" | "archive", profile: any) => {
     setPendingAction({ type, profile });
     setShowPasswordDialog(true);
   };
@@ -305,6 +329,9 @@ function DirectoryAdmin() {
       case "delete":
         setDeleteId(profile.id);
         break;
+      case "archive":
+        toggleArchiveProfile.mutate({ id: profile.id, archived: !(profile as any).archived });
+        break;
     }
   };
 
@@ -316,25 +343,29 @@ function DirectoryAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[170px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Status</TableHead><TableHead className="w-[200px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {profiles.map((p) => {
-            const socials = [p.linkedin && "LI", p.twitter && "X", p.instagram && "IG", p.facebook && "FB"].filter(Boolean).join(", ");
+          {profiles.map((p: any) => {
             return (
-              <TableRow key={p.id}>
+              <TableRow key={p.id} className={p.archived ? "opacity-50" : ""}>
                 <TableCell className="font-medium">{p.full_name || "—"}</TableCell>
                 <TableCell className="text-sm">{p.email || "—"}</TableCell>
                 <TableCell className="text-sm">{p.phone || "—"}</TableCell>
                 <TableCell className="text-sm max-w-[200px] truncate">{p.bio || "—"}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{socials || "—"}</TableCell>
+                <TableCell>{p.archived ? <span className="text-xs text-muted-foreground">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
                 <TableCell>
                    <div className="flex gap-1">
                     <Button size="icon" variant="ghost" onClick={() => requestAction("edit", p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => requestAction("assign", p)} title="Assign startups"><Link2 className="w-4 h-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => requestAction("reset", p)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
-                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => requestAction("delete", p)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => requestAction("archive", p)} title={p.archived ? "Restore" : "Archive"}>
+                      {p.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
+                    </Button>
+                    {p.archived && (
+                      <Button size="icon" variant="ghost" className="text-destructive" onClick={() => requestAction("delete", p)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
@@ -365,6 +396,7 @@ function DirectoryAdmin() {
 /* ─── Users & Roles Tab ───────────────────────── */
 function UsersAdmin() {
   const qc = useQueryClient();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles"],
@@ -400,7 +432,13 @@ function UsersAdmin() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const toggleArchiveUser = useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase.from("profiles").update({ archived } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profiles"] }); toast.success("Profile updated"); },
+  });
 
   const deleteProfile = useMutation({
     mutationFn: async (id: string) => {
@@ -418,14 +456,14 @@ function UsersAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead className="w-[80px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead>Status</TableHead><TableHead className="w-[120px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {profiles.map((p) => {
+          {profiles.map((p: any) => {
             const userRoles = getRoles(p.id);
             return (
-              <TableRow key={p.id}>
+              <TableRow key={p.id} className={p.archived ? "opacity-50" : ""}>
                 <TableCell className="font-medium">{p.full_name || "—"}</TableCell>
                 <TableCell>{p.email || "—"}</TableCell>
                 <TableCell>{p.phone || "—"}</TableCell>
@@ -441,8 +479,16 @@ function UsersAdmin() {
                     })}
                   </div>
                 </TableCell>
+                <TableCell>{p.archived ? <span className="text-xs text-muted-foreground">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
                 <TableCell>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <div className="flex gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => toggleArchiveUser.mutate({ id: p.id, archived: !p.archived })} title={p.archived ? "Restore" : "Archive"}>
+                      {p.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
+                    </Button>
+                    {p.archived && (
+                      <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete"><Trash2 className="w-4 h-4" /></Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             );

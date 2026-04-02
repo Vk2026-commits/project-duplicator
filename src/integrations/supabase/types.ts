@@ -485,6 +485,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          archived: boolean
           beneficiary_contact: string | null
           beneficiary_name: string | null
           beneficiary_relationship: string | null
@@ -511,6 +512,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean
           beneficiary_contact?: string | null
           beneficiary_name?: string | null
           beneficiary_relationship?: string | null
@@ -537,6 +539,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean
           beneficiary_contact?: string | null
           beneficiary_name?: string | null
           beneficiary_relationship?: string | null
@@ -745,6 +748,7 @@ export type Database = {
       }
       startups: {
         Row: {
+          archived: boolean
           created_at: string
           current_value: number
           description: string | null
@@ -760,6 +764,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean
           created_at?: string
           current_value?: number
           description?: string | null
@@ -775,6 +780,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean
           created_at?: string
           current_value?: number
           description?: string | null
