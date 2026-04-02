@@ -122,7 +122,15 @@ export default function InvestorProfile() {
         </div>
 
         {editing ? (
-          <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(form); }} className="space-y-5">
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            if (!disclaimerAcceptance) {
+              toast.error("You must sign the Investment Disclosure & Risk Disclaimer before saving your profile.");
+              navigate("/disclosures");
+              return;
+            }
+            updateMutation.mutate(form);
+          }} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Full Name</Label>
