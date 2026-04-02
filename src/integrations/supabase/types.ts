@@ -274,6 +274,33 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_agreements: {
+        Row: {
+          agreement_type: string
+          full_name: string
+          id: string
+          ip_address: string | null
+          signed_at: string
+          user_id: string
+        }
+        Insert: {
+          agreement_type: string
+          full_name: string
+          id?: string
+          ip_address?: string | null
+          signed_at?: string
+          user_id: string
+        }
+        Update: {
+          agreement_type?: string
+          full_name?: string
+          id?: string
+          ip_address?: string | null
+          signed_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profile_startup_links: {
         Row: {
           created_at: string
