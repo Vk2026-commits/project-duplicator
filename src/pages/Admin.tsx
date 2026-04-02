@@ -396,6 +396,7 @@ function DirectoryAdmin() {
 /* ─── Users & Roles Tab ───────────────────────── */
 function UsersAdmin() {
   const qc = useQueryClient();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles"],
@@ -431,7 +432,13 @@ function UsersAdmin() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const toggleArchiveUser = useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase.from("profiles").update({ archived } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profiles"] }); toast.success("Profile updated"); },
+  });
 
   const deleteProfile = useMutation({
     mutationFn: async (id: string) => {
@@ -449,14 +456,14 @@ function UsersAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead className="w-[80px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead>Status</TableHead><TableHead className="w-[120px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {profiles.map((p) => {
+          {profiles.map((p: any) => {
             const userRoles = getRoles(p.id);
             return (
-              <TableRow key={p.id}>
+              <TableRow key={p.id} className={p.archived ? "opacity-50" : ""}>
                 <TableCell className="font-medium">{p.full_name || "—"}</TableCell>
                 <TableCell>{p.email || "—"}</TableCell>
                 <TableCell>{p.phone || "—"}</TableCell>
@@ -472,8 +479,16 @@ function UsersAdmin() {
                     })}
                   </div>
                 </TableCell>
+                <TableCell>{p.archived ? <span className="text-xs text-muted-foreground">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
                 <TableCell>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <div className="flex gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => toggleArchiveUser.mutate({ id: p.id, archived: !p.archived })} title={p.archived ? "Restore" : "Archive"}>
+                      {p.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
+                    </Button>
+                    {p.archived && (
+                      <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete"><Trash2 className="w-4 h-4" /></Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             );
