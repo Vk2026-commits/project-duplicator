@@ -125,22 +125,25 @@ export default function MyPortfolioCard() {
             </p>
             <p className="text-lg font-bold">{formatCurrency(myTotalInvested)}</p>
           </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <Briefcase className="w-3 h-3" /> Portfolio Value
-              <TooltipProvider>
-                <UITooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[220px] text-xs">
-                    Portfolio Value = your equity % × each startup's current value. It may differ from Total Invested.
-                  </TooltipContent>
-                </UITooltip>
-              </TooltipProvider>
-            </p>
-            <p className="text-lg font-bold">{formatCurrency(myTotalEquityValue)}</p>
-          </div>
+          <TooltipProvider delayDuration={100}>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <div className="space-y-1 cursor-help rounded-lg px-2 py-1.5 -mx-2 -my-1.5 transition-colors hover:bg-primary/10">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Briefcase className="w-3 h-3" /> Portfolio Value
+                    <Info className="w-3 h-3 text-muted-foreground/60" />
+                  </p>
+                  <p className="text-lg font-bold">{formatCurrency(myTotalEquityValue)}</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[260px] text-xs leading-relaxed p-3">
+                <p className="font-semibold mb-1">How is this calculated?</p>
+                <p><strong>Portfolio Value</strong> = your equity % × each startup's current value.</p>
+                <p className="mt-1"><strong>Equity %</strong> is your ownership share, based on your investment relative to the funding goal.</p>
+                <p className="mt-1 text-muted-foreground">This may differ from Total Invested if the startup's value has changed.</p>
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               {isPositive ? (
