@@ -49,19 +49,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("user_id", user.id)
       .eq("role", "admin")
       .maybeSingle()
-      .then(({ data, error }) => {
-        if (cancelled) return;
+      .then(
+        ({ data, error }) => {
+          if (cancelled) return;
 
-        if (error) {
-          console.error("admin role check failed:", error.message);
+          if (error) {
+            console.error("admin role check failed:", error.message);
+            setIsAdmin(false);
+          } else {
+            setIsAdmin(!!data);
+          }
+
+          setLoading(false);
+        },
+        (fetchError) => {
+          if (cancelled) return;
+          console.error("admin role check failed:", fetchError);
           setIsAdmin(false);
-        } else {
-          setIsAdmin(!!data);
+          setLoading(false);
         }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      );
 
     return () => {
       cancelled = true;
