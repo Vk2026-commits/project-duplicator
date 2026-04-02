@@ -7,7 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { startups as mockStartups } from "@/lib/mock-data";
 import type { Startup } from "@/lib/mock-data";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Send, CheckCircle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function mapDbToStartup(row: any): Startup {
   return {
@@ -56,7 +58,37 @@ export default function Startups() {
     enabled: !!user,
   });
 
+  // Fetch user's info requests
+  const { data: myRequests = [] } = useQuery({
+    queryKey: ["my-info-requests", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("startup_id, status")
+        .eq("user_id", user.id);
+      if (error) throw error;
+      return data as unknown as { startup_id: string; status: string }[];
+    },
+    enabled: !!user,
+  });
+
   const myStartupIds = new Set(myLinks);
+  const requestMap = new Map(myRequests.map((r) => [r.startup_id, r.status]));
+
+  const requestInfoMutation = useMutation({
+    mutationFn: async (startupId: string) => {
+      const { error } = await supabase
+        .from("startup_info_requests" as any)
+        .insert({ user_id: user!.id, startup_id: startupId } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-info-requests"] });
+      toast.success("Information request sent to admin");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   const addMutation = useMutation({
     mutationFn: async (startup: {
@@ -99,15 +131,50 @@ export default function Startups() {
             if (canSeeDetails) {
               return <StartupCard key={s.id} startup={s} />;
             }
-            // Non-linked users see name only
+            // Non-linked users see name only + request info button
+            const reqStatus = requestMap.get(s.id);
+            const isApproved = reqStatus === "approved";
             return (
               <div key={s.id} className="glass-card rounded-xl p-6 animate-fade-in">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
                     <Briefcase className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <h3 className="font-display font-semibold">{s.name}</h3>
                 </div>
+                {isApproved && s.description && (
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-4">{s.description}</p>
+                )}
+                {isApproved && (
+                  <p className="text-xs text-muted-foreground mb-3">
+                    <span className="font-medium text-foreground">Sector:</span> {s.sector} &bull; <span className="font-medium text-foreground">Stage:</span> {s.stage}
+                    {s.founded ? <> &bull; <span className="font-medium text-foreground">Founded:</span> {s.founded}</> : null}
+                  </p>
+                )}
+                {user && !reqStatus && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-1"
+                    onClick={() => requestInfoMutation.mutate(s.id)}
+                    disabled={requestInfoMutation.isPending}
+                  >
+                    <Send className="w-3.5 h-3.5 mr-1.5" />
+                    Request for Information
+                  </Button>
+                )}
+                {reqStatus === "pending" && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-warning">
+                    <Clock className="w-3.5 h-3.5" />
+                    Request pending admin approval
+                  </div>
+                )}
+                {isApproved && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-primary">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    Information access granted
+                  </div>
+                )}
               </div>
             );
           })}

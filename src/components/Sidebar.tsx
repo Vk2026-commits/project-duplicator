@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays, Bell } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -21,6 +23,19 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, loading, isAdmin } = useAuth();
+
+  const { data: pendingCount = 0 } = useQuery({
+    queryKey: ["info-requests-pending-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      if (error) return 0;
+      return count || 0;
+    },
+    enabled: isAdmin,
+  });
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-50">
@@ -57,10 +72,15 @@ export default function Sidebar() {
                 to="/admin"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   location.pathname === "/admin" ? "bg-primary/10 text-primary glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                } w-full`}
+                } w-full relative`}
               >
                 <ShieldCheck className="w-4 h-4" />
                 Admin
+                {pendingCount > 0 && (
+                  <span className="ml-auto w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-bold">
+                    {pendingCount}
+                  </span>
+                )}
               </Link>
             )}
             <Link

@@ -14,7 +14,7 @@ import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
@@ -40,11 +40,16 @@ export default function Admin() {
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="directory">Directory & Profiles</TabsTrigger>
           <TabsTrigger value="users">Users & Roles</TabsTrigger>
+          <TabsTrigger value="info-requests" className="relative">
+            Info Requests
+            <InfoRequestsBadge />
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
         <TabsContent value="directory"><DirectoryAdmin /></TabsContent>
         <TabsContent value="users"><UsersAdmin /></TabsContent>
+        <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
@@ -401,6 +406,147 @@ function UsersAdmin() {
       </Table>
 
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Profile" description="This will delete this user's profile and roles." onConfirm={() => deleteId && deleteProfile.mutate(deleteId)} isDeleting={deleteProfile.isPending} />
+    </>
+  );
+}
+
+/* ─── Info Requests Badge ─────────────────────── */
+function InfoRequestsBadge() {
+  const { data: count = 0 } = useQuery({
+    queryKey: ["info-requests-pending-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  if (!count) return null;
+
+  return (
+    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-bold">
+      {count}
+    </span>
+  );
+}
+
+/* ─── Info Requests Admin Tab ─────────────────── */
+function InfoRequestsAdmin() {
+  const qc = useQueryClient();
+
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ["admin-info-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as unknown as { id: string; user_id: string; startup_id: string; status: string; created_at: string }[];
+    },
+  });
+
+  const { data: profiles = [] } = useQuery({
+    queryKey: ["admin-profiles-for-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("id, full_name, email");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: startups = [] } = useQuery({
+    queryKey: ["admin-startups-for-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("startups").select("id, name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const profileMap = new Map(profiles.map((p) => [p.id, p]));
+  const startupMap = new Map(startups.map((s) => [s.id, s]));
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase
+        .from("startup_info_requests" as any)
+        .update({ status } as any)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-info-requests"] });
+      qc.invalidateQueries({ queryKey: ["info-requests-pending-count"] });
+      toast.success("Request updated");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+
+  if (!requests.length) return <p className="text-muted-foreground">No information requests yet.</p>;
+
+  return (
+    <>
+      <p className="text-sm text-muted-foreground mb-4">
+        Members can request information about startups they aren't linked to. Approving grants access to the startup's bio and basic details (no financial data).
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Member</TableHead>
+            <TableHead>Startup</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Requested</TableHead>
+            <TableHead className="w-[120px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {requests.map((req) => {
+            const profile = profileMap.get(req.user_id);
+            const startup = startupMap.get(req.startup_id);
+            return (
+              <TableRow key={req.id}>
+                <TableCell className="font-medium">{profile?.full_name || profile?.email || req.user_id.slice(0, 8)}</TableCell>
+                <TableCell>{startup?.name || req.startup_id.slice(0, 8)}</TableCell>
+                <TableCell>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    req.status === "pending" ? "bg-warning/10 text-warning" :
+                    req.status === "approved" ? "bg-primary/10 text-primary" :
+                    "bg-destructive/10 text-destructive"
+                  }`}>
+                    {req.status}
+                  </span>
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(req.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    {req.status === "pending" && (
+                      <>
+                        <Button size="icon" variant="ghost" className="text-primary" onClick={() => updateStatus.mutate({ id: req.id, status: "approved" })} title="Approve" disabled={updateStatus.isPending}>
+                          <CheckCircle className="w-4 h-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="text-destructive" onClick={() => updateStatus.mutate({ id: req.id, status: "rejected" })} title="Reject" disabled={updateStatus.isPending}>
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
+                    {req.status !== "pending" && (
+                      <span className="text-xs text-muted-foreground px-2">—</span>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </>
   );
 }
