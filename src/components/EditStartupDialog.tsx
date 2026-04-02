@@ -127,23 +127,5 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
         </form>
       </DialogContent>
     </Dialog>
-
-    <AlertDialog open={showInvestorWarning} onOpenChange={setShowInvestorWarning}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Investor Contributions Exist</AlertDialogTitle>
-          <AlertDialogDescription>
-            Investors have put in <span className="font-semibold text-foreground">{formatCurrency(investorTotal)}</span> for this startup. Setting the invested amount lower than this may cause a mismatch. The sync trigger will automatically update the invested total when investor records change.
-            <br /><br />
-            Are you sure you want to proceed?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={confirmSave}>Save Anyway</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    </>
   );
 }
