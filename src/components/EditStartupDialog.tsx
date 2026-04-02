@@ -35,7 +35,6 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setName(startup.name);
     setSector(startup.sector);
     setStage(startup.stage);
-    setInvested(String(startup.invested));
     setCurrentValue(String(startup.current_value));
     setDescription(startup.description || "");
     setProgress(String(startup.progress));
