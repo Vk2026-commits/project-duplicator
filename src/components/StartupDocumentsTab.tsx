@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { FileText, Plus, Trash2, Download, CheckCircle2, AlertCircle, Eye } from "lucide-react";
 import { toast } from "sonner";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 const DOC_TYPES = [
   { value: "mou", label: "MOU" },
@@ -31,6 +32,7 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [viewUrl, setViewUrl] = useState<string | null>(null);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [docType, setDocType] = useState("other");
@@ -289,7 +291,7 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-destructive hover:text-destructive"
-                          onClick={() => deleteMutation.mutate(doc.id)}
+                          onClick={() => setDeletingDocId(doc.id)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
@@ -348,6 +350,14 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+      <ConfirmDeleteDialog
+        open={!!deletingDocId}
+        onOpenChange={(o) => { if (!o) setDeletingDocId(null); }}
+        title="Delete Document"
+        description="Are you sure you want to delete this document? This action cannot be undone."
+        onConfirm={() => deletingDocId && deleteMutation.mutate(deletingDocId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

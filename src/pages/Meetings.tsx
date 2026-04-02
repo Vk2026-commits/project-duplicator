@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Calendar, MapPin, FileText, Clock, CheckCircle, Send, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 const statusStyles: Record<string, string> = {
   scheduled: "bg-primary/20 text-primary",
@@ -26,6 +27,7 @@ export default function Meetings() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [expandedMeeting, setExpandedMeeting] = useState<string | null>(null);
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     title: "", meeting_date: "", location: "", agenda: "", status: "scheduled",
@@ -278,7 +280,7 @@ export default function Meetings() {
                               <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                             </div>
                             {(note.author_id === user.id || isAdmin) && (
-                              <Button size="sm" variant="ghost" className="text-destructive shrink-0" onClick={() => deleteNoteMutation.mutate(note.id)}>
+                              <Button size="sm" variant="ghost" className="text-destructive shrink-0" onClick={() => setDeletingNoteId(note.id)}>
                                 <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             )}
@@ -312,6 +314,14 @@ export default function Meetings() {
           })}
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={!!deletingNoteId}
+        onOpenChange={(o) => { if (!o) setDeletingNoteId(null); }}
+        title="Delete Note"
+        description="Are you sure you want to delete this note? This action cannot be undone."
+        onConfirm={() => deletingNoteId && deleteNoteMutation.mutate(deletingNoteId)}
+        isDeleting={deleteNoteMutation.isPending}
+      />
     </Layout>
   );
 }

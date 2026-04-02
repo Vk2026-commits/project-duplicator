@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, DollarSign, Wallet, PiggyBank, TrendingUp, Users, AlertTriangle } from "lucide-react";
+import { Plus, DollarSign, Wallet, PiggyBank, TrendingUp, Users, AlertTriangle, Trash2 } from "lucide-react";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
@@ -25,6 +26,7 @@ export default function Contributions() {
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ user_id: "", amount: "", contribution_date: "", notes: "" });
+  const [deletingContribId, setDeletingContribId] = useState<string | null>(null);
 
   if (!isAdmin) {
     return (
@@ -286,7 +288,7 @@ export default function Contributions() {
                   <TableCell className="text-muted-foreground text-sm">{c.notes || "—"}</TableCell>
                   {isAdmin && (
                     <TableCell>
-                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteMutation.mutate(c.id)}>
+                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDeletingContribId(c.id)}>
                         Remove
                       </Button>
                     </TableCell>
@@ -305,6 +307,14 @@ export default function Contributions() {
           All members actively participate in investment decisions and are not passive investors.
         </p>
       </div>
+      <ConfirmDeleteDialog
+        open={!!deletingContribId}
+        onOpenChange={(o) => { if (!o) setDeletingContribId(null); }}
+        title="Delete Contribution"
+        description="Are you sure you want to delete this contribution? This action cannot be undone."
+        onConfirm={() => deletingContribId && deleteMutation.mutate(deletingContribId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </Layout>
   );
 }

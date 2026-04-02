@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { MessageSquare, Send, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 interface Props {
   dealId: string;
@@ -18,6 +19,7 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   const { data: comments = [] } = useQuery({
     queryKey: ["deal-comments", dealId],
@@ -93,7 +95,7 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
                     <p className="text-sm whitespace-pre-wrap">{c.content}</p>
                   </div>
                   {(c.author_id === user?.id || isAdmin) && (
-                    <Button size="sm" variant="ghost" className="text-destructive shrink-0 mt-1" onClick={() => deleteMutation.mutate(c.id)}>
+                    <Button size="sm" variant="ghost" className="text-destructive shrink-0 mt-1" onClick={() => setDeletingCommentId(c.id)}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   )}
@@ -122,6 +124,14 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
           </div>
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={!!deletingCommentId}
+        onOpenChange={(o) => { if (!o) setDeletingCommentId(null); }}
+        title="Delete Comment"
+        description="Are you sure you want to delete this comment? This action cannot be undone."
+        onConfirm={() => deletingCommentId && deleteMutation.mutate(deletingCommentId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }
