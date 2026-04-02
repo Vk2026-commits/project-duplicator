@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
@@ -6,19 +6,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
 import EditInvestorDialog from "@/components/EditInvestorDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
+import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 
-/* ─── Admin Page ──────────────────────────────── */
 export default function Admin() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
@@ -34,16 +29,18 @@ export default function Admin() {
     <Layout>
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold">Admin Dashboard</h2>
-        <p className="text-sm text-muted-foreground mt-1">Manage startups, investors, users & roles</p>
+        <p className="text-sm text-muted-foreground mt-1">Full management of startups, investors, directory & user roles</p>
       </div>
       <Tabs defaultValue="startups" className="space-y-4">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="startups">Startups</TabsTrigger>
           <TabsTrigger value="investors">Investors</TabsTrigger>
+          <TabsTrigger value="directory">Directory & Profiles</TabsTrigger>
           <TabsTrigger value="users">Users & Roles</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
+        <TabsContent value="directory"><DirectoryAdmin /></TabsContent>
         <TabsContent value="users"><UsersAdmin /></TabsContent>
       </Tabs>
     </Layout>
@@ -67,7 +64,6 @@ function StartupsAdmin() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // delete investors first
       await supabase.from("startup_investors").delete().eq("startup_id", id);
       const { error } = await supabase.from("startups").delete().eq("id", id);
       if (error) throw error;
@@ -115,23 +111,9 @@ function StartupsAdmin() {
       </Table>
 
       {editStartup && (
-        <EditStartupDialog
-          open={!!editStartup}
-          onOpenChange={(o) => { if (!o) setEditStartup(null); }}
-          startup={editStartup}
-          onSave={(d) => editMutation.mutate(d)}
-          isSubmitting={editMutation.isPending}
-        />
+        <EditStartupDialog open={!!editStartup} onOpenChange={(o) => { if (!o) setEditStartup(null); }} startup={editStartup} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
-
-      <ConfirmDeleteDialog
-        open={!!deleteId}
-        onOpenChange={(o) => { if (!o) setDeleteId(null); }}
-        title="Delete Startup"
-        description="This will permanently delete this startup and all its investors. This cannot be undone."
-        onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
-        isDeleting={deleteMutation.isPending}
-      />
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Startup" description="This will permanently delete this startup and all its investors." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
     </>
   );
 }
@@ -210,23 +192,93 @@ function InvestorsAdmin() {
       </Table>
 
       {editInvestor && (
-        <EditInvestorDialog
-          open={!!editInvestor}
-          onOpenChange={(o) => { if (!o) setEditInvestor(null); }}
-          investor={editInvestor}
-          onSave={(d) => editMutation.mutate(d)}
-          isSubmitting={editMutation.isPending}
-        />
+        <EditInvestorDialog open={!!editInvestor} onOpenChange={(o) => { if (!o) setEditInvestor(null); }} investor={editInvestor} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Investor" description="This will permanently delete this investor record." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+    </>
+  );
+}
 
-      <ConfirmDeleteDialog
-        open={!!deleteId}
-        onOpenChange={(o) => { if (!o) setDeleteId(null); }}
-        title="Delete Investor"
-        description="This will permanently delete this investor record."
-        onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
-        isDeleting={deleteMutation.isPending}
-      />
+/* ─── Directory & Profiles Tab ────────────────── */
+function DirectoryAdmin() {
+  const qc = useQueryClient();
+  const [editProfile, setEditProfile] = useState<any | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const { data: profiles = [], isLoading } = useQuery({
+    queryKey: ["admin-profiles-dir"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const editMutation = useMutation({
+    mutationFn: async (p: any) => {
+      const { error } = await supabase.from("profiles").update({
+        full_name: p.full_name, email: p.email, phone: p.phone, bio: p.bio, photo_url: p.photo_url,
+        linkedin: p.linkedin, twitter: p.twitter, instagram: p.instagram, facebook: p.facebook,
+      }).eq("id", p.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profiles-dir"] }); qc.invalidateQueries({ queryKey: ["admin-profiles"] }); toast.success("Profile updated"); },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await supabase.from("user_roles").delete().eq("user_id", id);
+      const { error } = await supabase.from("profiles").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-profiles-dir"] }); toast.success("Profile deleted"); setDeleteId(null); },
+  });
+
+  const sendPasswordReset = async (email: string | null) => {
+    if (!email) { toast.error("No email on this profile"); return; }
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) toast.error(error.message);
+    else toast.success(`Password reset email sent to ${email}`);
+  };
+
+  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+
+  return (
+    <>
+      <p className="text-sm text-muted-foreground mb-4">Full profile management — edit all fields, send password resets, or remove profiles.</p>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[140px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {profiles.map((p) => {
+            const socials = [p.linkedin && "LI", p.twitter && "X", p.instagram && "IG", p.facebook && "FB"].filter(Boolean).join(", ");
+            return (
+              <TableRow key={p.id}>
+                <TableCell className="font-medium">{p.full_name || "—"}</TableCell>
+                <TableCell className="text-sm">{p.email || "—"}</TableCell>
+                <TableCell className="text-sm">{p.phone || "—"}</TableCell>
+                <TableCell className="text-sm max-w-[200px] truncate">{p.bio || "—"}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{socials || "—"}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => setEditProfile(p)} title="Edit profile"><Pencil className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => sendPasswordReset(p.email)} title="Send password reset"><KeyRound className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)} title="Delete profile"><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      {editProfile && (
+        <AdminProfileEditDialog open={!!editProfile} onOpenChange={(o) => { if (!o) setEditProfile(null); }} profile={editProfile} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
+      )}
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Profile" description="This will delete this user's profile and roles. The auth account will remain." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
     </>
   );
 }
@@ -287,7 +339,7 @@ function UsersAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead className="w-[140px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Roles</TableHead><TableHead className="w-[80px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -303,14 +355,7 @@ function UsersAdmin() {
                     {(["admin", "moderator", "user"] as const).map((role) => {
                       const has = userRoles.includes(role);
                       return (
-                        <Button
-                          key={role}
-                          size="sm"
-                          variant={has ? "default" : "outline"}
-                          className="h-6 text-xs px-2"
-                          onClick={() => toggleRole.mutate({ userId: p.id, role, hasRole: has })}
-                          disabled={toggleRole.isPending}
-                        >
+                        <Button key={role} size="sm" variant={has ? "default" : "outline"} className="h-6 text-xs px-2" onClick={() => toggleRole.mutate({ userId: p.id, role, hasRole: has })} disabled={toggleRole.isPending}>
                           {role}
                         </Button>
                       );
@@ -318,9 +363,7 @@ function UsersAdmin() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(p.id)}><Trash2 className="w-4 h-4" /></Button>
                 </TableCell>
               </TableRow>
             );
@@ -328,14 +371,7 @@ function UsersAdmin() {
         </TableBody>
       </Table>
 
-      <ConfirmDeleteDialog
-        open={!!deleteId}
-        onOpenChange={(o) => { if (!o) setDeleteId(null); }}
-        title="Delete Profile"
-        description="This will delete this user's profile and roles. The auth account will remain."
-        onConfirm={() => deleteId && deleteProfile.mutate(deleteId)}
-        isDeleting={deleteProfile.isPending}
-      />
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Profile" description="This will delete this user's profile and roles." onConfirm={() => deleteId && deleteProfile.mutate(deleteId)} isDeleting={deleteProfile.isPending} />
     </>
   );
 }
