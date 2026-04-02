@@ -97,8 +97,8 @@ export default function AssignInvestorStartupsDialog({ open, onOpenChange, inves
         investor_name: investorName,
         email: investorEmail || null,
         startup_id,
-        amount_invested: parseFloat(data.amount),
-        equity_percentage: parseFloat(data.equity),
+        amount_invested: parseFloat(data.amount) || 0,
+        equity_percentage: parseFloat(data.equity) || 0,
       }));
 
       const { error } = await supabase.from("startup_investors").insert(rows);
