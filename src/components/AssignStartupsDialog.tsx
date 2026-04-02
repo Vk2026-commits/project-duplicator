@@ -190,25 +190,25 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
                   {isNew && (
                     <div className="grid grid-cols-2 gap-3 mt-3 ml-8">
                       <div className="space-y-1">
-                        <Label className="text-xs">Amount ($)</Label>
+                        <Label className="text-xs">Amount ($) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 50000"
                           value={newStartupData.get(s.id)?.amount || ""}
                           onChange={(e) => updateField(s.id, "amount", e.target.value)}
-                          min="1"
+                          min="0"
                           step="any"
                           className="h-8 text-sm"
                         />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Equity (%)</Label>
+                        <Label className="text-xs">Equity (%) <span className="text-muted-foreground">(optional)</span></Label>
                         <Input
                           type="number"
                           placeholder="e.g. 5"
                           value={newStartupData.get(s.id)?.equity || ""}
                           onChange={(e) => updateField(s.id, "equity", e.target.value)}
-                          min="0.01"
+                          min="0"
                           max="100"
                           step="any"
                           className="h-8 text-sm"
