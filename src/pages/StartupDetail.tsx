@@ -96,6 +96,7 @@ export default function StartupDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+      queryClient.invalidateQueries({ queryKey: ["startup", id] });
       setEditingEquityId(null);
       toast.success("Equity updated");
     },
