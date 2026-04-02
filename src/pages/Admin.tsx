@@ -13,7 +13,8 @@ import EditInvestorDialog from "@/components/EditInvestorDialog";
 import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2 } from "lucide-react";
+import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Admin() {
@@ -126,6 +127,7 @@ function InvestorsAdmin() {
   const [editInvestor, setEditInvestor] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [assignInvestor, setAssignInvestor] = useState<any | null>(null);
+  const [ledgerInvestor, setLedgerInvestor] = useState<any | null>(null);
 
   const { data: investors = [], isLoading } = useQuery({
     queryKey: ["admin-investors"],
@@ -174,14 +176,14 @@ function InvestorsAdmin() {
         </TableHeader>
         <TableBody>
           {investors.map((inv: any) => (
-            <TableRow key={inv.id} className={inv.archived ? "opacity-50" : ""}>
+            <TableRow key={inv.id} className={`${inv.archived ? "opacity-50" : ""} cursor-pointer hover:bg-muted/50`} onClick={() => setLedgerInvestor(inv)}>
               <TableCell className="font-medium">{inv.investor_name}</TableCell>
               <TableCell>{inv.startups?.name || "—"}</TableCell>
               <TableCell className="text-right">${Number(inv.amount_invested).toLocaleString()}</TableCell>
               <TableCell className="text-right">{inv.equity_percentage}%</TableCell>
               <TableCell>{inv.archived ? <span className="text-muted-foreground text-xs">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
               <TableCell>
-                <div className="flex gap-1">
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <Button size="icon" variant="ghost" onClick={() => setEditInvestor(inv)}><Pencil className="w-4 h-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAssignInvestor(inv); }} title="Assign startups"><Link2 className="w-4 h-4 text-primary" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => toggleArchive.mutate({ id: inv.id, archived: !inv.archived })}>
@@ -205,6 +207,15 @@ function InvestorsAdmin() {
           onOpenChange={(o) => { if (!o) setAssignInvestor(null); }}
           investorName={assignInvestor.investor_name}
           investorEmail={assignInvestor.email}
+          onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
+        />
+      )}
+      {ledgerInvestor && (
+        <InvestorLedgerDialog
+          open={!!ledgerInvestor}
+          onOpenChange={(o) => { if (!o) setLedgerInvestor(null); }}
+          investorName={ledgerInvestor.investor_name}
+          investorEmail={ledgerInvestor.email}
           onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
         />
       )}
