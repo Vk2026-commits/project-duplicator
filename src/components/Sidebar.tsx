@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,8 @@ const navItems = [
   { icon: Briefcase, label: "Startups", path: "/startups" },
   { icon: TrendingUp, label: "Performance", path: "/performance" },
   { icon: ScrollText, label: "Mission & Values", path: "/mission" },
+  { icon: Handshake, label: "Deal Review", path: "/deals" },
+  { icon: PiggyBank, label: "Capital Pool", path: "/contributions" },
   { icon: Info, label: "Information", path: "/information" },
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
 ];
