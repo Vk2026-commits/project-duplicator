@@ -235,6 +235,14 @@ export default function InvestorProfile() {
               navigate("/disclosures");
               return;
             }
+            if (!form.full_name?.trim()) {
+              toast.error("Full name is required");
+              return;
+            }
+            if (!form.phone?.trim()) {
+              toast.error("Phone number is required");
+              return;
+            }
             updateMutation.mutate(form);
           }} className="space-y-6">
             {!disclaimerAcceptance && (
