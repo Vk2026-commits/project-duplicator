@@ -113,8 +113,11 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Invested ($)</Label>
-              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="0" step="any" />
+              <Label>Total Invested</Label>
+              <div className="h-10 px-3 py-2 rounded-md border bg-muted text-sm flex items-center font-medium">
+                {formatCurrency(investorTotal)}
+              </div>
+              <p className="text-xs text-muted-foreground">Auto-calculated from investor contributions.</p>
             </div>
             <div className="space-y-2">
               <Label>Current Value ($)</Label>
