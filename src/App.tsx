@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Investors from "./pages/Investors";
 import InvestorDetail from "./pages/InvestorDetail";
@@ -25,6 +26,10 @@ import DisclaimerModal from "./components/DisclaimerModal";
 
 const queryClient = new QueryClient();
 
+const P = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute>{children}</ProtectedRoute>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -35,22 +40,22 @@ const App = () => (
           <DisclaimerModal />
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Index />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/investors" element={<Investors />} />
-            <Route path="/investors/:id" element={<InvestorDetail />} />
-            <Route path="/directory" element={<InvestorDirectory />} />
-            <Route path="/profile/:id" element={<InvestorProfile />} />
-            <Route path="/startups" element={<Startups />} />
-            <Route path="/startups/:id" element={<StartupDetail />} />
-            <Route path="/performance" element={<Performance />} />
-            <Route path="/mission" element={<Mission />} />
-            <Route path="/information" element={<Information />} />
-            <Route path="/disclosures" element={<Disclosures />} />
-            <Route path="/deals" element={<Deals />} />
-            <Route path="/meetings" element={<Meetings />} />
-            <Route path="/contributions" element={<Contributions />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard" element={<P><Index /></P>} />
+            <Route path="/investors" element={<P><Investors /></P>} />
+            <Route path="/investors/:id" element={<P><InvestorDetail /></P>} />
+            <Route path="/directory" element={<P><InvestorDirectory /></P>} />
+            <Route path="/profile/:id" element={<P><InvestorProfile /></P>} />
+            <Route path="/startups" element={<P><Startups /></P>} />
+            <Route path="/startups/:id" element={<P><StartupDetail /></P>} />
+            <Route path="/performance" element={<P><Performance /></P>} />
+            <Route path="/mission" element={<P><Mission /></P>} />
+            <Route path="/information" element={<P><Information /></P>} />
+            <Route path="/disclosures" element={<P><Disclosures /></P>} />
+            <Route path="/deals" element={<P><Deals /></P>} />
+            <Route path="/meetings" element={<P><Meetings /></P>} />
+            <Route path="/contributions" element={<P><Contributions /></P>} />
+            <Route path="/admin" element={<P><Admin /></P>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
