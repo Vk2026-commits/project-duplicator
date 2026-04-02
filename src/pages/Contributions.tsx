@@ -26,6 +26,7 @@ export default function Contributions() {
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ user_id: "", amount: "", contribution_date: "", notes: "" });
+  const [deletingContribId, setDeletingContribId] = useState<string | null>(null);
 
   if (!isAdmin) {
     return (

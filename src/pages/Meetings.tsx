@@ -27,6 +27,7 @@ export default function Meetings() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [expandedMeeting, setExpandedMeeting] = useState<string | null>(null);
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     title: "", meeting_date: "", location: "", agenda: "", status: "scheduled",
