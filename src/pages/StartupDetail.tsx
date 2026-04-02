@@ -269,6 +269,7 @@ export default function StartupDetail() {
                     <tr className="border-b border-border">
                       <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
+                      <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Pledge</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
                       <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Notes</th>
