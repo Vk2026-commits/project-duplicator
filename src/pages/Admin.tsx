@@ -15,7 +15,7 @@ import AdminPasswordDialog from "@/components/AdminPasswordDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users, Archive, ArchiveRestore } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
