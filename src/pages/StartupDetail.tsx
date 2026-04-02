@@ -329,6 +329,10 @@ export default function StartupDetail() {
         <TabsContent value="revenue">
           <StartupRevenueTab startupId={id!} startupName={startup.name} />
         </TabsContent>
+
+        <TabsContent value="documents">
+          <StartupDocumentsTab startupId={id!} startupName={startup.name} />
+        </TabsContent>
       </Tabs>
 
       {/* Dialogs */}
