@@ -114,13 +114,13 @@ export default function AssignStartupsDialog({ open, onOpenChange, profileId, pr
       // 2. Create startup_investors records for newly added startups
       if (newlySelected.length > 0) {
         const investorRows = newlySelected.map((startup_id) => {
-          const data = newStartupData.get(startup_id)!;
+          const data = newStartupData.get(startup_id);
           return {
             investor_name: profileName,
             email: profileEmail || null,
             startup_id,
-            amount_invested: parseFloat(data.amount),
-            equity_percentage: parseFloat(data.equity),
+            amount_invested: parseFloat(data?.amount || "0") || 0,
+            equity_percentage: parseFloat(data?.equity || "0") || 0,
           };
         });
         const { error } = await supabase.from("startup_investors").insert(investorRows);
