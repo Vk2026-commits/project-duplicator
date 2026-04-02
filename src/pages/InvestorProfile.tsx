@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,7 @@ export default function InvestorProfile() {
   const { id } = useParams();
   const { user, isAdmin } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<any>({});
 
@@ -121,7 +122,27 @@ export default function InvestorProfile() {
         </div>
 
         {editing ? (
-          <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(form); }} className="space-y-5">
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            if (!disclaimerAcceptance) {
+              toast.error("You must sign the Investment Disclosure & Risk Disclaimer before saving your profile.");
+              navigate("/disclosures");
+              return;
+            }
+            updateMutation.mutate(form);
+          }} className="space-y-5">
+            {!disclaimerAcceptance && (
+              <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                <Shield className="w-5 h-5 text-destructive flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">Disclaimer Required</p>
+                  <p className="text-xs text-muted-foreground">You must sign the Investment Disclosure & Risk Disclaimer before saving your profile.</p>
+                </div>
+                <Link to="/disclosures">
+                  <Button size="sm" variant="outline" type="button">Sign Now</Button>
+                </Link>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Full Name</Label>
