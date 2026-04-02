@@ -58,7 +58,37 @@ export default function Startups() {
     enabled: !!user,
   });
 
+  // Fetch user's info requests
+  const { data: myRequests = [] } = useQuery({
+    queryKey: ["my-info-requests", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("startup_info_requests" as any)
+        .select("startup_id, status")
+        .eq("user_id", user.id);
+      if (error) throw error;
+      return data as unknown as { startup_id: string; status: string }[];
+    },
+    enabled: !!user,
+  });
+
   const myStartupIds = new Set(myLinks);
+  const requestMap = new Map(myRequests.map((r) => [r.startup_id, r.status]));
+
+  const requestInfoMutation = useMutation({
+    mutationFn: async (startupId: string) => {
+      const { error } = await supabase
+        .from("startup_info_requests" as any)
+        .insert({ user_id: user!.id, startup_id: startupId } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-info-requests"] });
+      toast.success("Information request sent to admin");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
 
   const addMutation = useMutation({
     mutationFn: async (startup: {
