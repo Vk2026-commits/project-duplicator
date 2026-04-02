@@ -21,7 +21,7 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-50">
       <div className="p-6 border-b border-border">
-        <h1 className="font-display text-xl font-bold text-gradient">Faith-nancial</h1>
+        <h1 className="font-display text-xl font-bold text-gradient">Faithnancial</h1>
         <p className="text-xs text-muted-foreground mt-1">Investment Management</p>
       </div>
 
