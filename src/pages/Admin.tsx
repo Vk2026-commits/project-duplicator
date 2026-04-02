@@ -95,6 +95,14 @@ function StartupsAdmin() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-startups"] }); qc.invalidateQueries({ queryKey: ["startups"] }); },
   });
 
+  const toggleArchiveStartup = useMutation({
+    mutationFn: async ({ id, archived }: { id: string; archived: boolean }) => {
+      const { error } = await supabase.from("startups").update({ archived } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-startups"] }); qc.invalidateQueries({ queryKey: ["startups"] }); toast.success("Startup updated"); },
+  });
+
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
@@ -102,21 +110,27 @@ function StartupsAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Sector</TableHead><TableHead>Stage</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Value</TableHead><TableHead className="w-[100px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Sector</TableHead><TableHead>Stage</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Value</TableHead><TableHead>Status</TableHead><TableHead className="w-[130px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {startups.map((s) => (
-            <TableRow key={s.id}>
+          {startups.map((s: any) => (
+            <TableRow key={s.id} className={s.archived ? "opacity-50" : ""}>
               <TableCell className="font-medium">{s.name}</TableCell>
               <TableCell>{s.sector}</TableCell>
               <TableCell>{s.stage}</TableCell>
               <TableCell className="text-right">${Number(s.invested).toLocaleString()}</TableCell>
               <TableCell className="text-right">${Number(s.current_value).toLocaleString()}</TableCell>
+              <TableCell>{s.archived ? <span className="text-xs text-muted-foreground">Archived</span> : <span className="text-xs text-primary">Active</span>}</TableCell>
               <TableCell>
                 <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => setEditStartup(s)}><Pencil className="w-4 h-4" /></Button>
-                  <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(s.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => setEditStartup(s)} title="Edit"><Pencil className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => toggleArchiveStartup.mutate({ id: s.id, archived: !s.archived })} title={s.archived ? "Restore" : "Archive"}>
+                    {s.archived ? <ArchiveRestore className="w-4 h-4 text-primary" /> : <Archive className="w-4 h-4 text-muted-foreground" />}
+                  </Button>
+                  {s.archived && (
+                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(s.id)} title="Delete"><Trash2 className="w-4 h-4" /></Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -127,7 +141,7 @@ function StartupsAdmin() {
       {editStartup && (
         <EditStartupDialog open={!!editStartup} onOpenChange={(o) => { if (!o) setEditStartup(null); }} startup={editStartup} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
-      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Startup" description="This will permanently delete this startup and all its investors." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Startup" description="This will permanently delete this startup and all its investors. Make sure it is archived first." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
     </>
   );
 }
