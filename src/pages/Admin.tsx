@@ -46,6 +46,7 @@ export default function Admin() {
             <InfoRequestsBadge />
           </TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="interests">Member Interests</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
@@ -53,6 +54,7 @@ export default function Admin() {
         <TabsContent value="users"><UsersAdmin /></TabsContent>
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
         <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
+        <TabsContent value="interests"><MemberInterestsAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
