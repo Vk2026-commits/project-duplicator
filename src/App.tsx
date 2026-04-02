@@ -24,6 +24,7 @@ import Contributions from "./pages/Contributions";
 import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Onboarding from "./pages/Onboarding";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/contributions" element={<P><Contributions /></P>} />
             <Route path="/admin" element={<P><Admin /></P>} />
             <Route path="/onboarding" element={<P><Onboarding /></P>} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
