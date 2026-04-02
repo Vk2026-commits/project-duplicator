@@ -282,6 +282,9 @@ function DirectoryAdmin() {
         <AdminProfileEditDialog open={!!editProfile} onOpenChange={(o) => { if (!o) setEditProfile(null); }} profile={editProfile} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Profile" description="This will delete this user's profile and roles. The auth account will remain." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
+      {assignProfile && (
+        <AssignStartupsDialog open={!!assignProfile} onOpenChange={(o) => { if (!o) setAssignProfile(null); }} profileId={assignProfile.id} profileName={assignProfile.full_name || "Unnamed"} />
+      )}
     </>
   );
 }
