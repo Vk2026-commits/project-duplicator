@@ -313,6 +313,14 @@ export default function Meetings() {
           })}
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={!!deletingNoteId}
+        onOpenChange={(o) => { if (!o) setDeletingNoteId(null); }}
+        title="Delete Note"
+        description="Are you sure you want to delete this note? This action cannot be undone."
+        onConfirm={() => deletingNoteId && deleteNoteMutation.mutate(deletingNoteId)}
+        isDeleting={deleteNoteMutation.isPending}
+      />
     </Layout>
   );
 }

@@ -287,7 +287,7 @@ export default function Contributions() {
                   <TableCell className="text-muted-foreground text-sm">{c.notes || "—"}</TableCell>
                   {isAdmin && (
                     <TableCell>
-                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteMutation.mutate(c.id)}>
+                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDeletingContribId(c.id)}>
                         Remove
                       </Button>
                     </TableCell>

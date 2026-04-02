@@ -290,7 +290,7 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-destructive hover:text-destructive"
-                          onClick={() => deleteMutation.mutate(doc.id)}
+                          onClick={() => setDeletingDocId(doc.id)}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>

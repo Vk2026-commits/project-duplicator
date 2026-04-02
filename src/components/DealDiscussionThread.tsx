@@ -124,6 +124,14 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
           </div>
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={!!deletingCommentId}
+        onOpenChange={(o) => { if (!o) setDeletingCommentId(null); }}
+        title="Delete Comment"
+        description="Are you sure you want to delete this comment? This action cannot be undone."
+        onConfirm={() => deletingCommentId && deleteMutation.mutate(deletingCommentId)}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }
