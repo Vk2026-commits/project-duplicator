@@ -17,6 +17,7 @@ export default function InvestorProfile() {
   const { id } = useParams();
   const { user, isAdmin } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<any>({});
 
