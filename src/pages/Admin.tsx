@@ -251,7 +251,7 @@ function DirectoryAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[140px]">Actions</TableHead>
+            <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Bio</TableHead><TableHead>Socials</TableHead><TableHead className="w-[170px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
