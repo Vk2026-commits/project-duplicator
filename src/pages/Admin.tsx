@@ -40,11 +40,16 @@ export default function Admin() {
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="directory">Directory & Profiles</TabsTrigger>
           <TabsTrigger value="users">Users & Roles</TabsTrigger>
+          <TabsTrigger value="info-requests" className="relative">
+            Info Requests
+            <InfoRequestsBadge />
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
         <TabsContent value="directory"><DirectoryAdmin /></TabsContent>
         <TabsContent value="users"><UsersAdmin /></TabsContent>
+        <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
