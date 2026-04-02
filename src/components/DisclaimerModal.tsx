@@ -14,8 +14,10 @@ export default function DisclaimerModal() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (loading || !user) {
+    const excludedPaths = ["/login", "/disclosures"];
+    if (loading || !user || excludedPaths.includes(location.pathname)) {
       setChecking(false);
+      setOpen(false);
       return;
     }
 
