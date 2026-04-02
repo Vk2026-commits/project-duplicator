@@ -13,6 +13,7 @@ interface StartupAboutTabProps {
     current_value: number;
     progress: number;
     created_at: string;
+    funding_goal: number;
   };
 }
 
@@ -22,6 +23,11 @@ export default function StartupAboutTab({ startup }: StartupAboutTabProps) {
     "at-risk": "bg-warning/10 text-warning",
     outperforming: "bg-accent/10 text-accent",
   };
+
+  const invested = Number(startup.invested);
+  const fundingGoal = Number(startup.funding_goal);
+  const remaining = Math.max(fundingGoal - invested, 0);
+  const raisedPercent = fundingGoal > 0 ? Math.min((invested / fundingGoal) * 100, 100) : 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -63,12 +69,40 @@ export default function StartupAboutTab({ startup }: StartupAboutTabProps) {
         </div>
       </div>
 
+      {/* Funding Goal Progress */}
+      {fundingGoal > 0 && (
+        <div className="glass-card rounded-xl p-6">
+          <h3 className="font-display font-semibold text-lg mb-4">Capital Raise — {startup.stage}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div className="p-4 rounded-lg bg-secondary/30">
+              <span className="text-xs text-muted-foreground">Funding Goal</span>
+              <p className="text-lg font-bold mt-1">{formatCurrency(fundingGoal)}</p>
+            </div>
+            <div className="p-4 rounded-lg bg-secondary/30">
+              <span className="text-xs text-muted-foreground">Raised So Far</span>
+              <p className="text-lg font-bold mt-1 text-primary">{formatCurrency(invested)}</p>
+            </div>
+            <div className="p-4 rounded-lg bg-secondary/30">
+              <span className="text-xs text-muted-foreground">Remaining</span>
+              <p className="text-lg font-bold mt-1">{formatCurrency(remaining)}</p>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{raisedPercent.toFixed(1)}% raised</span>
+              <span className="font-medium">{formatCurrency(invested)} / {formatCurrency(fundingGoal)}</span>
+            </div>
+            <Progress value={raisedPercent} className="h-3" />
+          </div>
+        </div>
+      )}
+
       <div className="glass-card rounded-xl p-6">
         <h3 className="font-display font-semibold text-lg mb-4">Financial Summary</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-lg bg-secondary/30">
             <span className="text-xs text-muted-foreground">Total Invested</span>
-            <p className="text-lg font-bold mt-1">{formatCurrency(Number(startup.invested))}</p>
+            <p className="text-lg font-bold mt-1">{formatCurrency(invested)}</p>
           </div>
           <div className="p-4 rounded-lg bg-secondary/30">
             <span className="text-xs text-muted-foreground">Current Value</span>
@@ -77,7 +111,7 @@ export default function StartupAboutTab({ startup }: StartupAboutTabProps) {
           <div className="p-4 rounded-lg bg-secondary/30">
             <span className="text-xs text-muted-foreground">ROI</span>
             <p className="text-lg font-bold mt-1">
-              {(((Number(startup.current_value) - Number(startup.invested)) / Number(startup.invested)) * 100).toFixed(1)}%
+              {(((Number(startup.current_value) - invested) / invested) * 100).toFixed(1)}%
             </p>
           </div>
         </div>

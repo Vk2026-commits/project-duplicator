@@ -228,7 +228,7 @@ export default function StartupDetail() {
       <EditStartupDialog
         open={editStartupOpen}
         onOpenChange={setEditStartupOpen}
-        startup={{ id: startup.id, name: startup.name, sector: startup.sector, stage: startup.stage, invested: Number(startup.invested), current_value: Number(startup.current_value), description: startup.description, progress: startup.progress }}
+        startup={{ id: startup.id, name: startup.name, sector: startup.sector, stage: startup.stage, invested: Number(startup.invested), current_value: Number(startup.current_value), description: startup.description, progress: startup.progress, funding_goal: Number(startup.funding_goal) }}
         onSave={(data) => updateStartupMutation.mutate(data)}
         isSubmitting={updateStartupMutation.isPending}
       />
