@@ -9,7 +9,7 @@ import InvestorDetail from "./pages/InvestorDetail";
 import Startups from "./pages/Startups";
 import StartupDetail from "./pages/StartupDetail";
 import Performance from "./pages/Performance";
-import Login from "./pages/Login";
+import Mission from "./pages/Mission";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +27,7 @@ const App = () => (
           <Route path="/startups" element={<Startups />} />
           <Route path="/startups/:id" element={<StartupDetail />} />
           <Route path="/performance" element={<Performance />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/mission" element={<Mission />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
