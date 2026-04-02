@@ -30,6 +30,7 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
   const { user, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
+  const [viewUrl, setViewUrl] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [docType, setDocType] = useState("other");
@@ -268,10 +269,8 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {doc.file_url && (
-                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
-                          <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                            <Eye className="w-3.5 h-3.5" /> View
-                          </a>
+                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setViewUrl(doc.file_url)}>
+                          <Eye className="w-3.5 h-3.5" /> View
                         </Button>
                       )}
                       {!acked && user && (
@@ -312,6 +311,24 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           </p>
         </div>
       )}
+
+      {/* PDF Viewer Dialog */}
+      <Dialog open={!!viewUrl} onOpenChange={(open) => !open && setViewUrl(null)}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[85vh] flex flex-col p-0">
+          <DialogHeader className="p-4 pb-2">
+            <DialogTitle>Document Viewer</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 px-4 pb-4">
+            {viewUrl && (
+              <iframe
+                src={viewUrl}
+                className="w-full h-full rounded-lg border border-border"
+                title="Document preview"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
