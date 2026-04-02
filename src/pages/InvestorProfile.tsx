@@ -117,10 +117,6 @@ export default function InvestorProfile() {
                 <Label>Phone</Label>
                 <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
               </div>
-              <div className="space-y-2">
-                <Label>Photo URL</Label>
-                <Input value={form.photo_url || ""} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} placeholder="https://..." />
-              </div>
             </div>
             <div className="space-y-2">
               <Label>Bio</Label>
