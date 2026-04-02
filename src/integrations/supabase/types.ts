@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      profile_startup_links: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          startup_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          startup_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_startup_links_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_startup_links_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null
