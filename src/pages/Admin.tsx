@@ -124,6 +124,7 @@ function InvestorsAdmin() {
   const qc = useQueryClient();
   const [editInvestor, setEditInvestor] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [assignInvestor, setAssignInvestor] = useState<any | null>(null);
 
   const { data: investors = [], isLoading } = useQuery({
     queryKey: ["admin-investors"],
