@@ -75,6 +75,7 @@ export default function Startups() {
 
   const myStartupIds = new Set(myLinks);
   const requestMap = new Map(myRequests.map((r) => [r.startup_id, r.status]));
+  const approvedRequestIds = new Set(myRequests.filter((r) => r.status === "approved").map((r) => r.startup_id));
 
   const requestInfoMutation = useMutation({
     mutationFn: async (startupId: string) => {
@@ -127,7 +128,7 @@ export default function Startups() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {startups.map((s) => {
-            const canSeeDetails = isAdmin || myStartupIds.has(s.id);
+            const canSeeDetails = isAdmin || myStartupIds.has(s.id) || approvedRequestIds.has(s.id);
             if (canSeeDetails) {
               return <StartupCard key={s.id} startup={s} />;
             }
