@@ -32,6 +32,7 @@ export default function StartupDetail() {
   const [deletingInvestorId, setDeletingInvestorId] = useState<string | null>(null);
   const [editingEquityId, setEditingEquityId] = useState<string | null>(null);
   const [editingEquityValue, setEditingEquityValue] = useState("");
+  const [contributionsInvestor, setContributionsInvestor] = useState<any | null>(null);
 
   const { data: startup, isLoading: loadingStartup } = useQuery({
     queryKey: ["startup", id],
