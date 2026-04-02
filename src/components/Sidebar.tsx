@@ -10,6 +10,8 @@ const navItems = [
   { icon: Briefcase, label: "Startups", path: "/startups" },
   { icon: TrendingUp, label: "Performance", path: "/performance" },
   { icon: ScrollText, label: "Mission & Values", path: "/mission" },
+  { icon: Handshake, label: "Deal Review", path: "/deals" },
+  { icon: PiggyBank, label: "Capital Pool", path: "/contributions" },
   { icon: Info, label: "Information", path: "/information" },
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
 ];
