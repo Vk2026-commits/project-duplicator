@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +25,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
   const [name, setName] = useState(startup.name);
   const [sector, setSector] = useState(startup.sector);
   const [stage, setStage] = useState(startup.stage);
-  const [invested, setInvested] = useState(String(startup.invested));
+  // invested is now derived from investor contributions — not editable
   const [currentValue, setCurrentValue] = useState(String(startup.current_value));
   const [description, setDescription] = useState(startup.description || "");
   const [progress, setProgress] = useState(String(startup.progress));
@@ -35,22 +35,19 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
     setName(startup.name);
     setSector(startup.sector);
     setStage(startup.stage);
-    setInvested(String(startup.invested));
     setCurrentValue(String(startup.current_value));
     setDescription(startup.description || "");
     setProgress(String(startup.progress));
     setFundingGoal(String(startup.funding_goal));
   }, [startup]);
 
-  const [showInvestorWarning, setShowInvestorWarning] = useState(false);
-  const [pendingData, setPendingData] = useState<any>(null);
 
   const buildData = () => ({
     id: startup.id,
     name: name.trim(),
     sector,
     stage,
-    invested: parseFloat(invested) || 0,
+    invested: investorTotal,
     current_value: parseFloat(currentValue) || 0,
     description: description.trim(),
     progress: parseInt(progress) || 0,
@@ -64,29 +61,13 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
       return;
     }
     const data = buildData();
-    // Warn if setting invested lower than what investors have contributed
-    if (data.invested < investorTotal && investorTotal > 0) {
-      setPendingData(data);
-      setShowInvestorWarning(true);
-      return;
-    }
     onSave(data);
     toast.success("Startup updated");
     onOpenChange(false);
   };
 
-  const confirmSave = () => {
-    if (pendingData) {
-      onSave(pendingData);
-      toast.success("Startup updated");
-      onOpenChange(false);
-    }
-    setShowInvestorWarning(false);
-    setPendingData(null);
-  };
 
   return (
-    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
@@ -120,8 +101,11 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Invested ($)</Label>
-              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="0" step="any" />
+              <Label>Total Invested</Label>
+              <div className="h-10 px-3 py-2 rounded-md border bg-muted text-sm flex items-center font-medium">
+                {formatCurrency(investorTotal)}
+              </div>
+              <p className="text-xs text-muted-foreground">Auto-calculated from investor contributions.</p>
             </div>
             <div className="space-y-2">
               <Label>Current Value ($)</Label>
@@ -143,23 +127,5 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
         </form>
       </DialogContent>
     </Dialog>
-
-    <AlertDialog open={showInvestorWarning} onOpenChange={setShowInvestorWarning}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Investor Contributions Exist</AlertDialogTitle>
-          <AlertDialogDescription>
-            Investors have put in <span className="font-semibold text-foreground">{formatCurrency(investorTotal)}</span> for this startup. Setting the invested amount lower than this may cause a mismatch. The sync trigger will automatically update the invested total when investor records change.
-            <br /><br />
-            Are you sure you want to proceed?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={confirmSave}>Save Anyway</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    </>
   );
 }
