@@ -119,12 +119,23 @@ export default function MyPortfolioCard() {
       <CardContent className="space-y-4">
         {/* Summary row */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <DollarSign className="w-3 h-3" /> My Total Invested
-            </p>
-            <p className="text-lg font-bold">{formatCurrency(myTotalInvested)}</p>
-          </div>
+          <TooltipProvider delayDuration={100}>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <div className="space-y-1 cursor-help rounded-lg px-2 py-1.5 -mx-2 -my-1.5 transition-colors hover:bg-primary/10">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <DollarSign className="w-3 h-3" /> My Total Invested
+                    <Info className="w-3 h-3 text-muted-foreground/60" />
+                  </p>
+                  <p className="text-lg font-bold">{formatCurrency(myTotalInvested)}</p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[260px] text-xs leading-relaxed p-3">
+                <p className="font-semibold mb-1">How is this calculated?</p>
+                <p><strong>Total Invested</strong> = the sum of all your individual investment contributions across all startups you're linked to.</p>
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
           <TooltipProvider delayDuration={100}>
             <UITooltip>
               <TooltipTrigger asChild>
@@ -144,24 +155,31 @@ export default function MyPortfolioCard() {
               </TooltipContent>
             </UITooltip>
           </TooltipProvider>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              {isPositive ? (
-                <TrendingUp className="w-3 h-3 text-primary" />
-              ) : (
-                <TrendingDown className="w-3 h-3 text-destructive" />
-              )}
-              Growth
-            </p>
-            <p
-              className={`text-lg font-bold ${
-                isPositive ? "text-primary" : "text-destructive"
-              }`}
-            >
-              {isPositive ? "+" : ""}
-              {myGrowth.toFixed(1)}%
-            </p>
-          </div>
+          <TooltipProvider delayDuration={100}>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <div className="space-y-1 cursor-help rounded-lg px-2 py-1.5 -mx-2 -my-1.5 transition-colors hover:bg-primary/10">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    {isPositive ? (
+                      <TrendingUp className="w-3 h-3 text-primary" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3 text-destructive" />
+                    )}
+                    Growth
+                    <Info className="w-3 h-3 text-muted-foreground/60" />
+                  </p>
+                  <p className={`text-lg font-bold ${isPositive ? "text-primary" : "text-destructive"}`}>
+                    {isPositive ? "+" : ""}{myGrowth.toFixed(1)}%
+                  </p>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[260px] text-xs leading-relaxed p-3">
+                <p className="font-semibold mb-1">How is this calculated?</p>
+                <p><strong>Growth</strong> = (Portfolio Value − Total Invested) ÷ Total Invested × 100.</p>
+                <p className="mt-1 text-muted-foreground">A positive % means your equity is worth more than what you invested. A negative % means it's worth less.</p>
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
         </div>
 
         {/* Investment growth chart */}
