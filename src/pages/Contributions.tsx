@@ -22,6 +22,9 @@ function formatCurrency(val: number) {
 
 export default function Contributions() {
   const { user, isAdmin } = useAuth();
+  const queryClient = useQueryClient();
+  const [addOpen, setAddOpen] = useState(false);
+  const [form, setForm] = useState({ user_id: "", amount: "", contribution_date: "", notes: "" });
 
   if (!isAdmin) {
     return (
@@ -33,10 +36,6 @@ export default function Contributions() {
       </Layout>
     );
   }
-
-  const queryClient = useQueryClient();
-  const [addOpen, setAddOpen] = useState(false);
-  const [form, setForm] = useState({ user_id: "", amount: "", contribution_date: "", notes: "" });
 
   // Fetch contributions
   const { data: contributions = [], isLoading } = useQuery({
