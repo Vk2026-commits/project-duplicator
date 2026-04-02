@@ -16,7 +16,9 @@ import Mission from "./pages/Mission";
 import Information from "./pages/Information";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import Disclosures from "./pages/Disclosures";
 import NotFound from "./pages/NotFound";
+import DisclaimerModal from "./components/DisclaimerModal";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <DisclaimerModal />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -39,6 +42,7 @@ const App = () => (
             <Route path="/performance" element={<Performance />} />
             <Route path="/mission" element={<Mission />} />
             <Route path="/information" element={<Information />} />
+            <Route path="/disclosures" element={<Disclosures />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
