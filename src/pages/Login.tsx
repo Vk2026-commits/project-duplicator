@@ -33,7 +33,7 @@ export default function Login() {
         if (error) throw error;
         toast.success("Signed in successfully!");
       }
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.message);
     } finally {
