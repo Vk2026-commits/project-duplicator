@@ -54,10 +54,41 @@ export default function StartupDetail() {
 
   const addInvestorMutation = useMutation({
     mutationFn: async (investor: { investor_name: string; email: string; amount_invested: number; equity_percentage: number; investment_date: string; notes: string }) => {
-      const { error } = await supabase.from("startup_investors").insert({ startup_id: id!, ...investor, email: investor.email || null, notes: investor.notes || null });
+      // Calculate new equity based on proportional share of total pool
+      const currentTotal = investors.reduce((sum, inv) => sum + Number(inv.amount_invested), 0);
+      const newTotal = currentTotal + investor.amount_invested;
+      const newInvestorEquity = Math.round(((investor.amount_invested / newTotal) * 100) * 100) / 100;
+
+      // Insert the new investor with proportional equity
+      const { error } = await supabase.from("startup_investors").insert({
+        startup_id: id!,
+        investor_name: investor.investor_name,
+        email: investor.email || null,
+        amount_invested: investor.amount_invested,
+        equity_percentage: newInvestorEquity,
+        investment_date: investor.investment_date,
+        notes: investor.notes || null,
+      });
       if (error) throw error;
+
+      // Dilute existing investors proportionally
+      if (investors.length > 0) {
+        const dilutionFactor = currentTotal / newTotal;
+        for (const inv of investors) {
+          const dilutedEquity = Math.round((Number(inv.equity_percentage) * dilutionFactor) * 100) / 100;
+          const { error: updateErr } = await supabase
+            .from("startup_investors")
+            .update({ equity_percentage: dilutedEquity })
+            .eq("id", inv.id);
+          if (updateErr) throw updateErr;
+        }
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["startup-investors", id] });
+      queryClient.invalidateQueries({ queryKey: ["startup", id] });
+      toast.success("Investor added and equity diluted proportionally");
+    },
   });
 
   const updateStartupMutation = useMutation({
