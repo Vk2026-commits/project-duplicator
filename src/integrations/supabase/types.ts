@@ -604,8 +604,10 @@ export type Database = {
           equity_percentage: number
           id: string
           investment_date: string
+          investment_round: string | null
           investor_name: string
           notes: string | null
+          pledge_amount: number | null
           startup_id: string
           updated_at: string
         }
@@ -617,8 +619,10 @@ export type Database = {
           equity_percentage: number
           id?: string
           investment_date?: string
+          investment_round?: string | null
           investor_name: string
           notes?: string | null
+          pledge_amount?: number | null
           startup_id: string
           updated_at?: string
         }
@@ -630,8 +634,10 @@ export type Database = {
           equity_percentage?: number
           id?: string
           investment_date?: string
+          investment_round?: string | null
           investor_name?: string
           notes?: string | null
+          pledge_amount?: number | null
           startup_id?: string
           updated_at?: string
         }
