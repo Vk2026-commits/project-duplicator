@@ -14,22 +14,35 @@ export default function DisclaimerModal() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const excludedPaths = ["/login", "/disclosures"];
+    const excludedPaths = ["/login", "/disclosures", "/onboarding"];
     if (loading || !user || excludedPaths.includes(location.pathname)) {
       setChecking(false);
       setOpen(false);
       return;
     }
 
-    supabase
-      .from("disclaimer_acceptances")
-      .select("id")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!data) setOpen(true);
-        setChecking(false);
-      });
+    // Check both disclaimer and onboarding agreements
+    Promise.all([
+      supabase
+        .from("disclaimer_acceptances")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("onboarding_agreements")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("agreement_type", "operating_agreement")
+        .maybeSingle(),
+    ]).then(([disclaimer, onboarding]) => {
+      if (!disclaimer.data) {
+        setOpen(true);
+      } else if (!onboarding.data) {
+        // Disclaimer signed but onboarding not done — redirect to onboarding
+        navigate("/onboarding");
+      }
+      setChecking(false);
+    });
   }, [user, loading]);
 
   if (checking || !user) return null;

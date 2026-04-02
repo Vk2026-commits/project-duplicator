@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/meetings" element={<P><Meetings /></P>} />
             <Route path="/contributions" element={<P><Contributions /></P>} />
             <Route path="/admin" element={<P><Admin /></P>} />
+            <Route path="/onboarding" element={<P><Onboarding /></P>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
