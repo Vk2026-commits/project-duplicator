@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import AvatarUpload from "@/components/AvatarUpload";
 import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook } from "lucide-react";
 import { toast } from "sonner";
 
@@ -73,11 +74,25 @@ export default function InvestorProfile() {
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-5">
-            {profile.photo_url ? (
-              <img src={profile.photo_url} alt={profile.full_name || ""} className="w-20 h-20 rounded-full object-cover border-2 border-primary/30" />
-            ) : (
-              <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center text-2xl font-bold text-primary-foreground">{initials}</div>
-            )}
+            <div className="relative group">
+              {profile.photo_url ? (
+                <img src={profile.photo_url} alt={profile.full_name || ""} className="w-20 h-20 rounded-full object-cover border-2 border-primary/30" />
+              ) : (
+                <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center text-2xl font-bold text-primary-foreground">{initials}</div>
+              )}
+              {(canEdit || isAdmin) && (
+                <div className="mt-2">
+                  <AvatarUpload
+                    userId={id!}
+                    currentUrl={profile.photo_url}
+                    onUploaded={(url) => {
+                      queryClient.invalidateQueries({ queryKey: ["profile", id] });
+                      queryClient.invalidateQueries({ queryKey: ["all-profiles"] });
+                    }}
+                  />
+                </div>
+              )}
+            </div>
             <div>
               <h2 className="font-display text-2xl font-bold">{profile.full_name || "Unnamed Investor"}</h2>
               {canSeePrivate && profile.email && <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {profile.email}</p>}
@@ -101,10 +116,6 @@ export default function InvestorProfile() {
               <div className="space-y-2">
                 <Label>Phone</Label>
                 <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
-              </div>
-              <div className="space-y-2">
-                <Label>Photo URL</Label>
-                <Input value={form.photo_url || ""} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} placeholder="https://..." />
               </div>
             </div>
             <div className="space-y-2">
