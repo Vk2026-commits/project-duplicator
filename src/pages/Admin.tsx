@@ -210,6 +210,15 @@ function InvestorsAdmin() {
           onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
         />
       )}
+      {ledgerInvestor && (
+        <InvestorLedgerDialog
+          open={!!ledgerInvestor}
+          onOpenChange={(o) => { if (!o) setLedgerInvestor(null); }}
+          investorName={ledgerInvestor.investor_name}
+          investorEmail={ledgerInvestor.email}
+          onSaved={() => qc.invalidateQueries({ queryKey: ["admin-investors"] })}
+        />
+      )}
     </>
   );
 }
