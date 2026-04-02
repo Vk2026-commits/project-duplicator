@@ -14,7 +14,7 @@ import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -46,6 +46,7 @@ export default function Admin() {
             <InfoRequestsBadge />
           </TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="interests">Member Interests</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
@@ -53,6 +54,7 @@ export default function Admin() {
         <TabsContent value="users"><UsersAdmin /></TabsContent>
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
         <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
+        <TabsContent value="interests"><MemberInterestsAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
@@ -725,6 +727,140 @@ function ComplianceAdmin() {
           )}
         </TableBody>
       </Table>
+    </>
+  );
+}
+
+function MemberInterestsAdmin() {
+  const [selectedInterest, setSelectedInterest] = useState<string>("");
+
+  const { data: profiles = [] } = useQuery({
+    queryKey: ["all-profiles-interests"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("id, full_name, email, occupation, company, interests, photo_url");
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  // Collect all unique interests
+  const allInterests = Array.from(
+    new Set(profiles.flatMap((p: any) => (p.interests as string[]) || []))
+  ).sort();
+
+  const filteredProfiles = selectedInterest
+    ? profiles.filter((p: any) => ((p.interests as string[]) || []).includes(selectedInterest))
+    : profiles.filter((p: any) => ((p.interests as string[]) || []).length > 0);
+
+  return (
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="font-display font-semibold text-lg flex items-center gap-2">
+            <Heart className="w-5 h-5 text-primary" /> Member Interests
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Filter members by shared interests to plan group activities
+          </p>
+        </div>
+      </div>
+
+      {/* Interest filter chips */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setSelectedInterest("")}
+          className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+            !selectedInterest
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-secondary/50 text-muted-foreground border-border hover:border-primary/40"
+          }`}
+        >
+          All ({profiles.filter((p: any) => ((p.interests as string[]) || []).length > 0).length})
+        </button>
+        {allInterests.map((interest) => {
+          const count = profiles.filter((p: any) => ((p.interests as string[]) || []).includes(interest)).length;
+          return (
+            <button
+              key={interest}
+              onClick={() => setSelectedInterest(interest === selectedInterest ? "" : interest)}
+              className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                selectedInterest === interest
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-secondary/50 text-muted-foreground border-border hover:border-primary/40"
+              }`}
+            >
+              {interest} ({count})
+            </button>
+          );
+        })}
+      </div>
+
+      {filteredProfiles.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-8 text-center">
+          {allInterests.length === 0
+            ? "No members have added interests yet."
+            : "No members match this filter."}
+        </p>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Member</TableHead>
+              <TableHead>Occupation</TableHead>
+              <TableHead>Interests</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProfiles.map((p: any) => (
+              <TableRow key={p.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    {p.photo_url ? (
+                      <img src={p.photo_url} className="w-8 h-8 rounded-full object-cover" alt="" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
+                        {(p.full_name || "?").split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">{p.full_name || "Unnamed"}</p>
+                      <p className="text-xs text-muted-foreground">{p.email}</p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {p.occupation ? `${p.occupation}${p.company ? ` at ${p.company}` : ""}` : "—"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {((p.interests as string[]) || []).map((interest: string) => (
+                      <Badge
+                        key={interest}
+                        variant={interest === selectedInterest ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {interest}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+
+      {selectedInterest && filteredProfiles.length > 1 && (
+        <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <p className="text-sm font-medium flex items-center gap-2">
+            <Users className="w-4 h-4 text-primary" />
+            {filteredProfiles.length} members share an interest in "{selectedInterest}"
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Consider planning a group {selectedInterest.toLowerCase()} activity!
+          </p>
+        </div>
+      )}
     </>
   );
 }

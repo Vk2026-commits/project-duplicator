@@ -8,11 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import AvatarUpload from "@/components/AvatarUpload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText, AlertCircle, CheckCircle2, Briefcase, MapPin, Target, Heart } from "lucide-react";
 import { toast } from "sonner";
+
+const INTEREST_OPTIONS = [
+  "Golf", "Swimming", "Tennis", "Running", "Cycling", "Hiking",
+  "Basketball", "Football Games", "Baseball Games", "Soccer",
+  "Fishing", "Yoga", "Gym & Fitness",
+  "Family Activities", "Travel", "Wine & Dining",
+  "Reading", "Podcasts", "Cooking",
+  "Philanthropy", "Mentoring", "Networking Events",
+  "Real Estate", "Technology", "Art & Culture",
+  "Music", "Photography", "Boating",
+];
 
 export default function InvestorProfile() {
   const { id } = useParams();
@@ -98,10 +110,18 @@ export default function InvestorProfile() {
   const signedDocs = allDocs.filter((d: any) => ackedDocIds.has(d.id));
   const startupNameMap = Object.fromEntries(linkedStartups.map((l: any) => [l.startup_id, (l as any).startups?.name || "Unknown"]));
 
-
   useEffect(() => {
-    if (profile) setForm(profile);
+    if (profile) setForm({ ...profile, interests: (profile as any).interests || [] });
   }, [profile]);
+
+  const toggleInterest = (interest: string) => {
+    const current: string[] = form.interests || [];
+    if (current.includes(interest)) {
+      setForm({ ...form, interests: current.filter((i: string) => i !== interest) });
+    } else {
+      setForm({ ...form, interests: [...current, interest] });
+    }
+  };
 
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -114,7 +134,13 @@ export default function InvestorProfile() {
         twitter: data.twitter,
         instagram: data.instagram,
         facebook: data.facebook,
-      }).eq("id", id!);
+        occupation: data.occupation,
+        company: data.company,
+        location: data.location,
+        investment_focus: data.investment_focus,
+        interests: data.interests || [],
+        profile_completed: true,
+      } as any).eq("id", id!);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -128,13 +154,32 @@ export default function InvestorProfile() {
   if (isLoading) return <Layout><p className="text-muted-foreground">Loading...</p></Layout>;
   if (!profile) return <Layout><p className="text-muted-foreground">Profile not found.</p></Layout>;
 
+  const profileData = profile as any;
   const initials = (profile.full_name || "?").split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const isIncomplete = !(profileData.profile_completed);
+  const showCompletePrompt = isOwnProfile && isIncomplete && !editing;
 
   return (
     <Layout>
       <Link to="/investors" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Investors
       </Link>
+
+      {/* Complete Profile Prompt */}
+      {showCompletePrompt && (
+        <div className="mb-6 flex items-center gap-4 bg-primary/10 border border-primary/20 rounded-xl p-5 animate-fade-in">
+          <User className="w-8 h-8 text-primary flex-shrink-0" />
+          <div className="flex-1">
+            <h3 className="font-display font-semibold text-foreground">Complete Your Profile</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Welcome! Please fill out your profile information so other members can get to know you.
+            </p>
+          </div>
+          <Button onClick={() => setEditing(true)} className="gap-1.5 shrink-0">
+            <Pencil className="w-3.5 h-3.5" /> Complete Profile
+          </Button>
+        </div>
+      )}
 
       <div className="glass-card rounded-xl p-8 animate-fade-in">
         {/* Header */}
@@ -161,7 +206,17 @@ export default function InvestorProfile() {
             </div>
             <div>
               <h2 className="font-display text-2xl font-bold">{profile.full_name || "Unnamed Investor"}</h2>
-              {canSeePrivate && profile.email && <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {profile.email}</p>}
+              {profileData.occupation && (
+                <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                  <Briefcase className="w-3.5 h-3.5" /> {profileData.occupation}{profileData.company ? ` at ${profileData.company}` : ""}
+                </p>
+              )}
+              {profileData.location && (
+                <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5" /> {profileData.location}
+                </p>
+              )}
+              {canSeePrivate && profile.email && <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5"><Mail className="w-3.5 h-3.5" /> {profile.email}</p>}
               {canSeePrivate && profile.phone && <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5"><Phone className="w-3.5 h-3.5" /> {profile.phone}</p>}
             </div>
           </div>
@@ -181,7 +236,7 @@ export default function InvestorProfile() {
               return;
             }
             updateMutation.mutate(form);
-          }} className="space-y-5">
+          }} className="space-y-6">
             {!disclaimerAcceptance && (
               <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4">
                 <Shield className="w-5 h-5 text-destructive flex-shrink-0" />
@@ -194,43 +249,104 @@ export default function InvestorProfile() {
                 </Link>
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Full Name</Label>
-                <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+
+            {/* Basic Info */}
+            <div>
+              <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Basic Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Full Name</Label>
+                  <Input value={form.full_name || ""} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Phone</Label>
+                  <Input value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 (555) 123-4567" />
+                </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Bio</Label>
+
+            {/* Professional Info */}
+            <div>
+              <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><Briefcase className="w-4 h-4 text-primary" /> Professional Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Occupation / Title</Label>
+                  <Input value={form.occupation || ""} onChange={(e) => setForm({ ...form, occupation: e.target.value })} placeholder="e.g. Software Engineer, Attorney, Entrepreneur" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Company / Business</Label>
+                  <Input value={form.company || ""} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="e.g. Acme Corp, Self-Employed" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <Input value={form.location || ""} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="e.g. Dallas, TX" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Investment Focus</Label>
+                  <Input value={form.investment_focus || ""} onChange={(e) => setForm({ ...form, investment_focus: e.target.value })} placeholder="e.g. Real Estate, AI, Healthcare" />
+                </div>
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div>
+              <h3 className="font-display font-semibold mb-3">About Me</h3>
               <Textarea value={form.bio || ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Tell us about yourself, your investment philosophy, and experience..." rows={4} />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" /> LinkedIn</Label>
-                <Input value={form.linkedin || ""} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} placeholder="https://linkedin.com/in/..." />
-              </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Twitter className="w-3.5 h-3.5" /> Twitter / X</Label>
-                <Input value={form.twitter || ""} onChange={(e) => setForm({ ...form, twitter: e.target.value })} placeholder="https://x.com/..." />
-              </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Instagram className="w-3.5 h-3.5" /> Instagram</Label>
-                <Input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="https://instagram.com/..." />
-              </div>
-              <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Facebook className="w-3.5 h-3.5" /> Facebook</Label>
-                <Input value={form.facebook || ""} onChange={(e) => setForm({ ...form, facebook: e.target.value })} placeholder="https://facebook.com/..." />
+
+            {/* Interests */}
+            <div>
+              <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><Heart className="w-4 h-4 text-primary" /> Interests & Hobbies</h3>
+              <p className="text-xs text-muted-foreground mb-3">Select activities you enjoy — we'll connect you with members who share similar interests!</p>
+              <div className="flex flex-wrap gap-2">
+                {INTEREST_OPTIONS.map((interest) => {
+                  const selected = (form.interests || []).includes(interest);
+                  return (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => toggleInterest(interest)}
+                      className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                        selected
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                          : "bg-secondary/50 text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+                      }`}
+                    >
+                      {interest}
+                    </button>
+                  );
+                })}
               </div>
             </div>
+
+            {/* Social */}
+            <div>
+              <h3 className="font-display font-semibold mb-3">Social Links</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" /> LinkedIn</Label>
+                  <Input value={form.linkedin || ""} onChange={(e) => setForm({ ...form, linkedin: e.target.value })} placeholder="https://linkedin.com/in/..." />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5"><Twitter className="w-3.5 h-3.5" /> Twitter / X</Label>
+                  <Input value={form.twitter || ""} onChange={(e) => setForm({ ...form, twitter: e.target.value })} placeholder="https://x.com/..." />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5"><Instagram className="w-3.5 h-3.5" /> Instagram</Label>
+                  <Input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="https://instagram.com/..." />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5"><Facebook className="w-3.5 h-3.5" /> Facebook</Label>
+                  <Input value={form.facebook || ""} onChange={(e) => setForm({ ...form, facebook: e.target.value })} placeholder="https://facebook.com/..." />
+                </div>
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <Button type="submit" disabled={updateMutation.isPending} className="gap-1.5">
-                <Save className="w-3.5 h-3.5" /> Save
+                <Save className="w-3.5 h-3.5" /> Save Profile
               </Button>
-              <Button type="button" variant="outline" onClick={() => { setEditing(false); setForm(profile); }}>
+              <Button type="button" variant="outline" onClick={() => { setEditing(false); setForm({ ...profile, interests: (profile as any).interests || [] }); }}>
                 <X className="w-3.5 h-3.5 mr-1" /> Cancel
               </Button>
             </div>
@@ -246,6 +362,28 @@ export default function InvestorProfile() {
             ) : canEdit ? (
               <p className="text-sm text-muted-foreground italic">No bio yet. Click "Edit Profile" to add one.</p>
             ) : null}
+
+            {/* Professional Info (view mode) */}
+            {(profileData.investment_focus) && (
+              <div>
+                <h3 className="font-display font-semibold mb-2 flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Investment Focus</h3>
+                <p className="text-sm text-muted-foreground">{profileData.investment_focus}</p>
+              </div>
+            )}
+
+            {/* Interests (view mode) */}
+            {(profileData.interests as string[] | undefined)?.length > 0 && (
+              <div>
+                <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><Heart className="w-4 h-4 text-primary" /> Interests & Hobbies</h3>
+                <div className="flex flex-wrap gap-2">
+                  {(profileData.interests as string[]).map((interest: string) => (
+                    <Badge key={interest} variant="secondary" className="text-sm px-3 py-1">
+                      {interest}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Social Links */}
             {(profile.linkedin || profile.twitter || profile.instagram || profile.facebook) && (
