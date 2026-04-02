@@ -13,6 +13,7 @@ import Startups from "./pages/Startups";
 import StartupDetail from "./pages/StartupDetail";
 import Performance from "./pages/Performance";
 import Mission from "./pages/Mission";
+import Information from "./pages/Information";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/startups/:id" element={<StartupDetail />} />
             <Route path="/performance" element={<Performance />} />
             <Route path="/mission" element={<Mission />} />
+            <Route path="/information" element={<Information />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
