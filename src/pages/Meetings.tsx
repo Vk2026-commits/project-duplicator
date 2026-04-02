@@ -279,7 +279,7 @@ export default function Meetings() {
                               <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                             </div>
                             {(note.author_id === user.id || isAdmin) && (
-                              <Button size="sm" variant="ghost" className="text-destructive shrink-0" onClick={() => deleteNoteMutation.mutate(note.id)}>
+                              <Button size="sm" variant="ghost" className="text-destructive shrink-0" onClick={() => setDeletingNoteId(note.id)}>
                                 <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             )}
