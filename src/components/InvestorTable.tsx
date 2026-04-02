@@ -31,26 +31,6 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
     },
   });
 
-  // Fetch profile_startup_links to determine co-investor status
-  const { data: allLinks = [] } = useQuery({
-    queryKey: ["all-profile-startup-links"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profile_startup_links")
-        .select("profile_id, startup_id");
-      if (error) throw error;
-      return data as { profile_id: string; startup_id: string }[];
-    },
-  });
-
-  // Get the startups the current user is invested in
-  const myStartupIds = new Set(
-    allLinks.filter((l) => l.profile_id === user?.id).map((l) => l.startup_id)
-  );
-
-  // Build a set of startup_ids where this investor record is a co-investor
-  // An investment is "co-invested" if the current user is linked to the same startup_id
-  const isCoInvestor = (startupId: string) => myStartupIds.has(startupId);
 
   const display = limit ? investments.slice(0, limit) : investments;
 
