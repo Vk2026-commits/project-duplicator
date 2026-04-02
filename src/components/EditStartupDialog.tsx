@@ -63,12 +63,6 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
       return;
     }
     const data = buildData();
-    // Warn if setting invested lower than what investors have contributed
-    if (data.invested < investorTotal && investorTotal > 0) {
-      setPendingData(data);
-      setShowInvestorWarning(true);
-      return;
-    }
     onSave(data);
     toast.success("Startup updated");
     onOpenChange(false);
