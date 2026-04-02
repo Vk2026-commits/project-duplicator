@@ -36,8 +36,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) { setIsAdmin(false); return; }
-    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => {
-      setIsAdmin(!!data);
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
+      if (error) {
+        console.error("has_role check failed:", error.message);
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(!!data);
+      }
     });
   }, [user]);
 
