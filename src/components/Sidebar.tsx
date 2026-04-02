@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays, Menu, X } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays, CalendarClock, Menu, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
