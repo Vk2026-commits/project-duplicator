@@ -139,6 +139,12 @@ export default function InvestorProfile() {
         location: data.location,
         investment_focus: data.investment_focus,
         interests: data.interests || [],
+        emergency_contact_name: data.emergency_contact_name || null,
+        emergency_contact_phone: data.emergency_contact_phone || null,
+        emergency_contact_relationship: data.emergency_contact_relationship || null,
+        beneficiary_name: data.beneficiary_name || null,
+        beneficiary_relationship: data.beneficiary_relationship || null,
+        beneficiary_contact: data.beneficiary_contact || null,
         profile_completed: true,
       } as any).eq("id", id!);
       if (error) throw error;
