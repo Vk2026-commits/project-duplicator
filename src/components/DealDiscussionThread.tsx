@@ -19,6 +19,7 @@ export default function DealDiscussionThread({ dealId, profileMap }: Props) {
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   const { data: comments = [] } = useQuery({
     queryKey: ["deal-comments", dealId],
