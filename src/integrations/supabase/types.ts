@@ -368,6 +368,7 @@ export type Database = {
           id: string
           ip_address: string | null
           signed_at: string
+          startup_id: string | null
           user_id: string
         }
         Insert: {
@@ -376,6 +377,7 @@ export type Database = {
           id?: string
           ip_address?: string | null
           signed_at?: string
+          startup_id?: string | null
           user_id: string
         }
         Update: {
@@ -384,9 +386,18 @@ export type Database = {
           id?: string
           ip_address?: string | null
           signed_at?: string
+          startup_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_agreements_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_startup_links: {
         Row: {
