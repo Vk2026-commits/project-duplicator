@@ -16,7 +16,7 @@ const navItems = [
   { icon: Handshake, label: "Deal Review", path: "/deals" },
   { icon: PiggyBank, label: "Capital Pool", path: "/contributions", adminOnly: true },
   { icon: CalendarDays, label: "Meetings", path: "/meetings" },
-  { icon: CalendarDays, label: "Calendar", path: "/calendar" },
+  { icon: CalendarClock, label: "Calendar", path: "/calendar" },
   { icon: Info, label: "Information", path: "/information" },
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
 ];
