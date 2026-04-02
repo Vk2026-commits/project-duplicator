@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, DollarSign, Briefcase } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { TrendingUp, TrendingDown, DollarSign, Briefcase, Info } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function MyPortfolioCard() {
   const { user } = useAuth();
@@ -127,6 +128,16 @@ export default function MyPortfolioCard() {
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <Briefcase className="w-3 h-3" /> Portfolio Value
+              <TooltipProvider>
+                <UITooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-3 h-3 text-muted-foreground/60 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[220px] text-xs">
+                    Portfolio Value = your equity % × each startup's current value. It may differ from Total Invested.
+                  </TooltipContent>
+                </UITooltip>
+              </TooltipProvider>
             </p>
             <p className="text-lg font-bold">{formatCurrency(myTotalEquityValue)}</p>
           </div>
@@ -209,7 +220,7 @@ export default function MyPortfolioCard() {
                         return `$${v}`;
                       }}
                     />
-                    <Tooltip
+                    <RechartsTooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--card))",
                         border: "1px solid hsl(var(--border))",
