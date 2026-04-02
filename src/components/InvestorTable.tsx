@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/mock-data";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface InvestorTableProps {
@@ -17,6 +19,7 @@ function maskName(name: string): string {
 
 export default function InvestorTable({ limit }: InvestorTableProps) {
   const { isAdmin } = useAuth();
+  const [search, setSearch] = useState("");
 
   const { data: investments = [], isLoading } = useQuery({
     queryKey: ["all-startup-investors-with-startups"],
@@ -32,22 +35,43 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
   });
 
 
-  const display = limit ? investments.slice(0, limit) : investments;
+  const filtered = investments.filter((inv: any) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      inv.investor_name?.toLowerCase().includes(q) ||
+      inv.email?.toLowerCase().includes(q) ||
+      inv.startups?.name?.toLowerCase().includes(q)
+    );
+  });
+
+  const display = limit ? filtered.slice(0, limit) : filtered;
 
   return (
     <div className="glass-card rounded-xl overflow-hidden animate-fade-in">
-      <div className="p-6 border-b border-border flex items-center justify-between">
+      <div className="p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="font-display font-semibold">Investors</h3>
           <p className="text-sm text-muted-foreground mt-0.5">
             {investments.length} investment{investments.length !== 1 ? "s" : ""} across startups
           </p>
         </div>
-        {limit && investments.length > limit && (
-          <Link to="/investors" className="text-sm text-primary hover:underline flex items-center gap-1">
-            View all <ArrowUpRight className="w-3 h-3" />
-          </Link>
-        )}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search investors..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 w-full sm:w-64"
+            />
+          </div>
+          {limit && investments.length > limit && (
+            <Link to="/investors" className="text-sm text-primary hover:underline flex items-center gap-1 whitespace-nowrap">
+              View all <ArrowUpRight className="w-3 h-3" />
+            </Link>
+          )}
+        </div>
       </div>
       {isLoading ? (
         <p className="p-6 text-muted-foreground text-sm">Loading investors...</p>
