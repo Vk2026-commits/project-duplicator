@@ -169,7 +169,7 @@ function InvestorsAdmin() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Investor</TableHead><TableHead>Startup</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Equity %</TableHead><TableHead>Status</TableHead><TableHead className="w-[120px]">Actions</TableHead>
+            <TableHead>Investor</TableHead><TableHead>Startup</TableHead><TableHead className="text-right">Invested</TableHead><TableHead className="text-right">Equity %</TableHead><TableHead>Status</TableHead><TableHead className="w-[160px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
