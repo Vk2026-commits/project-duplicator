@@ -22,6 +22,18 @@ function formatCurrency(val: number) {
 
 export default function Contributions() {
   const { user, isAdmin } = useAuth();
+
+  if (!isAdmin) {
+    return (
+      <Layout>
+        <div className="text-center py-16">
+          <AlertTriangle className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-muted-foreground">You don't have permission to view this page.</p>
+        </div>
+      </Layout>
+    );
+  }
+
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState({ user_id: "", amount: "", contribution_date: "", notes: "" });
