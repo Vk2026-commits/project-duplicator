@@ -54,6 +54,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
       current_value: parseFloat(currentValue) || 0,
       description: description.trim(),
       progress: parseInt(progress) || 0,
+      funding_goal: parseFloat(fundingGoal) || 0,
     });
     toast.success("Startup updated");
     onOpenChange(false);
