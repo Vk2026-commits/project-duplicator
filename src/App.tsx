@@ -37,6 +37,7 @@ const App = () => (
             <Route path="/startups/:id" element={<StartupDetail />} />
             <Route path="/performance" element={<Performance />} />
             <Route path="/mission" element={<Mission />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
