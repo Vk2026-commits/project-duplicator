@@ -11,6 +11,7 @@ const navItems = [
   { icon: TrendingUp, label: "Performance", path: "/performance" },
   { icon: ScrollText, label: "Mission & Values", path: "/mission" },
   { icon: Info, label: "Information", path: "/information" },
+  { icon: FileText, label: "Disclosures", path: "/disclosures" },
 ];
 
 export default function Sidebar() {
