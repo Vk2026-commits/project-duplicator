@@ -83,7 +83,7 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
                 {isAdmin && (
                   <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
                 )}
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
+                {isAdmin && <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>}
               </tr>
             </thead>
             <tbody>
