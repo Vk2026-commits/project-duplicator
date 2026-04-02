@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import AvatarUpload from "@/components/AvatarUpload";
-import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Pencil, Save, X, User, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, Shield, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 export default function InvestorProfile() {
@@ -31,6 +32,19 @@ export default function InvestorProfile() {
       return data;
     },
     enabled: !!id,
+  });
+
+  const { data: disclaimerAcceptance } = useQuery({
+    queryKey: ["disclaimer-acceptance", id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("disclaimer_acceptances")
+        .select("accepted_at, full_name")
+        .eq("user_id", id!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id && (isOwnProfile || isAdmin),
   });
 
   useEffect(() => {
@@ -192,6 +206,49 @@ export default function InvestorProfile() {
           </div>
         )}
       </div>
+
+      {/* Disclaimer Acceptance Status */}
+      {(isOwnProfile || isAdmin) && (
+        <Card className="glass-card border-border mt-6 animate-fade-in">
+          <CardContent className="p-6">
+            <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              Investment Disclosure & Risk Disclaimer
+            </h3>
+            {disclaimerAcceptance ? (
+              <div className="flex items-center gap-3 bg-accent/10 border border-accent/20 rounded-lg p-4">
+                <Shield className="w-6 h-6 text-accent flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">Disclaimer Accepted</p>
+                  <p className="text-xs text-muted-foreground">
+                    Signed by <span className="font-semibold text-foreground">{disclaimerAcceptance.full_name}</span> on{" "}
+                    {new Date(disclaimerAcceptance.accepted_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="w-6 h-6 text-destructive flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Disclaimer Not Signed</p>
+                    <p className="text-xs text-muted-foreground">This investor has not yet accepted the Investment Disclosure & Risk Disclaimer.</p>
+                  </div>
+                </div>
+                {isOwnProfile && (
+                  <Link to="/disclosures">
+                    <Button size="sm" variant="outline">Review & Sign</Button>
+                  </Link>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </Layout>
   );
 }
