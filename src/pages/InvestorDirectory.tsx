@@ -31,7 +31,7 @@ export default function InvestorDirectory() {
     queryFn: async () => {
       const { data, error } = await supabase.from("profile_startup_links" as any).select("profile_id, startup_id");
       if (error) throw error;
-      return data as { profile_id: string; startup_id: string }[];
+      return data as unknown as { profile_id: string; startup_id: string }[];
     },
   });
 
