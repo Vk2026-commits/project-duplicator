@@ -640,6 +640,74 @@ export default function InvestorProfile() {
           </CardContent>
         </Card>
       )}
+
+      {/* Investment Contributions */}
+      {(isOwnProfile || isAdmin) && investorRecords.length > 0 && (
+        <Card className="glass-card border-border mt-6 animate-fade-in">
+          <CardContent className="p-6">
+            <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-primary" />
+              Investment Contributions
+            </h3>
+
+            {investorRecords.map((rec: any) => {
+              const contribs = allContributions.filter((c: any) => c.startup_investor_id === rec.id);
+              const totalContributed = contribs.reduce((sum: number, c: any) => sum + Number(c.amount), 0);
+              const pledgeAmt = Number(rec.pledge_amount) || 0;
+              const progressPct = pledgeAmt > 0 ? Math.min((totalContributed / pledgeAmt) * 100, 100) : 0;
+
+              return (
+                <div key={rec.id} className="mb-5 last:mb-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-semibold">{rec.startups?.name || "Unknown Startup"}</h4>
+                    <span className="text-sm text-muted-foreground">
+                      Total: {formatCurrency(Number(rec.amount_invested))}
+                    </span>
+                  </div>
+
+                  {pledgeAmt > 0 && (
+                    <div className="mb-3 space-y-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Pledge: {formatCurrency(pledgeAmt)}</span>
+                        <span>{progressPct.toFixed(0)}% contributed</span>
+                      </div>
+                      <Progress value={progressPct} className="h-2" />
+                    </div>
+                  )}
+
+                  {contribs.length > 0 ? (
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-secondary/30">
+                            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">Date</th>
+                            <th className="text-right text-xs font-medium text-muted-foreground px-4 py-2">Amount</th>
+                            <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {contribs.map((c: any) => (
+                            <tr key={c.id} className="border-b border-border/50">
+                              <td className="px-4 py-2 text-sm flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                                {format(new Date(c.contribution_date), "MMM d, yyyy")}
+                              </td>
+                              <td className="px-4 py-2 text-right text-sm font-medium">{formatCurrency(Number(c.amount))}</td>
+                              <td className="px-4 py-2 text-sm text-muted-foreground">{c.notes || "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">No contributions recorded yet.</p>
+                  )}
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
     </Layout>
   );
 }
