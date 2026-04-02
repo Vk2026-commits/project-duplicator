@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Calendar, MapPin, FileText, Clock, CheckCircle, Send, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
 const statusStyles: Record<string, string> = {
   scheduled: "bg-primary/20 text-primary",
