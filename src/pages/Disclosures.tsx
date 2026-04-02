@@ -15,7 +15,7 @@ const disclaimerSections = [
   {
     icon: AlertTriangle,
     title: "No Guarantee of Returns",
-    content: "All investments involve risk. The Fellows Investment Group LLC makes no guarantees, representations, or warranties regarding profitability, performance, or return on investment. There is no assurance that any investment will be successful.",
+    content: "All investments involve risk. Faithnancial Investment Group LLC makes no guarantees, representations, or warranties regarding profitability, performance, or return on investment. There is no assurance that any investment will be successful.",
   },
   {
     icon: TrendingUp,
@@ -30,7 +30,7 @@ const disclaimerSections = [
   {
     icon: Scale,
     title: "No Financial, Legal, or Tax Advice",
-    content: "The Fellows Investment Group LLC does not provide financial, legal, or tax advice. All information shared is for informational purposes only. Members are strongly encouraged to consult with their own professional advisors before making any investment decisions.",
+    content: "Faithnancial Investment Group LLC does not provide financial, legal, or tax advice. All information shared is for informational purposes only. Members are strongly encouraged to consult with their own professional advisors before making any investment decisions.",
   },
   {
     icon: BookOpen,
@@ -50,7 +50,7 @@ const disclaimerSections = [
   {
     icon: Shield,
     title: "Limitation of Liability",
-    content: "The Fellows Investment Group LLC and its members shall not be held liable for any financial losses, damages, or outcomes resulting from investment decisions made by any participant.",
+    content: "Faithnancial Investment Group LLC and its members shall not be held liable for any financial losses, damages, or outcomes resulting from investment decisions made by any participant.",
   },
   {
     icon: Lock,
@@ -70,7 +70,7 @@ const acknowledgmentItems = [
   "I am participating voluntarily and at my own discretion",
   "I understand that I am responsible for my own investment decisions",
   "I have had the opportunity to seek financial, legal, and tax advice",
-  "I agree to abide by the rules and structure of The Fellows Investment Group LLC",
+  "I agree to abide by the rules and structure of Faithnancial Investment Group LLC",
 ];
 
 export default function Disclosures() {
@@ -140,7 +140,7 @@ export default function Disclosures() {
             Investment Disclosures & Risk Disclaimer
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Please read this information carefully before participating in any investment opportunities with The Fellows Investment Group LLC.
+            Please read this information carefully before participating in any investment opportunities with Faithnancial Investment Group LLC.
           </p>
         </div>
 
