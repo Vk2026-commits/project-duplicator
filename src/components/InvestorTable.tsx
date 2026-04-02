@@ -88,14 +88,13 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
             </thead>
             <tbody>
               {display.map((inv: any) => {
-                const coInvested = isAdmin || isCoInvestor(inv.startup_id);
-                const displayName = coInvested ? inv.investor_name : maskName(inv.investor_name);
+                const displayName = isAdmin ? inv.investor_name : maskName(inv.investor_name);
                 const initials = displayName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
 
                 return (
                   <tr key={inv.id} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                     <td className="px-6 py-4">
-                      {coInvested ? (
+                      {isAdmin ? (
                         <Link to={`/investors/${encodeURIComponent(inv.investor_name)}`} className="flex items-center gap-3 group">
                           <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
                             {initials}
@@ -115,23 +114,15 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      {coInvested ? (
-                        <>
-                          <Link to={`/startups/${inv.startup_id}`} className="text-sm hover:text-primary transition-colors">
-                            {inv.startups?.name || "Unknown"}
-                          </Link>
-                          <p className="text-xs text-muted-foreground">{inv.startups?.sector}</p>
-                        </>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">{inv.startups?.name || "Unknown"}</span>
-                      )}
+                      <span className="text-sm">{inv.startups?.name || "Unknown"}</span>
+                      {isAdmin && <p className="text-xs text-muted-foreground">{inv.startups?.sector}</p>}
                     </td>
                     {isAdmin && (
                       <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
                     )}
-                    <td className="px-6 py-4 text-right text-sm">
-                      {coInvested ? `${Number(inv.equity_percentage)}%` : "—"}
-                    </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4 text-right text-sm">{Number(inv.equity_percentage)}%</td>
+                    )}
                   </tr>
                 );
               })}
