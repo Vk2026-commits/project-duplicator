@@ -9,7 +9,8 @@ import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("signup") === "true");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
