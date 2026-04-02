@@ -269,10 +269,8 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {doc.file_url && (
-                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
-                          <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                            <Eye className="w-3.5 h-3.5" /> View
-                          </a>
+                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setViewUrl(doc.file_url)}>
+                          <Eye className="w-3.5 h-3.5" /> View
                         </Button>
                       )}
                       {!acked && user && (
