@@ -320,12 +320,31 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
           </DialogHeader>
           <div className="flex-1 min-h-0 px-4 pb-4">
             {viewUrl && (
-              <iframe
-                src={viewUrl}
+              <object
+                data={viewUrl}
+                type="application/pdf"
                 className="w-full h-full rounded-lg border border-border"
-                title="Document preview"
-              />
+              >
+                <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
+                  <FileText className="w-12 h-12 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    PDF preview is not available in this browser.
+                  </p>
+                  <Button variant="default" size="sm" className="gap-1.5" asChild>
+                    <a href={viewUrl} target="_blank" rel="noopener noreferrer">
+                      <Download className="w-3.5 h-3.5" /> Open PDF
+                    </a>
+                  </Button>
+                </div>
+              </object>
             )}
+          </div>
+          <div className="px-4 pb-4 flex justify-end">
+            <Button variant="outline" size="sm" className="gap-1.5" asChild>
+              <a href={viewUrl || "#"} target="_blank" rel="noopener noreferrer">
+                <Download className="w-3.5 h-3.5" /> Download
+              </a>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
