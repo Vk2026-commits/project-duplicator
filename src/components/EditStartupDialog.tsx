@@ -41,7 +41,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !sector || !stage || !invested) {
+    if (!name.trim() || !sector || !stage) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -94,8 +94,8 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Invested ($) *</Label>
-              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="1" step="any" />
+              <Label>Invested ($)</Label>
+              <Input type="number" value={invested} onChange={(e) => setInvested(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
               <Label>Current Value ($)</Label>
