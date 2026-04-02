@@ -291,6 +291,9 @@ export default function StartupDetail() {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right text-sm font-medium">{formatCurrency(Number(inv.amount_invested))}</td>
+                        <td className="px-6 py-4 text-right text-sm text-muted-foreground">
+                          {Number(inv.pledge_amount) > 0 ? formatCurrency(Number(inv.pledge_amount)) : "—"}
+                        </td>
                         <td className="px-6 py-4 text-right text-sm">
                           {editingEquityId === inv.id ? (
                             <div className="flex items-center justify-end gap-1">
