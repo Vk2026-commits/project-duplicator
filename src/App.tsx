@@ -17,6 +17,8 @@ import Information from "./pages/Information";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import Disclosures from "./pages/Disclosures";
+import Deals from "./pages/Deals";
+import Contributions from "./pages/Contributions";
 import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
 
