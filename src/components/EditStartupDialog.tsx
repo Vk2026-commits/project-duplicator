@@ -18,9 +18,10 @@ interface EditStartupDialogProps {
   startup: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string | null; progress: number; funding_goal: number };
   onSave: (data: { id: string; name: string; sector: string; stage: string; invested: number; current_value: number; description: string; progress: number; funding_goal: number }) => void;
   isSubmitting?: boolean;
+  investorTotal?: number;
 }
 
-export default function EditStartupDialog({ open, onOpenChange, startup, onSave, isSubmitting }: EditStartupDialogProps) {
+export default function EditStartupDialog({ open, onOpenChange, startup, onSave, isSubmitting, investorTotal = 0 }: EditStartupDialogProps) {
   const [name, setName] = useState(startup.name);
   const [sector, setSector] = useState(startup.sector);
   const [stage, setStage] = useState(startup.stage);
