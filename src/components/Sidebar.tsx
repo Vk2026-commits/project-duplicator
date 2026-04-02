@@ -72,10 +72,15 @@ export default function Sidebar() {
                 to="/admin"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   location.pathname === "/admin" ? "bg-primary/10 text-primary glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                } w-full`}
+                } w-full relative`}
               >
                 <ShieldCheck className="w-4 h-4" />
                 Admin
+                {pendingCount > 0 && (
+                  <span className="ml-auto w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-bold">
+                    {pendingCount}
+                  </span>
+                )}
               </Link>
             )}
             <Link
