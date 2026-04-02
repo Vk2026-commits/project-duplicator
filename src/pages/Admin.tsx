@@ -45,12 +45,14 @@ export default function Admin() {
             Info Requests
             <InfoRequestsBadge />
           </TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
         <TabsContent value="directory"><DirectoryAdmin /></TabsContent>
         <TabsContent value="users"><UsersAdmin /></TabsContent>
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
+        <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
