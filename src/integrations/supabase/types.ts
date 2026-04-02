@@ -438,43 +438,61 @@ export type Database = {
       profiles: {
         Row: {
           bio: string | null
+          company: string | null
           created_at: string
           email: string | null
           facebook: string | null
           full_name: string | null
           id: string
           instagram: string | null
+          interests: string[] | null
+          investment_focus: string | null
           linkedin: string | null
+          location: string | null
+          occupation: string | null
           phone: string | null
           photo_url: string | null
+          profile_completed: boolean | null
           twitter: string | null
           updated_at: string
         }
         Insert: {
           bio?: string | null
+          company?: string | null
           created_at?: string
           email?: string | null
           facebook?: string | null
           full_name?: string | null
           id: string
           instagram?: string | null
+          interests?: string[] | null
+          investment_focus?: string | null
           linkedin?: string | null
+          location?: string | null
+          occupation?: string | null
           phone?: string | null
           photo_url?: string | null
+          profile_completed?: boolean | null
           twitter?: string | null
           updated_at?: string
         }
         Update: {
           bio?: string | null
+          company?: string | null
           created_at?: string
           email?: string | null
           facebook?: string | null
           full_name?: string | null
           id?: string
           instagram?: string | null
+          interests?: string[] | null
+          investment_focus?: string | null
           linkedin?: string | null
+          location?: string | null
+          occupation?: string | null
           phone?: string | null
           photo_url?: string | null
+          profile_completed?: boolean | null
           twitter?: string | null
           updated_at?: string
         }
