@@ -25,7 +25,7 @@ export default function EditStartupDialog({ open, onOpenChange, startup, onSave,
   const [name, setName] = useState(startup.name);
   const [sector, setSector] = useState(startup.sector);
   const [stage, setStage] = useState(startup.stage);
-  const [invested, setInvested] = useState(String(startup.invested));
+  // invested is now derived from investor contributions — not editable
   const [currentValue, setCurrentValue] = useState(String(startup.current_value));
   const [description, setDescription] = useState(startup.description || "");
   const [progress, setProgress] = useState(String(startup.progress));
