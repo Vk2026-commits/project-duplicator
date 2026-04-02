@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 export default function DisclaimerModal() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [checking, setChecking] = useState(true);
 
