@@ -35,15 +35,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!user) { setIsAdmin(false); return; }
-    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
-      if (error) {
-        console.error("has_role check failed:", error.message);
-        setIsAdmin(false);
-      } else {
-        setIsAdmin(!!data);
-      }
-    });
+    let cancelled = false;
+
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    setLoading(true);
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(
+        ({ data, error }) => {
+          if (cancelled) return;
+
+          if (error) {
+            console.error("admin role check failed:", error.message);
+            setIsAdmin(false);
+          } else {
+            setIsAdmin(!!data);
+          }
+
+          setLoading(false);
+        },
+        (fetchError) => {
+          if (cancelled) return;
+          console.error("admin role check failed:", fetchError);
+          setIsAdmin(false);
+          setLoading(false);
+        }
+      );
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const signOut = async () => {
