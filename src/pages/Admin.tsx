@@ -205,6 +205,7 @@ function DirectoryAdmin() {
   const qc = useQueryClient();
   const [editProfile, setEditProfile] = useState<any | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [assignProfile, setAssignProfile] = useState<any | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles-dir"],
