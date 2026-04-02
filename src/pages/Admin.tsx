@@ -14,8 +14,9 @@ import AdminProfileEditDialog from "@/components/AdminProfileEditDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 export default function Admin() {
   const { user, isAdmin, loading } = useAuth();
@@ -44,12 +45,14 @@ export default function Admin() {
             Info Requests
             <InfoRequestsBadge />
           </TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
         <TabsContent value="directory"><DirectoryAdmin /></TabsContent>
         <TabsContent value="users"><UsersAdmin /></TabsContent>
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
+        <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
@@ -541,6 +544,99 @@ function InfoRequestsAdmin() {
                       <span className="text-xs text-muted-foreground px-2">—</span>
                     )}
                   </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </>
+  );
+}
+
+/* ─── Compliance Tab ──────────────────────────── */
+function ComplianceAdmin() {
+  const { data: profiles = [] } = useQuery({
+    queryKey: ["all-profiles"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, full_name, email");
+      return data || [];
+    },
+  });
+
+  const { data: disclaimers = [] } = useQuery({
+    queryKey: ["all-disclaimer-acceptances"],
+    queryFn: async () => {
+      const { data } = await supabase.from("disclaimer_acceptances").select("user_id, accepted_at, full_name");
+      return data || [];
+    },
+  });
+
+  const { data: onboardingAgreements = [] } = useQuery({
+    queryKey: ["all-onboarding-agreements"],
+    queryFn: async () => {
+      const { data } = await supabase.from("onboarding_agreements").select("user_id, agreement_type, signed_at, full_name");
+      return data || [];
+    },
+  });
+
+  const disclaimerMap = new Map(disclaimers.map((d: any) => [d.user_id, d]));
+  const onboardingMap = new Map<string, any[]>();
+  onboardingAgreements.forEach((a: any) => {
+    if (!onboardingMap.has(a.user_id)) onboardingMap.set(a.user_id, []);
+    onboardingMap.get(a.user_id)!.push(a);
+  });
+
+  return (
+    <>
+      <div className="flex items-center gap-2 mb-4">
+        <FileText className="w-5 h-5 text-primary" />
+        <h3 className="font-display font-semibold text-lg">Member Compliance Tracker</h3>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Member</TableHead>
+            <TableHead>Risk Disclaimer</TableHead>
+            <TableHead>Operating Agreement</TableHead>
+            <TableHead>Onboarding Packet</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {profiles.map((p: any) => {
+            const disc = disclaimerMap.get(p.id);
+            const agreements = onboardingMap.get(p.id) || [];
+            const opAgreement = agreements.find((a: any) => a.agreement_type === "operating_agreement");
+            const onbPacket = agreements.find((a: any) => a.agreement_type === "onboarding_packet");
+            return (
+              <TableRow key={p.id}>
+                <TableCell className="font-medium">{p.full_name || p.email || "—"}</TableCell>
+                <TableCell>
+                  {disc ? (
+                    <Badge variant="default" className="bg-green-600/20 text-green-700 dark:text-green-400 border-green-600/30">
+                      <CheckCircle className="w-3 h-3 mr-1" /> Signed {new Date(disc.accepted_at).toLocaleDateString()}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">Pending</Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {opAgreement ? (
+                    <Badge variant="default" className="bg-green-600/20 text-green-700 dark:text-green-400 border-green-600/30">
+                      <CheckCircle className="w-3 h-3 mr-1" /> Signed {new Date(opAgreement.signed_at).toLocaleDateString()}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">Pending</Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {onbPacket ? (
+                    <Badge variant="default" className="bg-green-600/20 text-green-700 dark:text-green-400 border-green-600/30">
+                      <CheckCircle className="w-3 h-3 mr-1" /> Signed {new Date(onbPacket.signed_at).toLocaleDateString()}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-amber-600 border-amber-500/30">Pending</Badge>
+                  )}
                 </TableCell>
               </TableRow>
             );
