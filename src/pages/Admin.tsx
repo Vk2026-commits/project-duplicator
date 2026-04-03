@@ -174,10 +174,17 @@ function InvestorsAdmin() {
 
   const editMutation = useMutation({
     mutationFn: async (inv: any) => {
+      const shouldAutoCalculateEquity = Number(inv.startups?.funding_goal ?? 0) > 0;
+      const computedEquity = calculateInvestorEquity({
+        fundingGoal: inv.startups?.funding_goal,
+        pledgeAmount: inv.pledge_amount,
+        amountInvested: inv.amount_invested,
+      });
+
       const { error } = await supabase.from("startup_investors").update({
         investor_name: inv.investor_name,
         amount_invested: inv.amount_invested,
-        equity_percentage: inv.equity_percentage,
+        equity_percentage: shouldAutoCalculateEquity ? computedEquity : inv.equity_percentage,
         email: inv.email,
         notes: inv.notes,
         archived: inv.archived,
