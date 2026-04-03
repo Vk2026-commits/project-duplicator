@@ -26,9 +26,10 @@ interface EditInvestorDialogProps {
   investor: Investor;
   onSave: (data: Investor) => void;
   isSubmitting?: boolean;
+  fundingGoal?: number | null;
 }
 
-export default function EditInvestorDialog({ open, onOpenChange, investor, onSave, isSubmitting }: EditInvestorDialogProps) {
+export default function EditInvestorDialog({ open, onOpenChange, investor, onSave, isSubmitting, fundingGoal }: EditInvestorDialogProps) {
   const [name, setName] = useState(investor.investor_name);
   const [email, setEmail] = useState(investor.email || "");
   const [amountInvested, setAmountInvested] = useState(String(investor.amount_invested));
@@ -49,21 +50,56 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
     setInvestmentRound(investor.investment_round || "");
   }, [investor]);
 
+  const usesAutoCalculatedEquity = Number(fundingGoal ?? 0) > 0;
+
+  const calculatedEquity = useMemo(() => {
+    return calculateInvestorEquity({
+      fundingGoal,
+      pledgeAmount: pledgeAmount === "" ? null : pledgeAmount,
+      amountInvested: amountInvested === "" ? 0 : amountInvested,
+    });
+  }, [amountInvested, fundingGoal, pledgeAmount]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!name.trim()) {
       toast.error("Please fill in the investor name");
       return;
     }
+
+    const normalizedAmountInvested = amountInvested === "" ? 0 : Number(amountInvested);
+    if (!Number.isFinite(normalizedAmountInvested) || normalizedAmountInvested < 0) {
+      toast.error("Please enter a valid total contributed amount");
+      return;
+    }
+
+    const normalizedPledgeAmount = pledgeAmount === "" ? null : Number(pledgeAmount);
+    if (normalizedPledgeAmount !== null && (!Number.isFinite(normalizedPledgeAmount) || normalizedPledgeAmount < 0)) {
+      toast.error("Please enter a valid pledge amount");
+      return;
+    }
+
+    const normalizedEquity = usesAutoCalculatedEquity
+      ? calculatedEquity
+      : equity === ""
+        ? 0
+        : Number(equity);
+
+    if (!Number.isFinite(normalizedEquity) || normalizedEquity < 0 || normalizedEquity > 100) {
+      toast.error("Equity must be between 0 and 100%");
+      return;
+    }
+
     onSave({
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: amountInvested === "" ? 0 : parseFloat(amountInvested),
-      equity_percentage: equity === "" ? 0 : parseFloat(equity),
+      amount_invested: normalizedAmountInvested,
+      equity_percentage: normalizedEquity,
       investment_date: date,
       notes: notes.trim() || null,
-      pledge_amount: pledgeAmount ? parseFloat(pledgeAmount) : null,
+      pledge_amount: normalizedPledgeAmount,
       investment_round: investmentRound || null,
     });
   };
@@ -92,7 +128,21 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
             </div>
             <div className="space-y-2">
               <Label>Equity (%)</Label>
-              <Input type="number" value={equity} onChange={(e) => setEquity(e.target.value)} min="0" max="100" step="any" />
+              <Input
+                type="number"
+                value={usesAutoCalculatedEquity ? calculatedEquity.toFixed(2) : equity}
+                onChange={(e) => setEquity(e.target.value)}
+                min="0"
+                max="100"
+                step="any"
+                readOnly={usesAutoCalculatedEquity}
+                className={usesAutoCalculatedEquity ? "bg-muted/40" : undefined}
+              />
+              {usesAutoCalculatedEquity && (
+                <p className="text-xs text-muted-foreground">
+                  Calculated from pledge amount, or total contributed if no pledge amount is set.
+                </p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">

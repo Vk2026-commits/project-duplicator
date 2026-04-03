@@ -240,7 +240,14 @@ function InvestorsAdmin() {
       </Table>
 
       {editInvestor && (
-        <EditInvestorDialog open={!!editInvestor} onOpenChange={(o) => { if (!o) setEditInvestor(null); }} investor={editInvestor} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
+        <EditInvestorDialog
+          open={!!editInvestor}
+          onOpenChange={(o) => { if (!o) setEditInvestor(null); }}
+          investor={editInvestor}
+          onSave={(d) => editMutation.mutate(d)}
+          isSubmitting={editMutation.isPending}
+          fundingGoal={Number(editInvestor.startups?.funding_goal) || 0}
+        />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Investor" description="This will permanently delete this investor record." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
       {assignInvestor && (

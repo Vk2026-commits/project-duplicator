@@ -416,6 +416,7 @@ export default function StartupDetail() {
           investor={editingInvestor}
           onSave={(data) => updateInvestorMutation.mutate(data)}
           isSubmitting={updateInvestorMutation.isPending}
+          fundingGoal={Number(startup.funding_goal)}
         />
       )}
       <ConfirmDeleteDialog
