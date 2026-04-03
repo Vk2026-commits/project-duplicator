@@ -1,22 +1,18 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import StatCard from "@/components/StatCard";
-import EditInvestorDialog from "@/components/EditInvestorDialog";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/mock-data";
-import { DollarSign, TrendingUp, Briefcase, ArrowLeft, Pencil, Archive, ArchiveRestore } from "lucide-react";
-import { toast } from "sonner";
+import { DollarSign, TrendingUp, Briefcase, ArrowLeft, Archive } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function InvestorDetail() {
   const { id } = useParams();
   const investorName = decodeURIComponent(id || "");
-  const queryClient = useQueryClient();
   const [showArchived, setShowArchived] = useState(false);
-  const [editingInvestor, setEditingInvestor] = useState<any | null>(null);
   const { isAdmin } = useAuth();
 
   if (!isAdmin) {
@@ -51,41 +47,6 @@ export default function InvestorDetail() {
   const email = investments.find((i) => i.email)?.email || null;
   const startupCount = new Set(activeInvestments.map((i) => i.startup_id)).size;
 
-  const archiveMutation = useMutation({
-    mutationFn: async ({ investorId, archive }: { investorId: string; archive: boolean }) => {
-      const { error } = await supabase
-        .from("startup_investors")
-        .update({ archived: archive } as any)
-        .eq("id", investorId);
-      if (error) throw error;
-    },
-    onSuccess: (_, { archive }) => {
-      queryClient.invalidateQueries({ queryKey: ["investor-investments", investorName] });
-      queryClient.invalidateQueries({ queryKey: ["all-startup-investors-with-startups"] });
-      toast.success(archive ? "Investment archived" : "Investment restored");
-    },
-  });
-
-  const updateInvestorMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const { error } = await supabase.from("startup_investors").update({
-        investor_name: data.investor_name,
-        email: data.email,
-        amount_invested: data.amount_invested,
-        equity_percentage: data.equity_percentage,
-        investment_date: data.investment_date,
-        notes: data.notes,
-        pledge_amount: data.pledge_amount,
-        investment_round: data.investment_round,
-      } as any).eq("id", data.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["investor-investments", investorName] });
-      queryClient.invalidateQueries({ queryKey: ["all-startup-investors-with-startups"] });
-      setEditingInvestor(null);
-    },
-  });
 
   if (isLoading) return <Layout><p className="text-muted-foreground">Loading...</p></Layout>;
 
@@ -136,7 +97,7 @@ export default function InvestorDetail() {
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -153,24 +114,6 @@ export default function InvestorDetail() {
                   <td className="px-6 py-4 text-right text-sm text-muted-foreground">
                     {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)} title="Edit">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      {inv.archived ? (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary" title="Restore"
-                          onClick={() => archiveMutation.mutate({ investorId: inv.id, archive: false })}>
-                          <ArchiveRestore className="w-3.5 h-3.5" />
-                        </Button>
-                      ) : (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-warning hover:text-warning" title="Archive"
-                          onClick={() => archiveMutation.mutate({ investorId: inv.id, archive: true })}>
-                          <Archive className="w-3.5 h-3.5" />
-                        </Button>
-                      )}
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -178,15 +121,6 @@ export default function InvestorDetail() {
         )}
       </div>
 
-      {editingInvestor && (
-        <EditInvestorDialog
-          open={!!editingInvestor}
-          onOpenChange={(open) => { if (!open) setEditingInvestor(null); }}
-          investor={editingInvestor}
-          onSave={(data) => updateInvestorMutation.mutate(data)}
-          isSubmitting={updateInvestorMutation.isPending}
-        />
-      )}
     </Layout>
   );
 }
