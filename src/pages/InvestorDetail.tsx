@@ -97,7 +97,7 @@ export default function InvestorDetail() {
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Amount</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Equity</th>
                 <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Date</th>
-                <th className="text-right text-xs font-medium text-muted-foreground px-6 py-3">Actions</th>
+                
               </tr>
             </thead>
             <tbody>
