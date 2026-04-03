@@ -33,32 +33,17 @@ interface EditInvestorDialogProps {
 export default function EditInvestorDialog({ open, onOpenChange, investor, onSave, isSubmitting }: EditInvestorDialogProps) {
   const [name, setName] = useState(investor.investor_name);
   const [email, setEmail] = useState(investor.email || "");
+  const [amountInvested, setAmountInvested] = useState(String(investor.amount_invested));
   const [equity, setEquity] = useState(String(investor.equity_percentage));
   const [date, setDate] = useState(investor.investment_date);
   const [notes, setNotes] = useState(investor.notes || "");
   const [pledgeAmount, setPledgeAmount] = useState(String(investor.pledge_amount ?? ""));
   const [investmentRound, setInvestmentRound] = useState(investor.investment_round || "");
 
-  // Fetch contributions total for this investor record
-  const { data: contributionsTotal = 0 } = useQuery({
-    queryKey: ["contributions-total", investor.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("investor_contributions")
-        .select("amount")
-        .eq("startup_investor_id", investor.id);
-      if (error) throw error;
-      return (data || []).reduce((sum, c) => sum + Number(c.amount), 0);
-    },
-    enabled: open,
-  });
-
-  // Use contributions total if there are contributions, otherwise use amount_invested
-  const computedAmount = contributionsTotal > 0 ? contributionsTotal : investor.amount_invested;
-
   useEffect(() => {
     setName(investor.investor_name);
     setEmail(investor.email || "");
+    setAmountInvested(String(investor.amount_invested));
     setEquity(String(investor.equity_percentage));
     setDate(investor.investment_date);
     setNotes(investor.notes || "");
@@ -76,7 +61,7 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: computedAmount,
+      amount_invested: parseFloat(amountInvested) || 0,
       equity_percentage: parseFloat(equity) || 0,
       investment_date: date,
       notes: notes.trim() || null,
@@ -104,11 +89,8 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Total Contributed</Label>
-              <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted text-sm font-medium flex items-center">
-                {formatCurrency(computedAmount)}
-              </div>
-              <p className="text-xs text-muted-foreground">Calculated from contributions</p>
+              <Label>Total Contributed ($)</Label>
+              <Input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
               <Label>Equity (%)</Label>
