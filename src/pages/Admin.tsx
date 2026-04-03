@@ -174,7 +174,14 @@ function InvestorsAdmin() {
   const editMutation = useMutation({
     mutationFn: async (inv: any) => {
       const { error } = await supabase.from("startup_investors").update({
-        investor_name: inv.investor_name, amount_invested: inv.amount_invested, equity_percentage: inv.equity_percentage, email: inv.email, notes: inv.notes, archived: inv.archived,
+        investor_name: inv.investor_name,
+        amount_invested: inv.amount_invested,
+        equity_percentage: inv.equity_percentage,
+        email: inv.email,
+        notes: inv.notes,
+        archived: inv.archived,
+        pledge_amount: inv.pledge_amount,
+        investment_round: inv.investment_round,
       }).eq("id", inv.id);
       if (error) throw error;
     },
