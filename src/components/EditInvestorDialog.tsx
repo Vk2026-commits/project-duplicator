@@ -61,7 +61,7 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: computedAmount,
+      amount_invested: parseFloat(amountInvested) || 0,
       equity_percentage: parseFloat(equity) || 0,
       investment_date: date,
       notes: notes.trim() || null,
