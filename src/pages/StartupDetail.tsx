@@ -118,7 +118,23 @@ export default function StartupDetail() {
 
   const updateInvestorMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { error } = await supabase.from("startup_investors").update({ investor_name: data.investor_name, email: data.email, amount_invested: data.amount_invested, equity_percentage: data.equity_percentage, investment_date: data.investment_date, notes: data.notes, pledge_amount: data.pledge_amount, investment_round: data.investment_round }).eq("id", data.id);
+      const shouldAutoCalculateEquity = Number(startup?.funding_goal ?? 0) > 0;
+      const computedEquity = calculateInvestorEquity({
+        fundingGoal: startup?.funding_goal,
+        pledgeAmount: data.pledge_amount,
+        amountInvested: data.amount_invested,
+      });
+
+      const { error } = await supabase.from("startup_investors").update({
+        investor_name: data.investor_name,
+        email: data.email,
+        amount_invested: data.amount_invested,
+        equity_percentage: shouldAutoCalculateEquity ? computedEquity : data.equity_percentage,
+        investment_date: data.investment_date,
+        notes: data.notes,
+        pledge_amount: data.pledge_amount,
+        investment_round: data.investment_round,
+      }).eq("id", data.id);
       if (error) throw error;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["startup-investors", id] }); queryClient.invalidateQueries({ queryKey: ["startup", id] }); setEditingInvestor(null); },
