@@ -177,6 +177,7 @@ function InvestorsAdmin() {
         investor_name: inv.investor_name,
         amount_invested: inv.amount_invested,
         equity_percentage: inv.equity_percentage,
+        investment_date: inv.investment_date,
         email: inv.email,
         notes: inv.notes,
         archived: inv.archived,
@@ -185,7 +186,15 @@ function InvestorsAdmin() {
       }).eq("id", inv.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-investors"] }); toast.success("Investor updated"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-investors"] });
+      qc.invalidateQueries({ queryKey: ["startup-investors"] });
+      qc.invalidateQueries({ queryKey: ["startup"] });
+      qc.invalidateQueries({ queryKey: ["startups"] });
+      qc.invalidateQueries({ queryKey: ["admin-startups"] });
+      toast.success("Investor updated");
+      setEditInvestor(null);
+    },
   });
 
   const toggleArchive = useMutation({
