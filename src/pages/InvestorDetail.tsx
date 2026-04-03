@@ -6,7 +6,8 @@ import Layout from "@/components/Layout";
 import StatCard from "@/components/StatCard";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/mock-data";
-import { DollarSign, TrendingUp, Briefcase, ArrowLeft } from "lucide-react";
+import { DollarSign, TrendingUp, Briefcase, ArrowLeft, Archive } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function InvestorDetail() {
   const { id } = useParams();
