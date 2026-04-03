@@ -157,7 +157,7 @@ function InvestorsAdmin() {
   const { data: investors = [], isLoading } = useQuery({
     queryKey: ["admin-investors"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("startup_investors").select("*, startups(name)").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("startup_investors").select("*, startups(name, funding_goal)").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
