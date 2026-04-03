@@ -11,9 +11,7 @@ import { DollarSign, TrendingUp, Briefcase, ArrowLeft } from "lucide-react";
 export default function InvestorDetail() {
   const { id } = useParams();
   const investorName = decodeURIComponent(id || "");
-  const queryClient = useQueryClient();
   const [showArchived, setShowArchived] = useState(false);
-  const [editingInvestor, setEditingInvestor] = useState<any | null>(null);
   const { isAdmin } = useAuth();
 
   if (!isAdmin) {
