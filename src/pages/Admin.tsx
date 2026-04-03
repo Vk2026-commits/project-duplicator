@@ -18,6 +18,7 @@ import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
 import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users, Archive, ArchiveRestore } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { calculateInvestorEquity } from "@/lib/investor-equity";
 
 export default function Admin() {
   const { user, isAdmin, loading } = useAuth();
@@ -157,7 +158,7 @@ function InvestorsAdmin() {
   const { data: investors = [], isLoading } = useQuery({
     queryKey: ["admin-investors"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("startup_investors").select("*, startups(name)").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("startup_investors").select("*, startups(name, funding_goal)").order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -173,10 +174,17 @@ function InvestorsAdmin() {
 
   const editMutation = useMutation({
     mutationFn: async (inv: any) => {
+      const shouldAutoCalculateEquity = Number(inv.startups?.funding_goal ?? 0) > 0;
+      const computedEquity = calculateInvestorEquity({
+        fundingGoal: inv.startups?.funding_goal,
+        pledgeAmount: inv.pledge_amount,
+        amountInvested: inv.amount_invested,
+      });
+
       const { error } = await supabase.from("startup_investors").update({
         investor_name: inv.investor_name,
         amount_invested: inv.amount_invested,
-        equity_percentage: inv.equity_percentage,
+        equity_percentage: shouldAutoCalculateEquity ? computedEquity : inv.equity_percentage,
         email: inv.email,
         notes: inv.notes,
         archived: inv.archived,
@@ -232,7 +240,14 @@ function InvestorsAdmin() {
       </Table>
 
       {editInvestor && (
-        <EditInvestorDialog open={!!editInvestor} onOpenChange={(o) => { if (!o) setEditInvestor(null); }} investor={editInvestor} onSave={(d) => editMutation.mutate(d)} isSubmitting={editMutation.isPending} />
+        <EditInvestorDialog
+          open={!!editInvestor}
+          onOpenChange={(o) => { if (!o) setEditInvestor(null); }}
+          investor={editInvestor}
+          onSave={(d) => editMutation.mutate(d)}
+          isSubmitting={editMutation.isPending}
+          fundingGoal={Number(editInvestor.startups?.funding_goal) || 0}
+        />
       )}
       <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(o) => { if (!o) setDeleteId(null); }} title="Delete Investor" description="This will permanently delete this investor record." onConfirm={() => deleteId && deleteMutation.mutate(deleteId)} isDeleting={deleteMutation.isPending} />
       {assignInvestor && (
