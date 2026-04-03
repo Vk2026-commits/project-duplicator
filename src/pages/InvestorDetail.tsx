@@ -46,41 +46,6 @@ export default function InvestorDetail() {
   const email = investments.find((i) => i.email)?.email || null;
   const startupCount = new Set(activeInvestments.map((i) => i.startup_id)).size;
 
-  const archiveMutation = useMutation({
-    mutationFn: async ({ investorId, archive }: { investorId: string; archive: boolean }) => {
-      const { error } = await supabase
-        .from("startup_investors")
-        .update({ archived: archive } as any)
-        .eq("id", investorId);
-      if (error) throw error;
-    },
-    onSuccess: (_, { archive }) => {
-      queryClient.invalidateQueries({ queryKey: ["investor-investments", investorName] });
-      queryClient.invalidateQueries({ queryKey: ["all-startup-investors-with-startups"] });
-      toast.success(archive ? "Investment archived" : "Investment restored");
-    },
-  });
-
-  const updateInvestorMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const { error } = await supabase.from("startup_investors").update({
-        investor_name: data.investor_name,
-        email: data.email,
-        amount_invested: data.amount_invested,
-        equity_percentage: data.equity_percentage,
-        investment_date: data.investment_date,
-        notes: data.notes,
-        pledge_amount: data.pledge_amount,
-        investment_round: data.investment_round,
-      } as any).eq("id", data.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["investor-investments", investorName] });
-      queryClient.invalidateQueries({ queryKey: ["all-startup-investors-with-startups"] });
-      setEditingInvestor(null);
-    },
-  });
 
   if (isLoading) return <Layout><p className="text-muted-foreground">Loading...</p></Layout>;
 
