@@ -114,9 +114,6 @@ export default function InvestorDetail() {
                   <td className="px-6 py-4 text-right text-sm text-muted-foreground">
                     {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="text-xs text-muted-foreground">View only</span>
-                  </td>
                 </tr>
               ))}
             </tbody>
