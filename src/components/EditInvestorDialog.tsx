@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
-import { formatCurrency } from "@/lib/mock-data";
 import { toast } from "sonner";
 
 interface Investor {
@@ -29,6 +26,20 @@ interface EditInvestorDialogProps {
   onSave: (data: Investor) => void;
   isSubmitting?: boolean;
 }
+
+const parseNumericValue = (value: string, fallback = 0) => {
+  if (value.trim() === "") return fallback;
+
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const parseOptionalNumericValue = (value: string) => {
+  if (value.trim() === "") return null;
+
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
 
 export default function EditInvestorDialog({ open, onOpenChange, investor, onSave, isSubmitting }: EditInvestorDialogProps) {
   const [name, setName] = useState(investor.investor_name);
@@ -57,15 +68,19 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
       toast.error("Please fill in the investor name");
       return;
     }
+
+    const normalizedAmountInvested = parseNumericValue(amountInvested, 0);
+    const normalizedEquity = normalizedAmountInvested <= 0 ? 0 : parseNumericValue(equity, 0);
+
     onSave({
       ...investor,
       investor_name: name.trim(),
       email: email.trim() || null,
-      amount_invested: amountInvested === "" ? 0 : parseFloat(amountInvested),
-      equity_percentage: equity === "" ? 0 : parseFloat(equity),
+      amount_invested: normalizedAmountInvested,
+      equity_percentage: normalizedEquity,
       investment_date: date,
       notes: notes.trim() || null,
-      pledge_amount: pledgeAmount ? parseFloat(pledgeAmount) : null,
+      pledge_amount: parseOptionalNumericValue(pledgeAmount),
       investment_round: investmentRound || null,
     });
   };
