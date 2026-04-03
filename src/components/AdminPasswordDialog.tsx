@@ -28,7 +28,6 @@ export default function AdminPasswordDialog({ open, onOpenChange, title, descrip
     setError("");
     setVerifying(true);
 
-    // Re-authenticate by signing in with current email + entered password
     const { data: { user } } = await supabase.auth.getUser();
     if (!user?.email) {
       setError("Could not determine your email");
@@ -36,20 +35,33 @@ export default function AdminPasswordDialog({ open, onOpenChange, title, descrip
       return;
     }
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password,
-    });
+    // Verify password via direct GoTrue API call to avoid triggering
+    // onAuthStateChange which causes page-level re-renders and redirects
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": anonKey,
+        },
+        body: JSON.stringify({ email: user.email, password }),
+      });
 
-    setVerifying(false);
+      setVerifying(false);
 
-    if (signInError) {
-      setError("Incorrect password. Please try again.");
-      return;
+      if (!res.ok) {
+        setError("Incorrect password. Please try again.");
+        return;
+      }
+
+      setPassword("");
+      onConfirmed();
+    } catch {
+      setVerifying(false);
+      setError("Verification failed. Please try again.");
     }
-
-    setPassword("");
-    onConfirmed();
   };
 
   const handleClose = (v: boolean) => {
