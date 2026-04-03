@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
+import { calculateInvestorEquity } from "@/lib/investor-equity";
 import InvestorContributionsDialog from "@/components/InvestorContributionsDialog";
 import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X, HandCoins } from "lucide-react";
 import { toast } from "sonner";
