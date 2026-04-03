@@ -123,15 +123,6 @@ export default function InvestorDetail() {
         )}
       </div>
 
-      {editingInvestor && (
-        <EditInvestorDialog
-          open={!!editingInvestor}
-          onOpenChange={(open) => { if (!open) setEditingInvestor(null); }}
-          investor={editingInvestor}
-          onSave={(data) => updateInvestorMutation.mutate(data)}
-          isSubmitting={updateInvestorMutation.isPending}
-        />
-      )}
     </Layout>
   );
 }
