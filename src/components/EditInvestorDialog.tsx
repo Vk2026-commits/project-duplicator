@@ -89,11 +89,8 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Total Contributed</Label>
-              <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted text-sm font-medium flex items-center">
-                {formatCurrency(computedAmount)}
-              </div>
-              <p className="text-xs text-muted-foreground">Calculated from contributions</p>
+              <Label>Total Contributed ($)</Label>
+              <Input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} min="0" step="any" />
             </div>
             <div className="space-y-2">
               <Label>Equity (%)</Label>
