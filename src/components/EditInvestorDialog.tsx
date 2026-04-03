@@ -43,6 +43,7 @@ export default function EditInvestorDialog({ open, onOpenChange, investor, onSav
   useEffect(() => {
     setName(investor.investor_name);
     setEmail(investor.email || "");
+    setAmountInvested(String(investor.amount_invested));
     setEquity(String(investor.equity_percentage));
     setDate(investor.investment_date);
     setNotes(investor.notes || "");
