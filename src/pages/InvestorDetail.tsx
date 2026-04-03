@@ -154,22 +154,7 @@ export default function InvestorDetail() {
                     {new Date(inv.investment_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingInvestor(inv)} title="Edit">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      {inv.archived ? (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary" title="Restore"
-                          onClick={() => archiveMutation.mutate({ investorId: inv.id, archive: false })}>
-                          <ArchiveRestore className="w-3.5 h-3.5" />
-                        </Button>
-                      ) : (
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-warning hover:text-warning" title="Archive"
-                          onClick={() => archiveMutation.mutate({ investorId: inv.id, archive: true })}>
-                          <Archive className="w-3.5 h-3.5" />
-                        </Button>
-                      )}
-                    </div>
+                    <span className="text-xs text-muted-foreground">View only</span>
                   </td>
                 </tr>
               ))}
