@@ -21,6 +21,10 @@ const navItems = [
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
 ];
 
+const externalLinks = [
+  { icon: Wallet, label: "Budget Tool", href: "https://budget.faithnancial.com" },
+];
+
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
