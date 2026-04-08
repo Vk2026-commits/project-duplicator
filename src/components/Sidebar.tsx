@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays, CalendarClock, Menu, X } from "lucide-react";
+import { BarChart3, Users, Briefcase, TrendingUp, ScrollText, UserCircle, LogIn, LogOut, Contact, ShieldCheck, Info, FileText, Handshake, PiggyBank, CalendarDays, CalendarClock, Menu, X, Wallet } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +19,10 @@ const navItems = [
   { icon: CalendarClock, label: "Calendar", path: "/calendar" },
   { icon: Info, label: "Information", path: "/information" },
   { icon: FileText, label: "Disclosures", path: "/disclosures" },
+];
+
+const externalLinks = [
+  { icon: Wallet, label: "Budget Tool", href: "https://budget.faithnancial.com" },
 ];
 
 export default function Sidebar() {
@@ -76,6 +80,24 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        <div className="pt-3 mt-3 border-t border-border">
+          <p className="px-3 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Ecosystem</p>
+          {externalLinks.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeSidebar}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+              <span className="ml-auto text-[10px] text-muted-foreground/50">↗</span>
+            </a>
+          ))}
+        </div>
       </nav>
 
       <div className="p-4 border-t border-border space-y-1">
