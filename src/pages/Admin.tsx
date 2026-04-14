@@ -15,7 +15,7 @@ import AdminPasswordDialog from "@/components/AdminPasswordDialog";
 import AssignStartupsDialog from "@/components/AssignStartupsDialog";
 import AssignInvestorStartupsDialog from "@/components/AssignInvestorStartupsDialog";
 import InvestorLedgerDialog from "@/components/InvestorLedgerDialog";
-import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users, Archive, ArchiveRestore } from "lucide-react";
+import { Pencil, Trash2, ShieldCheck, ShieldOff, KeyRound, Link2, DollarSign, CheckCircle, XCircle, Bell, FileText, Heart, Users, Archive, ArchiveRestore, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -48,6 +48,7 @@ export default function Admin() {
           </TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="interests">Member Interests</TabsTrigger>
+          <TabsTrigger value="email-log">Email Log</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
         <TabsContent value="investors"><InvestorsAdmin /></TabsContent>
@@ -56,6 +57,7 @@ export default function Admin() {
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
         <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
         <TabsContent value="interests"><MemberInterestsAdmin /></TabsContent>
+        <TabsContent value="email-log"><EmailLogAdmin /></TabsContent>
       </Tabs>
     </Layout>
   );
