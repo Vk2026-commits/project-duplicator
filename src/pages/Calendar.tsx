@@ -362,6 +362,9 @@ export default function CalendarPage() {
                                     {t.status.replace("_", " ")}
                                   </Badge>
                                 </div>
+                                {t.notes && (
+                                  <p className="text-[10px] text-muted-foreground/80 mt-1 line-clamp-1 italic">📝 {t.notes}</p>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -433,6 +436,9 @@ export default function CalendarPage() {
                               </div>
                               {t.description && (
                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{t.description}</p>
+                              )}
+                              {t.notes && (
+                                <p className="text-xs text-muted-foreground/80 mt-1 line-clamp-2 italic border-l-2 border-primary/30 pl-2">📝 {t.notes}</p>
                               )}
                             </div>
                           </div>
