@@ -179,7 +179,7 @@ export default function CalendarPage() {
               ) : (
                 <div className="space-y-2">
                   {thisMonthTasks.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50 cursor-pointer hover:bg-secondary" onClick={() => { setEditTask(t); setShowAddDialog(true); }}>
+                    <div key={t.id} className={`flex items-center justify-between p-2 rounded-lg bg-secondary/50 ${isAdmin ? "cursor-pointer hover:bg-secondary" : ""}`} onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}>
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: PHASE_COLORS[t.phase] || "hsl(var(--primary))" }} />
                         <span className="text-sm font-medium truncate">{t.title}</span>
