@@ -283,7 +283,7 @@ export default function CalendarPage() {
                           {dayTasks.slice(0, 3).map((t) => (
                             <div
                               key={t.id}
-                              className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate cursor-pointer"
+                              className={`text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate ${isAdmin ? "cursor-pointer" : ""}`}
                               style={{
                                 background: `${PHASE_COLORS[t.phase] || "hsl(var(--primary))"}22`,
                                 color: PHASE_COLORS[t.phase] || "hsl(var(--primary))",
