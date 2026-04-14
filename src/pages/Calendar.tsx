@@ -291,8 +291,10 @@ export default function CalendarPage() {
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditTask(t);
-                                setShowAddDialog(true);
+                                if (isAdmin) {
+                                  setEditTask(t);
+                                  setShowAddDialog(true);
+                                }
                               }}
                             >
                               {t.is_milestone && "🏁 "}{t.title}
