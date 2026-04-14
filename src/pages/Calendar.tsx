@@ -406,7 +406,7 @@ export default function CalendarPage() {
                         {phaseTasks.map((t) => (
                           <div
                             key={t.id}
-                            className="relative cursor-pointer group"
+                            className={`relative ${isAdmin ? "cursor-pointer" : ""} group`}
                             onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                           >
                             <div
