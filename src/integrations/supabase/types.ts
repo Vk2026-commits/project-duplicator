@@ -26,6 +26,7 @@ export type Database = {
           id: string
           is_milestone: boolean
           is_recurring: boolean
+          notes: string | null
           phase: number
           phase_name: string
           recurrence_rule: string | null
@@ -44,6 +45,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean
           is_recurring?: boolean
+          notes?: string | null
           phase?: number
           phase_name: string
           recurrence_rule?: string | null
@@ -62,6 +64,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean
           is_recurring?: boolean
+          notes?: string | null
           phase?: number
           phase_name?: string
           recurrence_rule?: string | null

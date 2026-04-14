@@ -47,6 +47,7 @@ type CalendarTask = {
   phase_name: string;
   title: string;
   description: string | null;
+  notes: string | null;
   due_date: string;
   due_date_end: string | null;
   assigned_to: string | null;
@@ -487,6 +488,7 @@ function TaskDialog({
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [notes, setNotes] = useState("");
   const [phase, setPhase] = useState("1");
   const [phaseName, setPhaseName] = useState("Foundation");
   const [dueDate, setDueDate] = useState("");
@@ -494,6 +496,7 @@ function TaskDialog({
   const [status, setStatus] = useState("not_started");
   const [isMilestone, setIsMilestone] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const phaseNames: Record<string, string> = {
     "1": "Foundation",
@@ -510,6 +513,7 @@ function TaskDialog({
       if (task) {
         setTitle(task.title);
         setDescription(task.description || "");
+        setNotes(task.notes || "");
         setPhase(String(task.phase));
         setPhaseName(task.phase_name);
         setDueDate(task.due_date);
@@ -520,6 +524,7 @@ function TaskDialog({
       } else {
         setTitle("");
         setDescription("");
+        setNotes("");
         setPhase("1");
         setPhaseName("Foundation");
         setDueDate(selectedDate ? format(selectedDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"));
@@ -529,6 +534,7 @@ function TaskDialog({
         setIsRecurring(false);
       }
     }
+    setShowDeleteConfirm(false);
     onOpenChange(o);
   };
 
@@ -537,6 +543,7 @@ function TaskDialog({
       const payload = {
         title,
         description: description || null,
+        notes: notes || null,
         phase: Number(phase),
         phase_name: phaseNames[phase] || phaseName,
         due_date: dueDate,
@@ -575,82 +582,106 @@ function TaskDialog({
   });
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{task ? "Edit Task" : "New Task"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div>
-            <Label>Title *</Label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task title" />
-          </div>
-          <div>
-            <Label>Description</Label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{task ? "Edit Task" : "New Task"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
             <div>
-              <Label>Phase</Label>
-              <Select value={phase} onValueChange={(v) => { setPhase(v); setPhaseName(phaseNames[v] || ""); }}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Label>Title *</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task title" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            </div>
+            <div>
+              <Label>Notes / Meeting Summary</Label>
+              <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Add notes about what happened, decisions made, etc." />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Phase</Label>
+                <Select value={phase} onValueChange={(v) => { setPhase(v); setPhaseName(phaseNames[v] || ""); }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(phaseNames).map(([k, v]) => (
+                      <SelectItem key={k} value={k}>P{k}: {v}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Due Date *</Label>
+                <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <Label>Assign To</Label>
+              <Select value={assignedTo} onValueChange={setAssignedTo}>
+                <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
                 <SelectContent>
-                  {Object.entries(phaseNames).map(([k, v]) => (
-                    <SelectItem key={k} value={k}>P{k}: {v}</SelectItem>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.full_name || "Unnamed"}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Due Date *</Label>
-              <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              <Label>Status</Label>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="not_started">Not Started</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={isMilestone} onChange={(e) => setIsMilestone(e.target.checked)} className="rounded" />
+                Milestone
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} className="rounded" />
+                Recurring
+              </label>
             </div>
           </div>
-          <div>
-            <Label>Assign To</Label>
-            <Select value={assignedTo} onValueChange={setAssignedTo}>
-              <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="unassigned">Unassigned</SelectItem>
-                {profiles.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>{p.full_name || "Unnamed"}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Status</Label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="not_started">Not Started</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input type="checkbox" checked={isMilestone} onChange={(e) => setIsMilestone(e.target.checked)} className="rounded" />
-              Milestone
-            </label>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input type="checkbox" checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} className="rounded" />
-              Recurring
-            </label>
-          </div>
-        </div>
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          {task && isAdmin && (
-            <Button variant="destructive" size="sm" onClick={() => deleteMutation.mutate()} disabled={deleteMutation.isPending}>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            {task && isAdmin && (
+              <Button variant="destructive" size="sm" onClick={() => setShowDeleteConfirm(true)} disabled={deleteMutation.isPending}>
+                Delete
+              </Button>
+            )}
+            <Button onClick={() => saveMutation.mutate()} disabled={!title || !dueDate || saveMutation.isPending}>
+              {task ? "Save Changes" : "Create Task"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to delete?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will permanently delete "<span className="font-medium text-foreground">{task?.title}</span>". This action cannot be undone.
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => { setShowDeleteConfirm(false); deleteMutation.mutate(); }} disabled={deleteMutation.isPending}>
               Delete
             </Button>
-          )}
-          <Button onClick={() => saveMutation.mutate()} disabled={!title || !dueDate || saveMutation.isPending}>
-            {task ? "Save Changes" : "Create Task"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
