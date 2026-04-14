@@ -28,7 +28,7 @@ const InvestorCommunicationEmail = ({
         <Text style={text}>{message}</Text>
         <Hr style={hr} />
         <Text style={footer}>
-          Sent by {senderName} via {SITE_NAME}
+          Sent by {senderName} on behalf of {startupName}
         </Text>
       </Container>
     </Body>
