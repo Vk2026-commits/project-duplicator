@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Calendar, MapPin, FileText, Clock, CheckCircle, Send, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Calendar, MapPin, FileText, Clock, CheckCircle, Send, Trash2, ChevronDown, ChevronUp, Video, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 
@@ -30,7 +30,7 @@ export default function Meetings() {
   const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
-    title: "", meeting_date: "", location: "", agenda: "", status: "scheduled",
+    title: "", meeting_date: "", location: "", agenda: "", status: "scheduled", meeting_link: "",
   });
 
   // Fetch meetings
@@ -82,6 +82,7 @@ export default function Meetings() {
         meeting_date: new Date(form.meeting_date).toISOString(),
         location: form.location || null,
         agenda: form.agenda || null,
+        meeting_link: form.meeting_link || null,
         status: form.status,
         created_by: user!.id,
       } as any);
@@ -90,7 +91,7 @@ export default function Meetings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
       setCreateOpen(false);
-      setForm({ title: "", meeting_date: "", location: "", agenda: "", status: "scheduled" });
+      setForm({ title: "", meeting_date: "", location: "", agenda: "", status: "scheduled", meeting_link: "" });
       toast.success("Meeting created!");
     },
     onError: (e: any) => toast.error(e.message),
@@ -173,14 +174,18 @@ export default function Meetings() {
                   <Label>Title *</Label>
                   <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Monthly Investment Review" required />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Date & Time *</Label>
-                    <Input type="datetime-local" value={form.meeting_date} onChange={(e) => setForm({ ...form, meeting_date: e.target.value })} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Zoom / Office" />
+                 <div className="space-y-2">
+                   <Label>Google Meet / Video Link</Label>
+                   <Input value={form.meeting_link} onChange={(e) => setForm({ ...form, meeting_link: e.target.value })} placeholder="https://meet.google.com/abc-defg-hij" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-2">
+                     <Label>Date & Time *</Label>
+                     <Input type="datetime-local" value={form.meeting_date} onChange={(e) => setForm({ ...form, meeting_date: e.target.value })} required />
+                   </div>
+                   <div className="space-y-2">
+                     <Label>Location</Label>
+                     <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Office / Virtual" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -232,9 +237,16 @@ export default function Meetings() {
                             <MapPin className="w-3.5 h-3.5" />
                             {meeting.location}
                           </span>
-                        )}
+                         )}
+                        {meeting.meeting_link && (
+                           <a href={meeting.meeting_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                             <Video className="w-3.5 h-3.5" />
+                             Join Meeting
+                             <ExternalLink className="w-3 h-3" />
+                           </a>
+                         )}
                         <span className="flex items-center gap-1">
-                          <FileText className="w-3.5 h-3.5" />
+                           <FileText className="w-3.5 h-3.5" />
                           {meetingNotes.length} note{meetingNotes.length !== 1 ? "s" : ""}
                         </span>
                       </div>

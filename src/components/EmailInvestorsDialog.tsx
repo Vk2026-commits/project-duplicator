@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Mail, Send, Loader2 } from "lucide-react";
+import { Mail, Send, Loader2, Video } from "lucide-react";
 
 interface Investor {
   id: string;
@@ -27,6 +27,7 @@ export default function EmailInvestorsDialog({ open, onOpenChange, investors, st
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function EmailInvestorsDialog({ open, onOpenChange, investors, st
       setSelected(new Set(emailableInvestors.map((inv) => inv.id)));
       setSubject("");
       setMessage("");
+      setMeetingLink("");
     }
   }, [open]);
 
@@ -76,6 +78,7 @@ export default function EmailInvestorsDialog({ open, onOpenChange, investors, st
               subject: subject.trim(),
               message: message.trim(),
               senderName,
+              meetingLink: meetingLink.trim() || undefined,
             },
           },
         });
@@ -165,6 +168,20 @@ export default function EmailInvestorsDialog({ open, onOpenChange, investors, st
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={6}
+                className="mt-1"
+              />
+            </div>
+
+            {/* Meeting Link */}
+            <div>
+              <Label htmlFor="email-meeting-link" className="text-sm font-medium flex items-center gap-1.5">
+                <Video className="w-4 h-4" /> Google Meet Link <span className="text-muted-foreground font-normal">(optional)</span>
+              </Label>
+              <Input
+                id="email-meeting-link"
+                placeholder="https://meet.google.com/abc-defg-hij"
+                value={meetingLink}
+                onChange={(e) => setMeetingLink(e.target.value)}
                 className="mt-1"
               />
             </div>

@@ -26,6 +26,7 @@ export type Database = {
           id: string
           is_milestone: boolean
           is_recurring: boolean
+          meeting_link: string | null
           notes: string | null
           phase: number
           phase_name: string
@@ -45,6 +46,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean
           is_recurring?: boolean
+          meeting_link?: string | null
           notes?: string | null
           phase?: number
           phase_name: string
@@ -64,6 +66,7 @@ export type Database = {
           id?: string
           is_milestone?: boolean
           is_recurring?: boolean
+          meeting_link?: string | null
           notes?: string | null
           phase?: number
           phase_name?: string
@@ -422,6 +425,7 @@ export type Database = {
           id: string
           location: string | null
           meeting_date: string
+          meeting_link: string | null
           status: string
           title: string
           updated_at: string
@@ -433,6 +437,7 @@ export type Database = {
           id?: string
           location?: string | null
           meeting_date: string
+          meeting_link?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -444,6 +449,7 @@ export type Database = {
           id?: string
           location?: string | null
           meeting_date?: string
+          meeting_link?: string | null
           status?: string
           title?: string
           updated_at?: string
