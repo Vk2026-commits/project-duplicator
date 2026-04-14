@@ -348,7 +348,7 @@ export default function CalendarPage() {
                               <div
                                 key={t.id}
                                 className="p-2 rounded-lg bg-secondary/50 cursor-pointer hover:bg-secondary text-sm"
-                                onClick={() => { setEditTask(t); setShowAddDialog(true); }}
+                                onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                               >
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full shrink-0" style={{ background: PHASE_COLORS[t.phase] }} />
@@ -407,7 +407,7 @@ export default function CalendarPage() {
                           <div
                             key={t.id}
                             className="relative cursor-pointer group"
-                            onClick={() => { setEditTask(t); setShowAddDialog(true); }}
+                            onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                           >
                             <div
                               className="absolute -left-[calc(1.5rem+5px)] top-1.5 w-2.5 h-2.5 rounded-full border-2"
