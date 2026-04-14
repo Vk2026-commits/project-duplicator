@@ -20,7 +20,7 @@ const InvestorCommunicationEmail = ({
 }: InvestorCommunicationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Message from {SITE_NAME} regarding {startupName}</Preview>
+    <Preview>Message from {startupName}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>{startupName}</Heading>
