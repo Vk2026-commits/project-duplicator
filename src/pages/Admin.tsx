@@ -968,3 +968,135 @@ function MemberInterestsAdmin() {
     </>
   );
 }
+
+/* ─── Email Log Tab ────────────────────────────── */
+function EmailLogAdmin() {
+  const [timeRange, setTimeRange] = useState<string>("7d");
+
+  const rangeStart = (() => {
+    const now = new Date();
+    if (timeRange === "24h") return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    if (timeRange === "7d") return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  })();
+
+  const { data: logs = [], isLoading } = useQuery({
+    queryKey: ["email-log", timeRange],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_send_log")
+        .select("*")
+        .gte("created_at", rangeStart)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      // Deduplicate by message_id, keeping latest
+      const seen = new Map<string, typeof data[0]>();
+      for (const row of data) {
+        const key = row.message_id || row.id;
+        if (!seen.has(key)) seen.set(key, row);
+      }
+      return Array.from(seen.values());
+    },
+  });
+
+  const stats = {
+    total: logs.length,
+    sent: logs.filter(l => l.status === "sent").length,
+    pending: logs.filter(l => l.status === "pending").length,
+    failed: logs.filter(l => l.status === "dlq" || l.status === "failed").length,
+    suppressed: logs.filter(l => l.status === "suppressed").length,
+  };
+
+  const statusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      sent: "bg-green-500/20 text-green-400",
+      pending: "bg-yellow-500/20 text-yellow-400",
+      dlq: "bg-red-500/20 text-red-400",
+      failed: "bg-red-500/20 text-red-400",
+      suppressed: "bg-orange-500/20 text-orange-400",
+      bounced: "bg-red-500/20 text-red-400",
+      complained: "bg-red-500/20 text-red-400",
+    };
+    return (
+      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${map[status] || "bg-muted text-muted-foreground"}`}>
+        {status}
+      </span>
+    );
+  };
+
+  return (
+    <>
+      {/* Time range buttons */}
+      <div className="flex items-center gap-2 mb-4">
+        <Mail className="w-5 h-5 text-primary" />
+        <span className="text-sm font-medium mr-2">Time Range:</span>
+        {[
+          { value: "24h", label: "Last 24h" },
+          { value: "7d", label: "Last 7 days" },
+          { value: "30d", label: "Last 30 days" },
+        ].map(r => (
+          <Button
+            key={r.value}
+            variant={timeRange === r.value ? "default" : "outline"}
+            size="sm"
+            onClick={() => setTimeRange(r.value)}
+          >
+            {r.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+        {[
+          { label: "Total", value: stats.total },
+          { label: "Sent", value: stats.sent },
+          { label: "Pending", value: stats.pending },
+          { label: "Failed", value: stats.failed },
+          { label: "Suppressed", value: stats.suppressed },
+        ].map(s => (
+          <div key={s.label} className="rounded-lg border border-border bg-card p-3 text-center">
+            <p className="text-xl font-bold">{s.value}</p>
+            <p className="text-xs text-muted-foreground">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading email log...</p>
+      ) : logs.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No emails sent in this time range.</p>
+      ) : (
+        <div className="rounded-lg border border-border overflow-auto max-h-[500px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Template</TableHead>
+                <TableHead>Recipient</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Sent At</TableHead>
+                <TableHead>Error</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs.map(log => (
+                <TableRow key={log.id}>
+                  <TableCell className="text-sm font-medium">{log.template_name}</TableCell>
+                  <TableCell className="text-sm">{log.recipient_email}</TableCell>
+                  <TableCell>{statusBadge(log.status)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {new Date(log.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-xs text-red-400 max-w-[200px] truncate">
+                    {log.error_message || "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </>
+  );
+}
