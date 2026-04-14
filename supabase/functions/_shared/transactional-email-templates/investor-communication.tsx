@@ -4,7 +4,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-const SITE_NAME = "seed-path-portal"
+const SITE_NAME = "Faithnancial"
 
 interface InvestorCommunicationProps {
   startupName?: string
@@ -20,7 +20,7 @@ const InvestorCommunicationEmail = ({
 }: InvestorCommunicationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Message from {SITE_NAME} regarding {startupName}</Preview>
+    <Preview>Message from {startupName}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>{startupName}</Heading>
@@ -28,7 +28,7 @@ const InvestorCommunicationEmail = ({
         <Text style={text}>{message}</Text>
         <Hr style={hr} />
         <Text style={footer}>
-          Sent by {senderName} via {SITE_NAME}
+          Sent by {senderName} on behalf of {startupName}
         </Text>
       </Container>
     </Body>
