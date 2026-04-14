@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -362,6 +362,9 @@ export default function CalendarPage() {
                                     {t.status.replace("_", " ")}
                                   </Badge>
                                 </div>
+                                {t.notes && (
+                                  <p className="text-[10px] text-muted-foreground/80 mt-1 line-clamp-1 italic">📝 {t.notes}</p>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -433,6 +436,9 @@ export default function CalendarPage() {
                               </div>
                               {t.description && (
                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{t.description}</p>
+                              )}
+                              {t.notes && (
+                                <p className="text-xs text-muted-foreground/80 mt-1 line-clamp-2 italic border-l-2 border-primary/30 pl-2">📝 {t.notes}</p>
                               )}
                             </div>
                           </div>
@@ -507,9 +513,9 @@ function TaskDialog({
     "6": "Second + Third Deals",
   };
 
-  // Reset form when dialog opens
-  const handleOpenChange = (o: boolean) => {
-    if (o) {
+  // Populate form when dialog opens or task changes
+  useEffect(() => {
+    if (open) {
       if (task) {
         setTitle(task.title);
         setDescription(task.description || "");
@@ -533,8 +539,11 @@ function TaskDialog({
         setIsMilestone(false);
         setIsRecurring(false);
       }
+      setShowDeleteConfirm(false);
     }
-    setShowDeleteConfirm(false);
+  }, [open, task, selectedDate]);
+
+  const handleOpenChange = (o: boolean) => {
     onOpenChange(o);
   };
 
