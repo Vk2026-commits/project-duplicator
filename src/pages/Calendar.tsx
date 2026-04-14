@@ -47,6 +47,7 @@ type CalendarTask = {
   phase_name: string;
   title: string;
   description: string | null;
+  notes: string | null;
   due_date: string;
   due_date_end: string | null;
   assigned_to: string | null;
