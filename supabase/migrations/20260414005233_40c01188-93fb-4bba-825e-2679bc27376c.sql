@@ -1,0 +1,1 @@
+ALTER TABLE public.calendar_tasks ADD COLUMN notes text;
