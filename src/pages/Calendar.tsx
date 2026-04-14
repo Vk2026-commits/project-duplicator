@@ -347,7 +347,7 @@ export default function CalendarPage() {
                             {monthTasks.map((t) => (
                               <div
                                 key={t.id}
-                                className="p-2 rounded-lg bg-secondary/50 cursor-pointer hover:bg-secondary text-sm"
+                                className={`p-2 rounded-lg bg-secondary/50 ${isAdmin ? "cursor-pointer hover:bg-secondary" : ""} text-sm`}
                                 onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                               >
                                 <div className="flex items-center gap-2">
