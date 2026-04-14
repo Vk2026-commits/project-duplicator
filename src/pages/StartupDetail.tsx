@@ -18,7 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/lib/mock-data";
 import InvestorContributionsDialog from "@/components/InvestorContributionsDialog";
-import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X, HandCoins } from "lucide-react";
+import { DollarSign, TrendingUp, Users, ArrowLeft, Percent, Pencil, Trash2, Check, X, HandCoins, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StartupDetail() {
