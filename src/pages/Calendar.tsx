@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, Target, Flag, AlertCircle } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, Target, Flag, AlertCircle, Video, ExternalLink } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfQuarter, endOfQuarter, addQuarters, subQuarters, isToday } from "date-fns";
 import { toast } from "sonner";
 
@@ -56,6 +56,7 @@ type CalendarTask = {
   recurrence_rule: string | null;
   is_milestone: boolean;
   color: string | null;
+  meeting_link: string | null;
   created_by: string;
 };
 
@@ -502,6 +503,7 @@ function TaskDialog({
   const [status, setStatus] = useState("not_started");
   const [isMilestone, setIsMilestone] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
+  const [meetingLink, setMeetingLink] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const phaseNames: Record<string, string> = {
@@ -527,6 +529,7 @@ function TaskDialog({
         setStatus(task.status);
         setIsMilestone(task.is_milestone);
         setIsRecurring(task.is_recurring);
+        setMeetingLink(task.meeting_link || "");
       } else {
         setTitle("");
         setDescription("");
@@ -538,6 +541,7 @@ function TaskDialog({
         setStatus("not_started");
         setIsMilestone(false);
         setIsRecurring(false);
+        setMeetingLink("");
       }
       setShowDeleteConfirm(false);
     }
@@ -560,6 +564,7 @@ function TaskDialog({
         status,
         is_milestone: isMilestone,
         is_recurring: isRecurring,
+        meeting_link: meetingLink || null,
         created_by: userId,
       };
       if (task) {
@@ -649,6 +654,10 @@ function TaskDialog({
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label>Google Meet / Video Link</Label>
+              <Input value={meetingLink} onChange={(e) => setMeetingLink(e.target.value)} placeholder="https://meet.google.com/abc-defg-hij" />
             </div>
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
