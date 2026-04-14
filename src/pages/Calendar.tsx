@@ -507,9 +507,9 @@ function TaskDialog({
     "6": "Second + Third Deals",
   };
 
-  // Reset form when dialog opens
-  const handleOpenChange = (o: boolean) => {
-    if (o) {
+  // Populate form when dialog opens or task changes
+  useEffect(() => {
+    if (open) {
       if (task) {
         setTitle(task.title);
         setDescription(task.description || "");
@@ -533,8 +533,11 @@ function TaskDialog({
         setIsMilestone(false);
         setIsRecurring(false);
       }
+      setShowDeleteConfirm(false);
     }
-    setShowDeleteConfirm(false);
+  }, [open, task, selectedDate]);
+
+  const handleOpenChange = (o: boolean) => {
     onOpenChange(o);
   };
 
