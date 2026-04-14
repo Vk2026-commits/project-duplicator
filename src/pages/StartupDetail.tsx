@@ -216,6 +216,9 @@ export default function StartupDetail() {
           <div className="space-y-4 animate-fade-in">
             {isAdmin && (
               <div className="flex justify-end gap-2">
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmailDialogOpen(true)}>
+                  <Mail className="w-3.5 h-3.5" /> Email Investors
+                </Button>
                 {fundingGoal > 0 && investors.length > 0 && (
                   <Button
                     variant="outline"
@@ -423,6 +426,12 @@ export default function StartupDetail() {
           }}
         />
       )}
+      <EmailInvestorsDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        investors={investors}
+        startupName={startup.name}
+      />
     </Layout>
   );
 }
