@@ -179,7 +179,7 @@ export default function CalendarPage() {
               ) : (
                 <div className="space-y-2">
                   {thisMonthTasks.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50 cursor-pointer hover:bg-secondary" onClick={() => { setEditTask(t); setShowAddDialog(true); }}>
+                    <div key={t.id} className={`flex items-center justify-between p-2 rounded-lg bg-secondary/50 ${isAdmin ? "cursor-pointer hover:bg-secondary" : ""}`} onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}>
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: PHASE_COLORS[t.phase] || "hsl(var(--primary))" }} />
                         <span className="text-sm font-medium truncate">{t.title}</span>
@@ -283,7 +283,7 @@ export default function CalendarPage() {
                           {dayTasks.slice(0, 3).map((t) => (
                             <div
                               key={t.id}
-                              className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate cursor-pointer"
+                              className={`text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate ${isAdmin ? "cursor-pointer" : ""}`}
                               style={{
                                 background: `${PHASE_COLORS[t.phase] || "hsl(var(--primary))"}22`,
                                 color: PHASE_COLORS[t.phase] || "hsl(var(--primary))",
@@ -291,8 +291,10 @@ export default function CalendarPage() {
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditTask(t);
-                                setShowAddDialog(true);
+                                if (isAdmin) {
+                                  setEditTask(t);
+                                  setShowAddDialog(true);
+                                }
                               }}
                             >
                               {t.is_milestone && "🏁 "}{t.title}
@@ -345,8 +347,8 @@ export default function CalendarPage() {
                             {monthTasks.map((t) => (
                               <div
                                 key={t.id}
-                                className="p-2 rounded-lg bg-secondary/50 cursor-pointer hover:bg-secondary text-sm"
-                                onClick={() => { setEditTask(t); setShowAddDialog(true); }}
+                                className={`p-2 rounded-lg bg-secondary/50 ${isAdmin ? "cursor-pointer hover:bg-secondary" : ""} text-sm`}
+                                onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                               >
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full shrink-0" style={{ background: PHASE_COLORS[t.phase] }} />
@@ -404,8 +406,8 @@ export default function CalendarPage() {
                         {phaseTasks.map((t) => (
                           <div
                             key={t.id}
-                            className="relative cursor-pointer group"
-                            onClick={() => { setEditTask(t); setShowAddDialog(true); }}
+                            className={`relative ${isAdmin ? "cursor-pointer" : ""} group`}
+                            onClick={() => { if (isAdmin) { setEditTask(t); setShowAddDialog(true); } }}
                           >
                             <div
                               className="absolute -left-[calc(1.5rem+5px)] top-1.5 w-2.5 h-2.5 rounded-full border-2"
