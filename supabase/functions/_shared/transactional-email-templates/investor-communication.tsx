@@ -1,6 +1,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Hr,
+  Body, Container, Head, Heading, Html, Preview, Text, Hr, Button,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -11,12 +11,14 @@ interface InvestorCommunicationProps {
   subject?: string
   message?: string
   senderName?: string
+  meetingLink?: string
 }
 
 const InvestorCommunicationEmail = ({
   startupName = 'Your Investment Group',
   message = '',
   senderName = 'Admin',
+  meetingLink,
 }: InvestorCommunicationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -26,6 +28,16 @@ const InvestorCommunicationEmail = ({
         <Heading style={h1}>{startupName}</Heading>
         <Hr style={hr} />
         <Text style={text}>{message}</Text>
+        {meetingLink && (
+          <>
+            <Button style={joinBtn} href={meetingLink}>
+              Join Meeting
+            </Button>
+            <Text style={linkNote}>
+              Or copy this link: {meetingLink}
+            </Text>
+          </>
+        )}
         <Hr style={hr} />
         <Text style={footer}>
           Sent by {senderName} on behalf of {startupName}
@@ -45,6 +57,7 @@ export const template = {
     subject: 'Important Update',
     message: 'This is an important update regarding your investment.',
     senderName: 'Admin',
+    meetingLink: 'https://meet.google.com/abc-defg-hij',
   },
 } satisfies TemplateEntry
 
@@ -54,3 +67,16 @@ const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#3b82f6', ma
 const hr = { borderColor: '#e5e7eb', margin: '20px 0' }
 const text = { fontSize: '15px', color: '#333333', lineHeight: '1.6', margin: '0 0 16px', whiteSpace: 'pre-wrap' as const }
 const footer = { fontSize: '12px', color: '#999999', margin: '16px 0 0' }
+const joinBtn = {
+  backgroundColor: '#3b82f6',
+  borderRadius: '6px',
+  color: '#ffffff',
+  fontSize: '15px',
+  fontWeight: 'bold' as const,
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '12px 24px',
+  margin: '0 0 8px',
+}
+const linkNote = { fontSize: '12px', color: '#999999', margin: '0 0 16px', wordBreak: 'break-all' as const }
