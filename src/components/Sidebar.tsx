@@ -23,7 +23,7 @@ const navItems = [
 
 const externalLinks = [
   { icon: Wallet, label: "Budget Tool", href: "https://budget.faithnancial.com" },
-  { icon: ScrollText, label: "Heirloom", href: "https://www.heirloom.faithnancial.com" },
+  { icon: ScrollText, label: "Estate Planning", href: "https://www.heirloom.faithnancial.com" },
 ];
 
 export default function Sidebar() {
