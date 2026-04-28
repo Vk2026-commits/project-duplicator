@@ -59,6 +59,29 @@ Deno.serve(async (req) => {
   const admin = createClient(supabaseUrl, serviceKey)
 
   try {
+    const windowStart = new Date(Math.floor(Date.now() / 60000) * 60000).toISOString()
+    const { data: requestCount, error: counterError } = await admin.rpc('increment_security_request_counter', {
+      _user_id: userId,
+      _action_type: 'document_signed_url',
+      _window_start: windowStart,
+    })
+
+    if (counterError) {
+      console.error('document request counter failed', { error: counterError.message, userId })
+      return json({ error: 'Unable to access document' }, 500)
+    }
+
+    if (Number(requestCount) > 60) {
+      await admin.from('document_access_log').insert({
+        document_id: parsed.documentId,
+        actor_id: userId,
+        action_type: 'signed_url_request',
+        access_result: 'denied',
+        metadata: { reason: 'request_limit_exceeded' },
+      })
+      return json({ error: 'Too many requests' }, 429)
+    }
+
     const { data: document, error: documentError } = await admin
       .from('startup_documents')
       .select('id, startup_id, file_path')
