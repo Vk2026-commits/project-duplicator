@@ -39,6 +39,21 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const openSecureDocument = async (documentId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke("get-document-url", {
+        body: { documentId },
+      });
+
+      if (error) throw error;
+      if (!data?.signedUrl) throw new Error("Document access was denied");
+
+      setViewUrl(data.signedUrl);
+    } catch (err: any) {
+      toast.error(err?.message || "Document access is unavailable");
+    }
+  };
+
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ["startup-documents", startupId],
     queryFn: async () => {
@@ -84,29 +99,28 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
   const addDocMutation = useMutation({
     mutationFn: async () => {
       setUploading(true);
-      let fileUrl: string | null = null;
+      let filePath: string | null = null;
 
       if (file) {
         const ext = file.name.split(".").pop();
-        const path = `${startupId}/${Date.now()}.${ext}`;
+        const safeExt = ext?.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || "bin";
+        const path = `${startupId}/${crypto.randomUUID()}.${safeExt}`;
         const { error: uploadErr } = await supabase.storage
           .from("startup-documents")
           .upload(path, file);
         if (uploadErr) throw uploadErr;
-        const { data: urlData } = supabase.storage
-          .from("startup-documents")
-          .getPublicUrl(path);
-        fileUrl = urlData.publicUrl;
+        filePath = path;
       }
 
       const { error } = await supabase.from("startup_documents").insert({
         startup_id: startupId,
-        title,
-        description: description || null,
+        title: title.trim().slice(0, 160),
+        description: description.trim().slice(0, 1000) || null,
         document_type: docType,
-        file_url: fileUrl,
+        file_path: filePath,
+        file_url: null,
         created_by: user!.id,
-      });
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -270,8 +284,8 @@ export default function StartupDocumentsTab({ startupId, startupName }: Props) {
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {doc.file_url && (
-                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setViewUrl(doc.file_url)}>
+                      {(doc as any).file_path && !isAdmin && (
+                        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => openSecureDocument(doc.id)}>
                           <Eye className="w-3.5 h-3.5" /> View
                         </Button>
                       )}
