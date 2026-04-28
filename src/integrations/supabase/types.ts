@@ -704,6 +704,33 @@ export type Database = {
         }
         Relationships: []
       }
+      security_request_counters: {
+        Row: {
+          action_type: string
+          id: string
+          request_count: number
+          updated_at: string
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          action_type: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          user_id: string
+          window_start: string
+        }
+        Update: {
+          action_type?: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       startup_documents: {
         Row: {
           created_at: string
@@ -1002,6 +1029,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_security_request_counter: {
+        Args: { _action_type: string; _user_id: string; _window_start: string }
+        Returns: number
       }
       move_to_dlq: {
         Args: {
