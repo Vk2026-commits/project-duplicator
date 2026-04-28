@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action_type: string
+          admin_id: string
+          created_at: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       calendar_tasks: {
         Row: {
           assigned_to: string | null
@@ -218,6 +248,39 @@ export type Database = {
           id?: string
           ip_address?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      document_access_log: {
+        Row: {
+          access_result: string
+          action_type: string
+          actor_id: string | null
+          created_at: string
+          document_id: string | null
+          id: string
+          metadata: Json
+          startup_id: string | null
+        }
+        Insert: {
+          access_result: string
+          action_type: string
+          actor_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          metadata?: Json
+          startup_id?: string | null
+        }
+        Update: {
+          access_result?: string
+          action_type?: string
+          actor_id?: string | null
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          metadata?: Json
+          startup_id?: string | null
         }
         Relationships: []
       }
@@ -641,12 +704,40 @@ export type Database = {
         }
         Relationships: []
       }
+      security_request_counters: {
+        Row: {
+          action_type: string
+          id: string
+          request_count: number
+          updated_at: string
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          action_type: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          user_id: string
+          window_start: string
+        }
+        Update: {
+          action_type?: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       startup_documents: {
         Row: {
           created_at: string
           created_by: string
           description: string | null
           document_type: string
+          file_path: string | null
           file_url: string | null
           id: string
           startup_id: string
@@ -658,6 +749,7 @@ export type Database = {
           created_by: string
           description?: string | null
           document_type?: string
+          file_path?: string | null
           file_url?: string | null
           id?: string
           startup_id: string
@@ -669,6 +761,7 @@ export type Database = {
           created_by?: string
           description?: string | null
           document_type?: string
+          file_path?: string | null
           file_url?: string | null
           id?: string
           startup_id?: string
@@ -918,6 +1011,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_startup_document: {
+        Args: { _document_id: string; _user_id: string }
+        Returns: boolean
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -932,6 +1029,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_security_request_counter: {
+        Args: { _action_type: string; _user_id: string; _window_start: string }
+        Returns: number
       }
       move_to_dlq: {
         Args: {
@@ -949,6 +1050,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      validate_startup_document_path: {
+        Args: { _file_path: string; _startup_id: string }
+        Returns: boolean
       }
     }
     Enums: {
