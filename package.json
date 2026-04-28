@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "security:load:100": "CONCURRENCY=100 node scripts/security-load-test.mjs",
+    "security:load:500": "CONCURRENCY=500 node scripts/security-load-test.mjs",
+    "security:load:1000": "CONCURRENCY=1000 node scripts/security-load-test.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
