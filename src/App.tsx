@@ -27,6 +27,7 @@ import Onboarding from "./pages/Onboarding";
 import Unsubscribe from "./pages/Unsubscribe";
 import Home from "./pages/Home";
 import ResetPassword from "./pages/ResetPassword";
+import NetworkInvite from "./pages/NetworkInvite";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Navigate to="/#signin" replace />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/network-invite" element={<NetworkInvite />} />
             <Route path="/dashboard" element={<P><Index /></P>} />
             <Route path="/investors" element={<P><Investors /></P>} />
             <Route path="/investors/:id" element={<P><InvestorDetail /></P>} />

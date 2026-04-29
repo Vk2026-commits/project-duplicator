@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
@@ -48,6 +50,7 @@ export default function Admin() {
           </TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="interests">Member Interests</TabsTrigger>
+          <TabsTrigger value="network-waitlist">Network Waitlist</TabsTrigger>
           <TabsTrigger value="email-log">Email Log</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
@@ -57,6 +60,7 @@ export default function Admin() {
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
         <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
         <TabsContent value="interests"><MemberInterestsAdmin /></TabsContent>
+        <TabsContent value="network-waitlist"><NetworkWaitlistAdmin /></TabsContent>
         <TabsContent value="email-log"><EmailLogAdmin /></TabsContent>
       </Tabs>
     </Layout>
@@ -965,6 +969,110 @@ function MemberInterestsAdmin() {
           </p>
         </div>
       )}
+    </>
+  );
+}
+
+/* ─── Network Waitlist Tab ─────────────────────── */
+function NetworkWaitlistAdmin() {
+  const qc = useQueryClient();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [engagementFilter, setEngagementFilter] = useState<string>("all");
+
+  const { data: analytics } = useQuery({
+    queryKey: ["network-waitlist-analytics"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("network_waitlist_analytics" as any);
+      if (error) throw error;
+      return Array.isArray(data) ? data[0] : data;
+    },
+  });
+
+  const { data: entries = [], isLoading } = useQuery({
+    queryKey: ["network-waitlist", engagementFilter],
+    queryFn: async () => {
+      let query = supabase.from("network_waitlist" as any).select("*").order("date_joined_waitlist", { ascending: true });
+      if (engagementFilter !== "all") query = query.eq("engagement_level", engagementFilter);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const inviteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      for (const entryId of ids) {
+        const { error } = await supabase.functions.invoke("network-waitlist", { body: { action: "invite", entryId } });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => { setSelectedIds([]); qc.invalidateQueries({ queryKey: ["network-waitlist"] }); qc.invalidateQueries({ queryKey: ["network-waitlist-analytics"] }); toast.success("Network invitations sent"); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const updateEntry = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
+      const { error } = await supabase.from("network_waitlist" as any).update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["network-waitlist"] }); qc.invalidateQueries({ queryKey: ["network-waitlist-analytics"] }); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const removeEntry = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("network_waitlist" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["network-waitlist"] }); toast.success("Waitlist entry removed"); },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const toggleSelected = (id: string, checked: boolean) => setSelectedIds((current) => checked ? [...new Set([...current, id])] : current.filter((item) => item !== id));
+  const selectedInvitable = selectedIds.filter((id) => entries.find((entry) => entry.id === id && entry.status !== "accepted"));
+
+  if (isLoading) return <p className="text-muted-foreground">Loading waitlist...</p>;
+
+  return (
+    <>
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {[
+          ["Total", analytics?.total_waitlist_users ?? 0],
+          ["Conversion", `${analytics?.invite_conversion_rate ?? 0}%`],
+          ["Avg. Accept", `${analytics?.average_time_to_acceptance_hours ?? 0}h`],
+          ["Expired", analytics?.expired_invites ?? 0],
+          ["Members", analytics?.active_network_members ?? 0],
+        ].map(([label, value]) => <div key={label} className="rounded-lg border border-border bg-card p-3"><p className="text-xl font-bold">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>)}
+      </div>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Select value={engagementFilter} onValueChange={setEngagementFilter}>
+          <SelectTrigger className="sm:w-56"><SelectValue placeholder="Engagement level" /></SelectTrigger>
+          <SelectContent><SelectItem value="all">All engagement</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="low">Low</SelectItem></SelectContent>
+        </Select>
+        <Button onClick={() => inviteMutation.mutate(selectedInvitable)} disabled={!selectedInvitable.length || inviteMutation.isPending}>
+          Send Invite Batch ({selectedInvitable.length})
+        </Button>
+      </div>
+      <div className="overflow-auto rounded-lg border border-border">
+        <Table>
+          <TableHeader><TableRow><TableHead className="w-10"></TableHead><TableHead>Name</TableHead><TableHead>Interest</TableHead><TableHead>Priority</TableHead><TableHead>Status</TableHead><TableHead>Joined</TableHead><TableHead className="w-[180px]">Actions</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {entries.map((entry) => (
+              <TableRow key={entry.id}>
+                <TableCell><Checkbox checked={selectedIds.includes(entry.id)} onCheckedChange={(checked) => toggleSelected(entry.id, checked === true)} /></TableCell>
+                <TableCell><p className="font-medium">{entry.first_name} {entry.last_name}</p><p className="text-xs text-muted-foreground">{entry.email}{entry.phone ? ` • ${entry.phone}` : ""}</p><p className="text-xs text-muted-foreground">{entry.occupation}</p></TableCell>
+                <TableCell className="capitalize">{String(entry.interest_type).replace("_", " ")}</TableCell>
+                <TableCell><div className="space-y-2"><Select value={entry.engagement_level} onValueChange={(value) => updateEntry.mutate({ id: entry.id, updates: { engagement_level: value } })}><SelectTrigger className="h-8 w-28"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="high">High</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="low">Low</SelectItem></SelectContent></Select><div className="flex flex-wrap gap-1"><Badge variant={entry.completed_onboarding ? "default" : "outline"} className="cursor-pointer" onClick={() => updateEntry.mutate({ id: entry.id, updates: { completed_onboarding: !entry.completed_onboarding } })}>Onboarding</Badge><Badge variant={entry.estate_profile_completed ? "default" : "outline"} className="cursor-pointer" onClick={() => updateEntry.mutate({ id: entry.id, updates: { estate_profile_completed: !entry.estate_profile_completed } })}>Estate</Badge></div></div></TableCell>
+                <TableCell><Badge variant={entry.status === "accepted" ? "default" : entry.status === "expired" ? "destructive" : "secondary"}>{entry.status}</Badge></TableCell>
+                <TableCell className="text-sm text-muted-foreground">{new Date(entry.date_joined_waitlist).toLocaleDateString()}</TableCell>
+                <TableCell><div className="flex gap-1"><Button size="icon" variant="ghost" onClick={() => inviteMutation.mutate([entry.id])} title="Invite" disabled={entry.status === "accepted" || inviteMutation.isPending}><Mail className="h-4 w-4 text-primary" /></Button><Button size="icon" variant="ghost" onClick={() => updateEntry.mutate({ id: entry.id, updates: { status: "invited" } })} title="Mark invited"><CheckCircle className="h-4 w-4 text-accent" /></Button><Button size="icon" variant="ghost" className="text-destructive" onClick={() => setDeleteId(entry.id)} title="Remove"><Trash2 className="h-4 w-4" /></Button></div></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <ConfirmDeleteDialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }} title="Remove Waitlist Entry" description="This removes the person from the Faithnancial Network waitlist." onConfirm={() => deleteId && removeEntry.mutate(deleteId)} isDeleting={removeEntry.isPending} />
     </>
   );
 }

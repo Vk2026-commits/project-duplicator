@@ -546,6 +546,75 @@ export type Database = {
         }
         Relationships: []
       }
+      network_waitlist: {
+        Row: {
+          completed_onboarding: boolean
+          created_at: string
+          date_joined_waitlist: string
+          email: string
+          engagement_level: Database["public"]["Enums"]["network_engagement_level"]
+          estate_profile_completed: boolean
+          first_name: string
+          id: string
+          interest_type: Database["public"]["Enums"]["network_interest_type"]
+          invite_accepted_at: string | null
+          invite_date: string | null
+          invite_expires_at: string | null
+          invite_token_hash: string | null
+          last_name: string
+          occupation: string
+          phone: string | null
+          status: Database["public"]["Enums"]["network_waitlist_status"]
+          tags: string[]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          completed_onboarding?: boolean
+          created_at?: string
+          date_joined_waitlist?: string
+          email: string
+          engagement_level?: Database["public"]["Enums"]["network_engagement_level"]
+          estate_profile_completed?: boolean
+          first_name: string
+          id?: string
+          interest_type?: Database["public"]["Enums"]["network_interest_type"]
+          invite_accepted_at?: string | null
+          invite_date?: string | null
+          invite_expires_at?: string | null
+          invite_token_hash?: string | null
+          last_name: string
+          occupation: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["network_waitlist_status"]
+          tags?: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          completed_onboarding?: boolean
+          created_at?: string
+          date_joined_waitlist?: string
+          email?: string
+          engagement_level?: Database["public"]["Enums"]["network_engagement_level"]
+          estate_profile_completed?: boolean
+          first_name?: string
+          id?: string
+          interest_type?: Database["public"]["Enums"]["network_interest_type"]
+          invite_accepted_at?: string | null
+          invite_date?: string | null
+          invite_expires_at?: string | null
+          invite_token_hash?: string | null
+          last_name?: string
+          occupation?: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["network_waitlist_status"]
+          tags?: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       onboarding_agreements: {
         Row: {
           agreement_type: string
@@ -1011,6 +1080,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_network_invite: {
+        Args: { _token: string }
+        Returns: {
+          message: string
+          success: boolean
+        }[]
+      }
       can_access_startup_document: {
         Args: { _document_id: string; _user_id: string }
         Returns: boolean
@@ -1022,6 +1098,17 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      expire_network_waitlist_invites: { Args: never; Returns: number }
+      generate_network_waitlist_invite: {
+        Args: { _waitlist_id: string }
+        Returns: {
+          expires_at: string
+          invite_token: string
+          invite_url: string
+          recipient_email: string
+          recipient_name: string
+        }[]
       }
       has_role: {
         Args: {
@@ -1043,6 +1130,16 @@ export type Database = {
         }
         Returns: number
       }
+      network_waitlist_analytics: {
+        Args: never
+        Returns: {
+          active_network_members: number
+          average_time_to_acceptance_hours: number
+          expired_invites: number
+          invite_conversion_rate: number
+          total_waitlist_users: number
+        }[]
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -1060,6 +1157,14 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       deal_status: "pending" | "approved" | "rejected"
       deal_vote_type: "approve" | "decline"
+      network_engagement_level: "low" | "medium" | "high"
+      network_interest_type:
+        | "learn"
+        | "invest"
+        | "build_wealth"
+        | "partnership"
+        | "other"
+      network_waitlist_status: "waiting" | "invited" | "accepted" | "expired"
       risk_level: "low" | "medium" | "high" | "very_high"
     }
     CompositeTypes: {
@@ -1191,6 +1296,15 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       deal_status: ["pending", "approved", "rejected"],
       deal_vote_type: ["approve", "decline"],
+      network_engagement_level: ["low", "medium", "high"],
+      network_interest_type: [
+        "learn",
+        "invest",
+        "build_wealth",
+        "partnership",
+        "other",
+      ],
+      network_waitlist_status: ["waiting", "invited", "accepted", "expired"],
       risk_level: ["low", "medium", "high", "very_high"],
     },
   },

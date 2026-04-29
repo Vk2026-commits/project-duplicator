@@ -13,10 +13,14 @@ import { template as complianceReminder } from './compliance-reminder.tsx'
 import { template as complianceThankYou } from './compliance-thank-you.tsx'
 import { template as startupAssignment } from './startup-assignment.tsx'
 import { template as investorCommunication } from './investor-communication.tsx'
+import { template as networkWaitlistConfirmation } from './network-waitlist-confirmation.tsx'
+import { template as networkInvite } from './network-invite.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'compliance-reminder': complianceReminder,
   'compliance-thank-you': complianceThankYou,
   'startup-assignment': startupAssignment,
   'investor-communication': investorCommunication,
+  'network-waitlist-confirmation': networkWaitlistConfirmation,
+  'network-invite': networkInvite,
 }
