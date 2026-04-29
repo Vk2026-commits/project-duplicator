@@ -160,9 +160,9 @@ export default function Deals() {
 
   return (
     <Layout>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold">Deal Review</h2>
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Deal Review</h2>
           <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
             <Shield className="w-4 h-4" />
             Internal review only — not a public offering
@@ -190,7 +190,7 @@ export default function Deals() {
                 <Label>Description *</Label>
                 <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Investment Required ($)</Label>
                   <Input type="number" min="0" step="0.01" value={form.investment_required} onChange={(e) => setForm({ ...form, investment_required: e.target.value })} />
@@ -200,7 +200,7 @@ export default function Deals() {
                   <Input placeholder="e.g. 2x in 3 years" value={form.expected_return} onChange={(e) => setForm({ ...form, expected_return: e.target.value })} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Risk Level</Label>
                   <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })}>
@@ -251,10 +251,10 @@ export default function Deals() {
             const StatusIcon = statusCfg.icon;
 
             return (
-              <Card key={deal.id} className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
+              <Card key={deal.id} className="p-4 sm:p-6 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-3 mb-1">
                       <h3 className="font-display text-lg font-semibold">{deal.title}</h3>
                       <Badge className={riskColors[deal.risk_level] || ""}>
                         {deal.risk_level?.replace("_", " ")} risk

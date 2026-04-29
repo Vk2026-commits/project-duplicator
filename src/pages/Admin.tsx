@@ -33,11 +33,11 @@ export default function Admin() {
   return (
     <Layout>
       <div className="mb-6">
-        <h2 className="font-display text-2xl font-bold">Admin Dashboard</h2>
+        <h2 className="font-display text-2xl sm:text-3xl font-bold">Admin Dashboard</h2>
         <p className="text-sm text-muted-foreground mt-1">Full management of startups, investors, directory & user roles</p>
       </div>
       <Tabs defaultValue="startups" className="space-y-4">
-        <TabsList className="flex-wrap">
+        <TabsList className="w-full justify-start overflow-x-auto sm:flex-wrap sm:h-auto">
           <TabsTrigger value="startups">Startups</TabsTrigger>
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="directory">Directory & Profiles</TabsTrigger>

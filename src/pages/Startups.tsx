@@ -116,9 +116,9 @@ export default function Startups() {
 
   return (
     <Layout>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold">Startup Investments</h2>
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Startup Investments</h2>
           <p className="text-sm text-muted-foreground mt-1">Track all startup investments and their progress</p>
         </div>
         {isAdmin && <NewInvestmentDialog onAdd={(s) => addMutation.mutate(s)} isSubmitting={addMutation.isPending} />}
@@ -126,7 +126,7 @@ export default function Startups() {
       {isLoading ? (
         <p className="text-muted-foreground">Loading startups...</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {startups.map((s) => {
             const canSeeDetails = isAdmin || myStartupIds.has(s.id) || approvedRequestIds.has(s.id);
             if (canSeeDetails) {
@@ -136,7 +136,7 @@ export default function Startups() {
             const reqStatus = requestMap.get(s.id);
             const isApproved = reqStatus === "approved";
             return (
-              <div key={s.id} className="glass-card rounded-xl p-6 animate-fade-in">
+              <div key={s.id} className="glass-card rounded-xl p-4 sm:p-6 animate-fade-in min-w-0">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
                     <Briefcase className="w-5 h-5 text-muted-foreground" />

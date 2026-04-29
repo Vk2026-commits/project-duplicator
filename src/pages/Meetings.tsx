@@ -153,9 +153,9 @@ export default function Meetings() {
 
   return (
     <Layout>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold">Meetings</h2>
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Meetings</h2>
           <p className="text-sm text-muted-foreground mt-1">Monthly meetings, agendas, and notes</p>
         </div>
         {isAdmin && (
@@ -178,7 +178,7 @@ export default function Meetings() {
                    <Label>Google Meet / Video Link</Label>
                    <Input value={form.meeting_link} onChange={(e) => setForm({ ...form, meeting_link: e.target.value })} placeholder="https://meet.google.com/abc-defg-hij" />
                  </div>
-                 <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    <div className="space-y-2">
                      <Label>Date & Time *</Label>
                      <Input type="datetime-local" value={form.meeting_date} onChange={(e) => setForm({ ...form, meeting_date: e.target.value })} required />
@@ -218,16 +218,16 @@ export default function Meetings() {
 
             return (
               <Card key={meeting.id} className="overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
+                  <div className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-3 mb-1">
                         <h3 className="font-display text-lg font-semibold">{meeting.title}</h3>
                         <Badge className={statusStyles[meeting.status] || ""}>
                           {meeting.status}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mt-1">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5" />
                           {format(new Date(meeting.meeting_date), "MMM d, yyyy 'at' h:mm a")}

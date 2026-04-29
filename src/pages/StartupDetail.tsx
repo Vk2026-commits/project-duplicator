@@ -174,13 +174,13 @@ export default function StartupDetail() {
         <ArrowLeft className="w-4 h-4" /> Back to Startups
       </Link>
 
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h2 className="font-display text-2xl font-bold">{startup.name}</h2>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold break-words">{startup.name}</h2>
           <p className="text-sm text-muted-foreground">{startup.sector} · {startup.stage}</p>
         </div>
         {isAdmin && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditStartupOpen(true)}>
               <Pencil className="w-3.5 h-3.5" /> Edit
             </Button>
@@ -192,7 +192,7 @@ export default function StartupDetail() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <StatCard icon={DollarSign} title="Total Invested" value={formatCurrency(Number(startup.invested))} />
         <StatCard icon={TrendingUp} title="Current Value" value={formatCurrency(Number(startup.current_value))} change={`ROI: ${roi >= 0 ? "+" : ""}${roi.toFixed(1)}%`} changeType={roi >= 0 ? "positive" : "negative"} />
         <StatCard icon={Users} title="Investors" value={String(investors.length)} />
@@ -201,7 +201,7 @@ export default function StartupDetail() {
 
       {/* Tabs */}
       <Tabs defaultValue="about" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="investors">Investors</TabsTrigger>
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
@@ -215,7 +215,7 @@ export default function StartupDetail() {
         <TabsContent value="investors">
           <div className="space-y-4 animate-fade-in">
             {isAdmin && (
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-wrap justify-start sm:justify-end gap-2">
                 <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmailDialogOpen(true)}>
                   <Mail className="w-3.5 h-3.5" /> Email Investors
                 </Button>
@@ -253,10 +253,10 @@ export default function StartupDetail() {
                 />
               </div>
             )}
-            <div className="glass-card rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="glass-card rounded-xl overflow-hidden min-w-0">
+              <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h3 className="font-display font-semibold">Investor Breakdown</h3>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                   {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
                   <span className="text-sm font-medium text-primary">{(100 - totalEquity).toFixed(1)}% equity available</span>
                 </div>
@@ -269,7 +269,8 @@ export default function StartupDetail() {
                   <p className="text-muted-foreground text-sm">No investors added yet.</p>
                 </div>
               ) : (
-                <table className="w-full">
+                <div className="overflow-x-auto overscroll-x-contain">
+                <table className="w-full min-w-[860px]">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
@@ -366,6 +367,7 @@ export default function StartupDetail() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           </div>

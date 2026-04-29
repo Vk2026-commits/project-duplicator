@@ -25,13 +25,13 @@ export default function StartupCard({ startup }: StartupCardProps) {
   };
 
   return (
-    <Link to={`/startups/${startup.id}`} className="glass-card rounded-xl p-5 hover:border-primary/30 transition-all group animate-fade-in block">
-      <div className="flex items-start justify-between mb-3">
-        <div>
+    <Link to={`/startups/${startup.id}`} className="glass-card rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all group animate-fade-in block min-w-0">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="min-w-0">
           <h4 className="font-display font-semibold group-hover:text-primary transition-colors">{startup.name}</h4>
           <p className="text-xs text-muted-foreground mt-0.5">{startup.sector}</p>
         </div>
-        <span className={`text-xs px-2 py-1 rounded-full border ${stageStyles[startup.stage]}`}>
+        <span className={`shrink-0 text-xs px-2 py-1 rounded-full border ${stageStyles[startup.stage]}`}>
           {startup.stage}
         </span>
       </div>
@@ -44,7 +44,7 @@ export default function StartupCard({ startup }: StartupCardProps) {
       </div>
       <Progress value={startup.progress} className="h-1.5 mb-4" />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs text-muted-foreground">Invested</p>
           <p className="text-sm font-medium">{formatCurrency(startup.invested)}</p>

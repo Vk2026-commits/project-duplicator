@@ -134,9 +134,9 @@ export default function Contributions() {
 
   return (
     <Layout>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-2xl font-bold">Capital & Contributions</h2>
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Capital & Contributions</h2>
           <p className="text-sm text-muted-foreground mt-1">Track member contributions and group capital pool</p>
         </div>
         {isAdmin && (
@@ -162,7 +162,7 @@ export default function Contributions() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Amount ($) *</Label>
                     <Input type="number" min="0.01" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
@@ -186,7 +186,7 @@ export default function Contributions() {
       </div>
 
       {/* Capital Pool Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <Card className="p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
