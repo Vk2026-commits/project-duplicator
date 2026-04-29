@@ -14,6 +14,9 @@ export default function NetworkInvite() {
   const [message, setMessage] = useState("This secure invitation requires you to sign in first.");
 
   useEffect(() => {
+    if (!loading && !user && token) {
+      sessionStorage.setItem("faithnancial-pending-network-invite", `/network-invite?token=${encodeURIComponent(token)}`);
+    }
     if (loading || !user || !token || status !== "idle") return;
     setStatus("accepting");
     supabase.rpc("accept_network_invite" as any, { _token: token }).then(({ data, error }) => {
@@ -39,7 +42,7 @@ export default function NetworkInvite() {
         <p className="mt-4 leading-7 text-muted-foreground">{message}</p>
         {!user && !loading && (
           <Button asChild className="mt-8 gradient-accent text-accent-foreground">
-            <Link to={`/?signin=true#signin`}>Sign in to accept</Link>
+            <Link to="/#signin">Sign in to accept</Link>
           </Button>
         )}
         {status === "error" && (
