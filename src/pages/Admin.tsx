@@ -24,7 +24,7 @@ export default function Admin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) navigate("/login");
+    if (!loading && (!user || !isAdmin)) navigate("/#signin");
   }, [loading, user, isAdmin, navigate]);
 
   if (loading) return <Layout><p className="text-muted-foreground p-8">Loading...</p></Layout>;
