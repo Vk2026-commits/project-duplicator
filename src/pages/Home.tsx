@@ -356,9 +356,15 @@ export default function Home() {
                   </div>
                   <h3 className="font-display text-2xl font-semibold">{item.title}</h3>
                   <p className="mt-3 flex-1 leading-7 text-muted-foreground">{item.description}</p>
-                  <Button asChild variant={item.title === "Manage Your Finances" ? "default" : "outline"} className="mt-6 w-full">
-                    {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
-                  </Button>
+                  {item.title === "Manage Your Finances" ? (
+                    <Button variant="default" className="mt-6 w-full" onClick={showCreateAccount}>
+                      {item.cta}
+                    </Button>
+                  ) : (
+                    <Button asChild variant="outline" className="mt-6 w-full">
+                      {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
