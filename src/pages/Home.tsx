@@ -398,9 +398,19 @@ export default function Home() {
                       </Button>
                       {showNetworkInvite && (
                         <div className="mt-4 rounded-lg border border-accent/20 bg-accent/10 p-4">
-                          <p className="text-sm leading-6 text-muted-foreground">
-                            Add your name to the list to join this network. Until then, please manage your finances and build your legacy so you can grow together with us and be invited to the trusted network to learn, invest, and build wealth through shared opportunities.
-                          </p>
+                          <h4 className="font-display text-xl font-bold text-foreground">Join the Faithnancial Network Waitlist</h4>
+                          <div className="mt-3 space-y-3 text-sm leading-6 text-muted-foreground">
+                            <p>Our investment network is currently at capacity with active members and ongoing opportunities.</p>
+                            <p>This is a curated community designed for collaboration, trust, and long-term wealth building — which means we grow intentionally, not quickly.</p>
+                            <p>Add your name to the waitlist, and you’ll be first to know when new openings become available.</p>
+                            <p>In the meantime, continue strengthening your foundation:</p>
+                            <ul className="space-y-2 pl-1">
+                              <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Manage your finances</li>
+                              <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Build your legacy</li>
+                              <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-accent" /> Prepare for opportunities ahead</li>
+                            </ul>
+                            <p>When a spot opens, you’ll be ready to step in and grow with us.</p>
+                          </div>
                           <form onSubmit={handleWaitlistSubmit} className="mt-5 space-y-3">
                             <div className="grid gap-3 sm:grid-cols-2">
                               <Input placeholder="First name" value={waitlistForm.firstName} onChange={(e) => setWaitlistForm({ ...waitlistForm, firstName: e.target.value })} required />
@@ -429,7 +439,7 @@ export default function Home() {
                               </SelectContent>
                             </Select>
                             <Button type="submit" className="w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
-                              {waitlistLoading ? "Joining..." : "Join Network Waitlist"}
+                              {waitlistLoading ? "Joining..." : "👉 Join the Waitlist"}
                             </Button>
                           </form>
                         </div>
