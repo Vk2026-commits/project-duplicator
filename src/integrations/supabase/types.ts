@@ -1100,6 +1100,16 @@ export type Database = {
         Returns: number
       }
       expire_network_waitlist_invites: { Args: never; Returns: number }
+      generate_network_waitlist_invite: {
+        Args: { _waitlist_id: string }
+        Returns: {
+          expires_at: string
+          invite_token: string
+          invite_url: string
+          recipient_email: string
+          recipient_name: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
