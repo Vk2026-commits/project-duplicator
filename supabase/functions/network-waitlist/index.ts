@@ -16,6 +16,7 @@ const json = (body: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
 const clean = (value?: string) => value?.trim() ?? ''
+const normalizePhone = (value?: string) => clean(value).replace(/\D/g, '')
 const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
 Deno.serve(async (req) => {
@@ -62,6 +63,8 @@ Deno.serve(async (req) => {
   const firstName = clean(body.firstName)
   const lastName = clean(body.lastName)
   const email = clean(body.email).toLowerCase()
+  const phone = clean(body.phone)
+  const phoneDigits = normalizePhone(body.phone)
   const occupation = clean(body.occupation)
   const interestType = body.interestType ?? 'learn'
   if (!firstName || !lastName || !occupation || !isEmail(email)) return json({ error: 'Please complete all required fields.' }, 400)
@@ -73,22 +76,29 @@ Deno.serve(async (req) => {
     userId = data.user?.id ?? null
   }
 
-  const { data: existing } = await adminClient.from('network_waitlist').select('id, status').ilike('email', email).maybeSingle()
+  const { data: existingByEmail } = await adminClient.from('network_waitlist').select('id, status').ilike('email', email).maybeSingle()
+  if (existingByEmail) return json({ success: true, alreadyOnList: true, message: 'You’re already on the Faithnancial Network waitlist.' })
+
+  if (phoneDigits) {
+    const { data: allPhones, error: phoneLookupError } = await adminClient.from('network_waitlist').select('id, phone')
+    if (phoneLookupError) return json({ error: phoneLookupError.message }, 400)
+    const existingByPhone = (allPhones ?? []).find((entry) => normalizePhone(entry.phone) === phoneDigits)
+    if (existingByPhone) return json({ success: true, alreadyOnList: true, message: 'You’re already on the Faithnancial Network waitlist.' })
+  }
+
   const payload = {
     user_id: userId,
     first_name: firstName,
     last_name: lastName,
     email,
-    phone: clean(body.phone) || null,
+    phone: phone || null,
     occupation,
     interest_type: interestType,
-    status: existing?.status === 'accepted' ? 'accepted' : 'waiting',
+    status: 'waiting',
     tags: ['Waitlist - Network'],
   }
 
-  const result = existing
-    ? await adminClient.from('network_waitlist').update(payload).eq('id', existing.id).select('id').single()
-    : await adminClient.from('network_waitlist').insert(payload).select('id').single()
+  const result = await adminClient.from('network_waitlist').insert(payload).select('id').single()
   if (result.error) return json({ error: result.error.message }, 400)
 
   await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {

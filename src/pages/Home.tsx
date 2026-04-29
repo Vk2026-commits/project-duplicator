@@ -96,6 +96,7 @@ export default function Home() {
   const [showNetworkInvite, setShowNetworkInvite] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+  const [waitlistStatusMessage, setWaitlistStatusMessage] = useState("We saved your request and sent a confirmation email.");
   const [waitlistForm, setWaitlistForm] = useState({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
 
   useEffect(() => {
@@ -188,11 +189,13 @@ export default function Home() {
     e.preventDefault();
     setWaitlistLoading(true);
     try {
-      const { error } = await supabase.functions.invoke("network-waitlist", {
+      const { data, error } = await supabase.functions.invoke("network-waitlist", {
         body: { action: "join", ...waitlistForm },
       });
       if (error) throw error;
-      toast.success("You're on the Faithnancial Network waitlist. Check your email for confirmation.");
+      const message = data?.alreadyOnList ? "You’re already on the Faithnancial Network waitlist." : "You're on the Faithnancial Network waitlist. Check your email for confirmation.";
+      toast.success(message);
+      setWaitlistStatusMessage(data?.alreadyOnList ? "You’re already on the list, so we did not create a duplicate entry." : "We saved your request and sent a confirmation email.");
       setWaitlistSubmitted(true);
       setWaitlistForm({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
     } catch (err: any) {
@@ -448,7 +451,7 @@ export default function Home() {
                                 <p className="flex items-center gap-2 font-semibold text-accent">
                                   <CheckCircle2 className="h-4 w-4" /> You’re on the Faithnancial Network waitlist.
                                 </p>
-                                <p className="mt-1 text-muted-foreground">We saved your request and sent a confirmation email.</p>
+                                <p className="mt-1 text-muted-foreground">{waitlistStatusMessage}</p>
                               </div>
                             )}
                           </form>
