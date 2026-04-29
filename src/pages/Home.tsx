@@ -5,12 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import {
   ArrowRight,
   BookOpen,
+  BriefcaseBusiness,
   CheckCircle2,
   FileLock2,
   Handshake,
@@ -21,6 +23,7 @@ import {
   Mail,
   Map,
   Network,
+  Phone,
   PiggyBank,
   Repeat2,
   ShieldCheck,
@@ -91,6 +94,8 @@ export default function Home() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [showNetworkInvite, setShowNetworkInvite] = useState(false);
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistForm, setWaitlistForm] = useState({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
 
   useEffect(() => {
     if (searchParams.get("signup") === "true") {
@@ -169,6 +174,23 @@ export default function Home() {
       toast.error(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke("network-waitlist", {
+        body: { action: "join", ...waitlistForm },
+      });
+      if (error) throw error;
+      toast.success("You're on the Faithnancial Network waitlist. Check your email for confirmation.");
+      setWaitlistForm({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
+    } catch (err: any) {
+      toast.error(err.message || "Unable to join the waitlist right now.");
+    } finally {
+      setWaitlistLoading(false);
     }
   };
 
