@@ -451,7 +451,7 @@ export default function Home() {
                                 <p className="flex items-center gap-2 font-semibold text-accent">
                                   <CheckCircle2 className="h-4 w-4" /> You’re on the Faithnancial Network waitlist.
                                 </p>
-                                <p className="mt-1 text-muted-foreground">We saved your request and sent a confirmation email.</p>
+                                <p className="mt-1 text-muted-foreground">{waitlistStatusMessage}</p>
                               </div>
                             )}
                           </form>
