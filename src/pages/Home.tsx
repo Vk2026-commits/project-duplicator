@@ -497,11 +497,11 @@ export default function Home() {
       </section>
 
       <section className="border-y border-border bg-secondary/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-5xl reveal-up" data-reveal>
           <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">How Faithnancial Works</h2>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {["Start with your finances", "Organize your documents and legacy", "Connect and grow with others"].map((step, index) => (
-              <div key={step} className="rounded-xl border border-border bg-card p-6">
+              <div key={step} className="motion-card rounded-xl border border-border bg-card p-6" style={{ transitionDelay: `${index * 80}ms` }}>
                 <p className="text-sm font-semibold text-accent">Step {index + 1}</p>
                 <p className="mt-3 font-display text-xl font-semibold">{step}</p>
               </div>
@@ -511,13 +511,13 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="mx-auto grid max-w-6xl gap-8 reveal-up lg:grid-cols-[0.9fr_1.1fr] lg:items-center" data-reveal>
           <div>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">Built on Security and Trust</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {trustBullets.map((bullet) => (
-              <div key={bullet} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
+              <div key={bullet} className="motion-card flex items-center gap-3 rounded-xl border border-border bg-card p-4">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-accent" />
                 <span className="font-medium">{bullet}</span>
               </div>
@@ -527,7 +527,7 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border bg-card/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl text-center reveal-up" data-reveal>
           <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-accent" />
           <h2 className="font-display text-3xl font-bold sm:text-4xl">If something happened tomorrow, would everything be in place?</h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
