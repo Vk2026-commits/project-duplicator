@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import DisclaimerModal from "./components/DisclaimerModal";
 import Onboarding from "./pages/Onboarding";
 import Unsubscribe from "./pages/Unsubscribe";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,7 @@ const App = () => (
         <AuthProvider>
           <DisclaimerModal />
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<P><Index /></P>} />
             <Route path="/investors" element={<P><Investors /></P>} />
