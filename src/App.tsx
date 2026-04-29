@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +16,6 @@ import Performance from "./pages/Performance";
 import Mission from "./pages/Mission";
 import Information from "./pages/Information";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
 import Disclosures from "./pages/Disclosures";
 import Meetings from "./pages/Meetings";
 import Deals from "./pages/Deals";
@@ -44,7 +43,7 @@ const App = () => (
           <DisclaimerModal />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Navigate to="/#signin" replace />} />
             <Route path="/dashboard" element={<P><Index /></P>} />
             <Route path="/investors" element={<P><Investors /></P>} />
             <Route path="/investors/:id" element={<P><InvestorDetail /></P>} />
