@@ -86,6 +86,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +106,23 @@ export default function Home() {
         toast.success("Signed in successfully!");
       }
       navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Password reset email sent. Check your inbox.");
+      setForgotPassword(false);
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -157,11 +175,11 @@ export default function Home() {
           <div id="signin" className="scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
             <div className="mb-5">
               <p className="text-sm font-semibold text-accent">Member access</p>
-              <h2 className="mt-1 font-display text-2xl font-bold">{isSignUp ? "Create your account" : "Sign in to Faithnancial"}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Private access for Faithnancial members and invited users.</p>
+              <h2 className="mt-1 font-display text-2xl font-bold">{forgotPassword ? "Reset your password" : isSignUp ? "Create your account" : "Sign in to Faithnancial"}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{forgotPassword ? "Enter your email and we’ll send a secure reset link." : "Private access for Faithnancial members and invited users."}</p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {isSignUp && (
+            <form onSubmit={forgotPassword ? handleResetRequest : handleSubmit} className="space-y-4">
+              {isSignUp && !forgotPassword && (
                 <div className="space-y-2">
                   <Label htmlFor="homeFullName" className="text-sm text-muted-foreground">Full Name</Label>
                   <Input
@@ -189,7 +207,7 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div className="space-y-2">
+              {!forgotPassword && <div className="space-y-2">
                 <Label htmlFor="homePassword" className="text-sm text-muted-foreground">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -204,9 +222,18 @@ export default function Home() {
                     minLength={6}
                   />
                 </div>
-              </div>
+              </div>}
+              {!isSignUp && !forgotPassword && (
+                <div className="flex justify-end">
+                  <button type="button" className="text-sm font-semibold text-accent hover:underline" onClick={() => setForgotPassword(true)}>
+                    Forgot password?
+                  </button>
+                </div>
+              )}
               <Button className="w-full gradient-accent text-accent-foreground font-semibold" size="lg" disabled={loading}>
-                {loading ? "Please wait..." : isSignUp ? (
+                {loading ? "Please wait..." : forgotPassword ? (
+                  <>Send Reset Email <Mail className="h-4 w-4" /></>
+                ) : isSignUp ? (
                   <>Sign Up <UserPlus className="h-4 w-4" /></>
                 ) : (
                   <>Sign In <ArrowRight className="h-4 w-4" /></>
@@ -214,9 +241,9 @@ export default function Home() {
               </Button>
             </form>
             <p className="mt-5 text-center text-sm text-muted-foreground">
-              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-              <button className="font-semibold text-accent hover:underline" onClick={() => setIsSignUp(!isSignUp)}>
-                {isSignUp ? "Sign In" : "Sign Up"}
+              {forgotPassword ? "Remember your password?" : isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button className="font-semibold text-accent hover:underline" onClick={() => forgotPassword ? setForgotPassword(false) : setIsSignUp(!isSignUp)}>
+                {forgotPassword ? "Sign In" : isSignUp ? "Sign In" : "Sign Up"}
               </button>
             </p>
           </div>
