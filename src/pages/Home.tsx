@@ -373,6 +373,7 @@ export default function Home() {
                           Add your name to the list to join this network. Until then, please manage your finances and build your legacy so you can grow together with us and be invited to the trusted network to learn, invest, and build wealth through shared opportunities.
                         </p>
                       )}
+                    </>
                   ) : (
                     <Button asChild variant="outline" className="mt-6 w-full">
                       {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
