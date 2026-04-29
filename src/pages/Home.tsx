@@ -371,7 +371,7 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl text-center reveal-up" data-reveal>
           <h2 className="font-display text-3xl font-bold sm:text-4xl">Why Faithnancial Was Created</h2>
           <div className="mt-6 space-y-4 text-lg leading-8 text-muted-foreground">
             <p>Too many people are trying to build their financial lives alone.</p>
@@ -384,15 +384,15 @@ export default function Home() {
 
       <section className="border-y border-border bg-card/30 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-10 max-w-3xl text-center">
+          <div className="mx-auto mb-10 max-w-3xl text-center reveal-up" data-reveal>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">The Faithnancial Framework</h2>
             <p className="mt-3 text-muted-foreground">12 principles guiding financial growth, discipline, and legacy</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {principles.map((principle) => (
-              <Card key={`${principle.letter}-${principle.word}`} className="bg-background/70">
+            {principles.map((principle, index) => (
+              <Card key={`${principle.letter}-${principle.word}`} className="motion-card reveal-up bg-background/70" data-reveal style={{ transitionDelay: `${index * 45}ms` }}>
                 <CardContent className="flex min-h-32 gap-4 p-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <div className="principle-icon-motion flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <principle.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -408,10 +408,10 @@ export default function Home() {
 
       <section id="ecosystem" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">One Ecosystem. Three Core Systems.</h2>
+          <h2 className="reveal-up text-center font-display text-3xl font-bold sm:text-4xl" data-reveal>One Ecosystem. Three Core Systems.</h2>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {ecosystem.map((item) => (
-              <Card key={item.title} className="bg-card">
+            {ecosystem.map((item, index) => (
+              <Card key={item.title} className="motion-card reveal-up bg-card" data-reveal style={{ transitionDelay: `${index * 90}ms` }}>
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-6 w-6" />
@@ -419,12 +419,12 @@ export default function Home() {
                   <h3 className="font-display text-2xl font-semibold">{item.title}</h3>
                   <p className="mt-3 flex-1 leading-7 text-muted-foreground">{item.description}</p>
                   {item.title === "Manage Your Finances" ? (
-                    <Button variant="default" className="mt-6 w-full" onClick={showCreateAccount}>
+                    <Button variant="default" className="motion-button mt-6 w-full" onClick={showCreateAccount}>
                       {item.cta}
                     </Button>
                   ) : item.title === "Grow Together" ? (
                     <>
-                      <Button variant="outline" className="mt-6 w-full" onClick={() => setShowNetworkInvite(true)}>
+                      <Button variant="outline" className="motion-button mt-6 w-full" onClick={() => setShowNetworkInvite(true)}>
                         {item.cta}
                       </Button>
                       {showNetworkInvite && (
@@ -469,7 +469,7 @@ export default function Home() {
                                 <SelectItem value="other">Other</SelectItem>
                               </SelectContent>
                             </Select>
-                            <Button type="submit" className="w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
+                            <Button type="submit" className="motion-button w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
                               {waitlistLoading ? "Joining..." : "👉 Join the Waitlist"}
                             </Button>
                             {waitlistSubmitted && (
@@ -485,7 +485,7 @@ export default function Home() {
                       )}
                     </>
                   ) : (
-                    <Button asChild variant="outline" className="mt-6 w-full">
+                    <Button asChild variant="outline" className="motion-button mt-6 w-full">
                       {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
                     </Button>
                   )}
