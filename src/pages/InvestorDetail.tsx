@@ -56,23 +56,23 @@ export default function InvestorDetail() {
         <ArrowLeft className="w-4 h-4" /> Back to Investors
       </Link>
 
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center text-lg font-bold text-primary-foreground">
+      <div className="flex items-center gap-4 mb-6 sm:mb-8 min-w-0">
+        <div className="w-14 h-14 shrink-0 rounded-full gradient-primary flex items-center justify-center text-lg font-bold text-primary-foreground">
           {investorName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
         </div>
-        <div>
-          <h2 className="font-display text-2xl font-bold">{investorName}</h2>
-          {email && <p className="text-sm text-muted-foreground">{email}</p>}
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold break-words">{investorName}</h2>
+          {email && <p className="text-sm text-muted-foreground break-all">{email}</p>}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:mb-8">
         <StatCard icon={DollarSign} title="Total Invested" value={formatCurrency(totalInvested)} />
         <StatCard icon={Briefcase} title="Startups" value={String(startupCount)} />
         <StatCard icon={TrendingUp} title="Total Equity" value={`${activeInvestments.reduce((sum, i) => sum + Number(i.equity_percentage), 0).toFixed(1)}%`} />
       </div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h3 className="font-display font-semibold text-lg">
           {showArchived ? "Archived Investments" : "Investment Breakdown"}
         </h3>
@@ -90,7 +90,8 @@ export default function InvestorDetail() {
             {showArchived ? "No archived investments." : "No active investments found."}
           </p>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-border">
                 <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Startup</th>
@@ -118,6 +119,7 @@ export default function InvestorDetail() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

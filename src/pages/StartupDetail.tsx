@@ -215,7 +215,7 @@ export default function StartupDetail() {
         <TabsContent value="investors">
           <div className="space-y-4 animate-fade-in">
             {isAdmin && (
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-wrap justify-start sm:justify-end gap-2">
                 <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEmailDialogOpen(true)}>
                   <Mail className="w-3.5 h-3.5" /> Email Investors
                 </Button>
@@ -253,10 +253,10 @@ export default function StartupDetail() {
                 />
               </div>
             )}
-            <div className="glass-card rounded-xl overflow-hidden">
-              <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="glass-card rounded-xl overflow-hidden min-w-0">
+              <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h3 className="font-display font-semibold">Investor Breakdown</h3>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                   {totalFromInvestors > 0 && <span className="text-sm text-muted-foreground">Total: {formatCurrency(totalFromInvestors)}</span>}
                   <span className="text-sm font-medium text-primary">{(100 - totalEquity).toFixed(1)}% equity available</span>
                 </div>
@@ -269,7 +269,8 @@ export default function StartupDetail() {
                   <p className="text-muted-foreground text-sm">No investors added yet.</p>
                 </div>
               ) : (
-                <table className="w-full">
+                <div className="overflow-x-auto overscroll-x-contain">
+                <table className="w-full min-w-[860px]">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
@@ -366,6 +367,7 @@ export default function StartupDetail() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           </div>
