@@ -26,6 +26,7 @@ import DisclaimerModal from "./components/DisclaimerModal";
 import Onboarding from "./pages/Onboarding";
 import Unsubscribe from "./pages/Unsubscribe";
 import Home from "./pages/Home";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Navigate to="/#signin" replace />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<P><Index /></P>} />
             <Route path="/investors" element={<P><Investors /></P>} />
             <Route path="/investors/:id" element={<P><InvestorDetail /></P>} />
