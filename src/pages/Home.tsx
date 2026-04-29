@@ -106,6 +106,32 @@ export default function Home() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+
+    if (reduceMotion || revealItems.length === 0) {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+
+    return () => observer.disconnect();
+  }, []);
+
   const showCreateAccount = () => {
     setIsSignUp(true);
     setForgotPassword(false);
@@ -220,32 +246,32 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="relative border-b border-border">
+      <section className="home-hero-motion relative overflow-hidden border-b border-border">
         <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
+            <p className="hero-kicker mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-accent" /> Faith-led financial organization
             </p>
-            <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="hero-headline font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Faith. Finances. Freedom. Build Wealth Together.
             </h1>
-            <p className="mt-5 max-w-2xl font-display text-2xl font-semibold leading-8 text-accent sm:text-3xl">
+            <p className="hero-subheadline mt-5 max-w-2xl font-display text-2xl font-semibold leading-8 text-accent sm:text-3xl">
               Your financial life and estate plan — all in one place.
             </p>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
+            <p className="hero-copy mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+            <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" className="motion-button gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
                 Start Managing My Finances <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="motion-button" asChild>
                 <a href="#ecosystem">Explore the Ecosystem</a>
               </Button>
             </div>
           </div>
 
-          <div id="signin" className="scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
+          <div id="signin" className="hero-signin scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
             <div className="mb-5">
               <p className="text-sm font-semibold text-accent">Member access</p>
               <h2 className="mt-1 font-display text-2xl font-bold">{forgotPassword ? "Reset your password" : isSignUp ? "Create your account" : "Sign in to Faithnancial"}</h2>
