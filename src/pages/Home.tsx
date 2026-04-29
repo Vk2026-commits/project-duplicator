@@ -200,10 +200,8 @@ export default function Home() {
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild className="gradient-accent text-accent-foreground font-semibold">
-                <a href={budgetAppUrl}>
-                  Start Managing My Finances <ArrowRight className="h-4 w-4" />
-                </a>
+              <Button size="lg" className="gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+                Start Managing My Finances <ArrowRight className="h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <a href="#ecosystem">Explore the Ecosystem</a>
