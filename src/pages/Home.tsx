@@ -76,14 +76,14 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link to="/" className="font-display text-xl font-bold text-gradient">
+          <Link to="/" className="font-display text-xl font-bold text-accent">
             Faithnancial
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button asChild className="gradient-primary text-primary-foreground font-semibold">
+            <Button asChild className="gradient-accent text-accent-foreground font-semibold">
               <a href={budgetAppUrl}>Start Free Trial</a>
             </Button>
           </div>
@@ -93,8 +93,8 @@ export default function Home() {
       <section className="relative border-b border-border">
         <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Faith-led financial organization
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 text-accent" /> Faith-led financial organization
             </p>
             <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Faith. Finances. Freedom. Build Wealth Together.
@@ -103,7 +103,7 @@ export default function Home() {
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild className="gradient-primary text-primary-foreground font-semibold">
+              <Button size="lg" asChild className="gradient-accent text-accent-foreground font-semibold">
                 <a href={budgetAppUrl}>
                   Start Managing My Finances <ArrowRight className="h-4 w-4" />
                 </a>
@@ -114,7 +114,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5 glow-primary sm:p-6">
+          <div className="glass-card rounded-2xl p-5 glow-accent sm:p-6">
             <div className="grid gap-4">
               {[
                 { label: "Budget", value: "Organized", icon: Wallet },
@@ -122,7 +122,7 @@ export default function Home() {
                 { label: "Legacy", value: "Prepared", icon: Layers3 },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-4 rounded-xl border border-border bg-secondary/60 p-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -158,11 +158,11 @@ export default function Home() {
             {principles.map((principle) => (
               <Card key={`${principle.letter}-${principle.word}`} className="bg-background/70">
                 <CardContent className="flex min-h-32 gap-4 p-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <principle.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-display text-xl font-bold"><span className="text-primary">{principle.letter}</span> — {principle.word}</p>
+                    <p className="font-display text-xl font-bold"><span className="text-accent">{principle.letter}</span> — {principle.word}</p>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">{principle.description}</p>
                   </div>
                 </CardContent>
@@ -179,7 +179,7 @@ export default function Home() {
             {ecosystem.map((item) => (
               <Card key={item.title} className="bg-card">
                 <CardContent className="flex h-full flex-col p-6">
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-6 w-6" />
                   </div>
                   <h3 className="font-display text-2xl font-semibold">{item.title}</h3>
@@ -200,7 +200,7 @@ export default function Home() {
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {["Start with your finances", "Organize your documents and legacy", "Connect and grow with others"].map((step, index) => (
               <div key={step} className="rounded-xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-primary">Step {index + 1}</p>
+                <p className="text-sm font-semibold text-accent">Step {index + 1}</p>
                 <p className="mt-3 font-display text-xl font-semibold">{step}</p>
               </div>
             ))}
@@ -226,7 +226,7 @@ export default function Home() {
 
       <section className="border-t border-border bg-card/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-primary" />
+          <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-accent" />
           <h2 className="font-display text-3xl font-bold sm:text-4xl">If something happened tomorrow, would everything be in place?</h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
             Your finances, documents, and plans should not be scattered.
@@ -234,7 +234,7 @@ export default function Home() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
             Faithnancial brings everything together so you, your family, and your future are protected.
           </p>
-          <Button size="lg" asChild className="mt-8 gradient-primary text-primary-foreground font-semibold">
+          <Button size="lg" asChild className="mt-8 gradient-accent text-accent-foreground font-semibold">
             <a href={budgetAppUrl}>
               Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
             </a>
