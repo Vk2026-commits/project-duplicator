@@ -95,6 +95,7 @@ export default function Home() {
   const [rememberMe, setRememberMe] = useState(true);
   const [showNetworkInvite, setShowNetworkInvite] = useState(false);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
   const [waitlistForm, setWaitlistForm] = useState({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
 
   useEffect(() => {
@@ -192,6 +193,7 @@ export default function Home() {
       });
       if (error) throw error;
       toast.success("You're on the Faithnancial Network waitlist. Check your email for confirmation.");
+      setWaitlistSubmitted(true);
       setWaitlistForm({ firstName: "", lastName: "", email: "", phone: "", occupation: "", interestType: "learn" });
     } catch (err: any) {
       toast.error(err.message || "Unable to join the waitlist right now.");
@@ -441,6 +443,14 @@ export default function Home() {
                             <Button type="submit" className="w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
                               {waitlistLoading ? "Joining..." : "👉 Join the Waitlist"}
                             </Button>
+                            {waitlistSubmitted && (
+                              <div className="rounded-lg border border-accent/25 bg-card p-4 text-sm leading-6 text-foreground">
+                                <p className="flex items-center gap-2 font-semibold text-accent">
+                                  <CheckCircle2 className="h-4 w-4" /> You’re on the Faithnancial Network waitlist.
+                                </p>
+                                <p className="mt-1 text-muted-foreground">We saved your request and sent a confirmation email.</p>
+                              </div>
+                            )}
                           </form>
                         </div>
                       )}
