@@ -106,6 +106,32 @@ export default function Home() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+
+    if (reduceMotion || revealItems.length === 0) {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+
+    return () => observer.disconnect();
+  }, []);
+
   const showCreateAccount = () => {
     setIsSignUp(true);
     setForgotPassword(false);
@@ -220,32 +246,32 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="relative border-b border-border">
+      <section className="home-hero-motion relative overflow-hidden border-b border-border">
         <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
+            <p className="hero-kicker mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-accent" /> Faith-led financial organization
             </p>
-            <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="hero-headline font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Faith. Finances. Freedom. Build Wealth Together.
             </h1>
-            <p className="mt-5 max-w-2xl font-display text-2xl font-semibold leading-8 text-accent sm:text-3xl">
+            <p className="hero-subheadline mt-5 max-w-2xl font-display text-2xl font-semibold leading-8 text-accent sm:text-3xl">
               Your financial life and estate plan — all in one place.
             </p>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
+            <p className="hero-copy mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+            <div className="hero-actions mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" className="motion-button gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
                 Start Managing My Finances <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="motion-button" asChild>
                 <a href="#ecosystem">Explore the Ecosystem</a>
               </Button>
             </div>
           </div>
 
-          <div id="signin" className="scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
+          <div id="signin" className="hero-signin scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
             <div className="mb-5">
               <p className="text-sm font-semibold text-accent">Member access</p>
               <h2 className="mt-1 font-display text-2xl font-bold">{forgotPassword ? "Reset your password" : isSignUp ? "Create your account" : "Sign in to Faithnancial"}</h2>
@@ -345,7 +371,7 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl text-center reveal-up" data-reveal>
           <h2 className="font-display text-3xl font-bold sm:text-4xl">Why Faithnancial Was Created</h2>
           <div className="mt-6 space-y-4 text-lg leading-8 text-muted-foreground">
             <p>Too many people are trying to build their financial lives alone.</p>
@@ -358,15 +384,15 @@ export default function Home() {
 
       <section className="border-y border-border bg-card/30 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-10 max-w-3xl text-center">
+          <div className="mx-auto mb-10 max-w-3xl text-center reveal-up" data-reveal>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">The Faithnancial Framework</h2>
             <p className="mt-3 text-muted-foreground">12 principles guiding financial growth, discipline, and legacy</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {principles.map((principle) => (
-              <Card key={`${principle.letter}-${principle.word}`} className="bg-background/70">
+            {principles.map((principle, index) => (
+              <Card key={`${principle.letter}-${principle.word}`} className="motion-card reveal-up bg-background/70" data-reveal style={{ transitionDelay: `${index * 45}ms` }}>
                 <CardContent className="flex min-h-32 gap-4 p-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                  <div className="principle-icon-motion flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <principle.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -382,10 +408,10 @@ export default function Home() {
 
       <section id="ecosystem" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">One Ecosystem. Three Core Systems.</h2>
+          <h2 className="reveal-up text-center font-display text-3xl font-bold sm:text-4xl" data-reveal>One Ecosystem. Three Core Systems.</h2>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {ecosystem.map((item) => (
-              <Card key={item.title} className="bg-card">
+            {ecosystem.map((item, index) => (
+              <Card key={item.title} className="motion-card reveal-up bg-card" data-reveal style={{ transitionDelay: `${index * 90}ms` }}>
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-6 w-6" />
@@ -393,12 +419,12 @@ export default function Home() {
                   <h3 className="font-display text-2xl font-semibold">{item.title}</h3>
                   <p className="mt-3 flex-1 leading-7 text-muted-foreground">{item.description}</p>
                   {item.title === "Manage Your Finances" ? (
-                    <Button variant="default" className="mt-6 w-full" onClick={showCreateAccount}>
+                    <Button variant="default" className="motion-button mt-6 w-full" onClick={showCreateAccount}>
                       {item.cta}
                     </Button>
                   ) : item.title === "Grow Together" ? (
                     <>
-                      <Button variant="outline" className="mt-6 w-full" onClick={() => setShowNetworkInvite(true)}>
+                      <Button variant="outline" className="motion-button mt-6 w-full" onClick={() => setShowNetworkInvite(true)}>
                         {item.cta}
                       </Button>
                       {showNetworkInvite && (
@@ -443,7 +469,7 @@ export default function Home() {
                                 <SelectItem value="other">Other</SelectItem>
                               </SelectContent>
                             </Select>
-                            <Button type="submit" className="w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
+                            <Button type="submit" className="motion-button w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
                               {waitlistLoading ? "Joining..." : "👉 Join the Waitlist"}
                             </Button>
                             {waitlistSubmitted && (
@@ -459,7 +485,7 @@ export default function Home() {
                       )}
                     </>
                   ) : (
-                    <Button asChild variant="outline" className="mt-6 w-full">
+                    <Button asChild variant="outline" className="motion-button mt-6 w-full">
                       {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
                     </Button>
                   )}
@@ -471,11 +497,11 @@ export default function Home() {
       </section>
 
       <section className="border-y border-border bg-secondary/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-5xl reveal-up" data-reveal>
           <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">How Faithnancial Works</h2>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {["Start with your finances", "Organize your documents and legacy", "Connect and grow with others"].map((step, index) => (
-              <div key={step} className="rounded-xl border border-border bg-card p-6">
+              <div key={step} className="motion-card rounded-xl border border-border bg-card p-6" style={{ transitionDelay: `${index * 80}ms` }}>
                 <p className="text-sm font-semibold text-accent">Step {index + 1}</p>
                 <p className="mt-3 font-display text-xl font-semibold">{step}</p>
               </div>
@@ -485,13 +511,13 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="mx-auto grid max-w-6xl gap-8 reveal-up lg:grid-cols-[0.9fr_1.1fr] lg:items-center" data-reveal>
           <div>
             <h2 className="font-display text-3xl font-bold sm:text-4xl">Built on Security and Trust</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {trustBullets.map((bullet) => (
-              <div key={bullet} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
+              <div key={bullet} className="motion-card flex items-center gap-3 rounded-xl border border-border bg-card p-4">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-accent" />
                 <span className="font-medium">{bullet}</span>
               </div>
@@ -501,7 +527,7 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border bg-card/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl text-center reveal-up" data-reveal>
           <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-accent" />
           <h2 className="font-display text-3xl font-bold sm:text-4xl">If something happened tomorrow, would everything be in place?</h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
@@ -510,7 +536,7 @@ export default function Home() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
             Faithnancial brings everything together so you, your family, and your future are protected.
           </p>
-          <Button size="lg" className="mt-8 gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+          <Button size="lg" className="motion-button mt-8 gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
             Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
