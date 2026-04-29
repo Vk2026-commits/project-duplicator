@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import EditStartupDialog from "@/components/EditStartupDialog";
@@ -48,6 +50,7 @@ export default function Admin() {
           </TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="interests">Member Interests</TabsTrigger>
+          <TabsTrigger value="network-waitlist">Network Waitlist</TabsTrigger>
           <TabsTrigger value="email-log">Email Log</TabsTrigger>
         </TabsList>
         <TabsContent value="startups"><StartupsAdmin /></TabsContent>
@@ -57,6 +60,7 @@ export default function Admin() {
         <TabsContent value="info-requests"><InfoRequestsAdmin /></TabsContent>
         <TabsContent value="compliance"><ComplianceAdmin /></TabsContent>
         <TabsContent value="interests"><MemberInterestsAdmin /></TabsContent>
+        <TabsContent value="network-waitlist"><NetworkWaitlistAdmin /></TabsContent>
         <TabsContent value="email-log"><EmailLogAdmin /></TabsContent>
       </Tabs>
     </Layout>
