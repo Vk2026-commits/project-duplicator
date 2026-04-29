@@ -200,7 +200,7 @@ export default function Home() {
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {["Start with your finances", "Organize your documents and legacy", "Connect and grow with others"].map((step, index) => (
               <div key={step} className="rounded-xl border border-border bg-card p-6">
-                <p className="text-sm font-semibold text-primary">Step {index + 1}</p>
+                <p className="text-sm font-semibold text-accent">Step {index + 1}</p>
                 <p className="mt-3 font-display text-xl font-semibold">{step}</p>
               </div>
             ))}
@@ -226,7 +226,7 @@ export default function Home() {
 
       <section className="border-t border-border bg-card/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-primary" />
+          <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-accent" />
           <h2 className="font-display text-3xl font-bold sm:text-4xl">If something happened tomorrow, would everything be in place?</h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
             Your finances, documents, and plans should not be scattered.
@@ -234,7 +234,7 @@ export default function Home() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
             Faithnancial brings everything together so you, your family, and your future are protected.
           </p>
-          <Button size="lg" asChild className="mt-8 gradient-primary text-primary-foreground font-semibold">
+          <Button size="lg" asChild className="mt-8 gradient-accent text-accent-foreground font-semibold">
             <a href={budgetAppUrl}>
               Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
             </a>
