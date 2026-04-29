@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Mail, ArrowRight, UserPlus } from "lucide-react";
+import { Lock, Mail, ArrowRight, UserPlus, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -42,16 +42,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8 sm:p-6 supports-[min-height:100svh]:min-h-svh">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-8 sm:p-6 supports-[min-height:100svh]:min-h-svh">
       <div className="w-full max-w-md min-w-0">
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="font-display text-3xl sm:text-4xl font-bold text-gradient mb-2">Faithnancial</h1>
+          <Link to="/" className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground mb-4">
+            <ShieldCheck className="h-4 w-4 text-accent" /> Faith-led financial organization
+          </Link>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold text-accent mb-2">Faithnancial</h1>
           <p className="text-sm text-muted-foreground">
             {isSignUp ? "Create your investor account" : "Sign in to your investor portal"}
           </p>
         </div>
 
-        <div className="glass-card rounded-2xl p-5 sm:p-8 glow-primary">
+        <div className="glass-card rounded-2xl border-accent/20 p-5 sm:p-8 glow-accent">
           <form onSubmit={handleSubmit} className="space-y-5">
             {isSignUp && (
               <div className="space-y-2">
@@ -100,7 +103,7 @@ export default function Login() {
               </div>
             </div>
 
-            <Button className="w-full gradient-primary text-primary-foreground font-semibold" size="lg" disabled={loading}>
+            <Button className="w-full gradient-accent text-accent-foreground font-semibold" size="lg" disabled={loading}>
               {loading ? "Please wait..." : isSignUp ? (
                 <>Sign Up <UserPlus className="w-4 h-4 ml-1" /></>
               ) : (
@@ -111,14 +114,14 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-            <button className="text-primary hover:underline font-medium" onClick={() => setIsSignUp(!isSignUp)}>
+            <button className="text-accent hover:underline font-medium" onClick={() => setIsSignUp(!isSignUp)}>
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
           </p>
         </div>
 
         <p className="text-center mt-6">
-          <Link to="/dashboard" className="text-sm text-primary hover:underline">← Back to Dashboard</Link>
+          <Link to="/" className="text-sm text-accent hover:underline">← Back to Faithnancial</Link>
         </p>
       </div>
     </div>
