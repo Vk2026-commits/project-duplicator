@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -91,6 +91,19 @@ export default function Home() {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
+  useEffect(() => {
+    if (searchParams.get("signup") === "true") {
+      setIsSignUp(true);
+      setForgotPassword(false);
+    }
+  }, [searchParams]);
+
+  const showCreateAccount = () => {
+    setIsSignUp(true);
+    setForgotPassword(false);
+    window.requestAnimationFrame(() => document.getElementById("signin")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
   const applySessionPreference = () => {
     localStorage.setItem("faithnancial-remember-session", rememberMe ? "true" : "false");
     sessionStorage.setItem("faithnancial-active-session", "true");
@@ -164,11 +177,8 @@ export default function Home() {
             Faithnancial
           </Link>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild className="hidden sm:inline-flex">
-              <a href="#signin">Sign In</a>
-            </Button>
-            <Button asChild className="gradient-accent text-accent-foreground font-semibold">
-              <a href={budgetAppUrl}>Start Free Trial</a>
+            <Button className="gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+              Start Free Trial
             </Button>
           </div>
         </div>
@@ -183,6 +193,9 @@ export default function Home() {
             <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Faith. Finances. Freedom. Build Wealth Together.
             </h1>
+            <p className="mt-5 max-w-2xl font-display text-2xl font-semibold leading-8 text-accent sm:text-3xl">
+              Your financial life and estate plan — all in one place.
+            </p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
