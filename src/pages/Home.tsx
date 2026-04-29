@@ -1,6 +1,11 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   ArrowRight,
   BookOpen,
@@ -10,7 +15,9 @@ import {
   HeartHandshake,
   Landmark,
   Layers3,
+  Lock,
   LockKeyhole,
+  Mail,
   Map,
   Network,
   PiggyBank,
@@ -18,6 +25,7 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  UserPlus,
   Users,
   Wallet,
 } from "lucide-react";
@@ -59,7 +67,7 @@ const ecosystem = [
     title: "Grow Together",
     description: "Join a trusted network to learn, invest, and build wealth through shared opportunities.",
     cta: "Explore Network",
-    href: "/login",
+    href: "#signin",
     icon: Handshake,
   },
 ];
@@ -72,8 +80,41 @@ const trustBullets = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("signup") === "true");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } },
+        });
+        if (error) throw error;
+        toast.success("Account created! You're now signed in.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("Signed in successfully!");
+      }
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <main className="faithnancial-public min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/" className="font-display text-xl font-bold text-accent">
@@ -81,7 +122,7 @@ export default function Home() {
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
-              <Link to="/login">Sign In</Link>
+              <a href="#signin">Sign In</a>
             </Button>
             <Button asChild className="gradient-accent text-accent-foreground font-semibold">
               <a href={budgetAppUrl}>Start Free Trial</a>
