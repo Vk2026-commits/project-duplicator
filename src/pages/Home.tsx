@@ -14,7 +14,6 @@ import {
   Handshake,
   HeartHandshake,
   Landmark,
-  Layers3,
   Lock,
   LockKeyhole,
   Mail,
