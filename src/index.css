@@ -58,12 +58,25 @@
 }
 
 @layer base {
+  html,
+  body,
+  #root {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 

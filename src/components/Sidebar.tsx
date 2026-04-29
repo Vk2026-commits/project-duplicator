@@ -70,7 +70,7 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               onClick={closeSidebar}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            className={`flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
                   ? "bg-primary/10 text-primary glow-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -91,7 +91,7 @@ export default function Sidebar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeSidebar}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+              className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
             >
               <item.icon className="w-4 h-4" />
               {item.label}
@@ -108,7 +108,7 @@ export default function Sidebar() {
               <Link
                 to="/admin"
                 onClick={closeSidebar}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   location.pathname === "/admin" ? "bg-primary/10 text-primary glow-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 } w-full relative`}
               >
@@ -124,14 +124,14 @@ export default function Sidebar() {
             <Link
               to={`/profile/${user.id}`}
               onClick={closeSidebar}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
+              className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
             >
               <UserCircle className="w-4 h-4" />
               My Profile
             </Link>
             <button
               onClick={async () => { await signOut(); navigate("/login", { replace: true }); closeSidebar(); }}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
+              className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -142,7 +142,7 @@ export default function Sidebar() {
             <Link
               to="/login"
               onClick={closeSidebar}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
+              className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
             >
               <LogIn className="w-4 h-4" />
               Sign In
@@ -150,7 +150,7 @@ export default function Sidebar() {
             <Link
               to="/login?signup=true"
               onClick={closeSidebar}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-all w-full"
+              className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-all w-full"
             >
               <UserCircle className="w-4 h-4" />
               Sign Up
@@ -174,7 +174,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile top bar */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-card border-b border-border flex items-center justify-between px-4 z-50">
+      <header className="fixed top-0 left-0 right-0 h-14 bg-card border-b border-border flex items-center justify-between px-4 z-50 supports-[height:100svh]:pt-[env(safe-area-inset-top)]">
         <button onClick={() => setOpen(true)} className="p-2 text-muted-foreground hover:text-foreground">
           <Menu className="w-5 h-5" />
         </button>
@@ -189,7 +189,7 @@ export default function Sidebar() {
 
       {/* Drawer */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-72 bg-card border-r border-border flex flex-col z-50 transition-transform duration-300 ${
+        className={`fixed left-0 top-0 h-screen w-[min(20rem,88vw)] bg-card border-r border-border flex flex-col z-50 transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
