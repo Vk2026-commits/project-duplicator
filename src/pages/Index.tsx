@@ -38,19 +38,19 @@ export default function Index() {
 
   return (
     <Layout>
-      <div className="mb-8">
-        <h2 className="font-display text-2xl font-bold">Dashboard</h2>
+      <div className="mb-6 sm:mb-8">
+        <h2 className="font-display text-2xl sm:text-3xl font-bold">Dashboard</h2>
         <p className="text-sm text-muted-foreground mt-1">Overview of your investment portfolio</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6 sm:mb-8">
         <StatCard icon={DollarSign} title="Total Invested" value={formatCurrency(totalInvested)} />
         <StatCard icon={TrendingUp} title="Portfolio Value" value={formatCurrency(totalValue)} change={totalInvested > 0 ? `ROI: ${overallRoi >= 0 ? "+" : ""}${overallRoi.toFixed(1)}%` : "No investments yet"} changeType={overallRoi >= 0 ? "positive" : "negative"} />
         <StatCard icon={Users} title="Active Investors" value={String(uniqueInvestorNames.size)} />
         <StatCard icon={Briefcase} title="Startup Investments" value={String(startups.length)} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6 sm:mb-8">
         <PortfolioChart />
         <SectorChart />
       </div>
