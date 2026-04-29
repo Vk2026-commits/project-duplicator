@@ -536,7 +536,7 @@ export default function Home() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
             Faithnancial brings everything together so you, your family, and your future are protected.
           </p>
-          <Button size="lg" className="mt-8 gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+          <Button size="lg" className="motion-button mt-8 gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
             Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
