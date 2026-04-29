@@ -93,8 +93,8 @@ export default function Home() {
       <section className="relative border-b border-border">
         <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Faith-led financial organization
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-card px-3 py-1 text-sm text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 text-accent" /> Faith-led financial organization
             </p>
             <h1 className="font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Faith. Finances. Freedom. Build Wealth Together.
@@ -103,7 +103,7 @@ export default function Home() {
               Faithnancial is an ecosystem designed to help individuals and families organize their finances, build legacy, and grow wealth through community.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild className="gradient-primary text-primary-foreground font-semibold">
+              <Button size="lg" asChild className="gradient-accent text-accent-foreground font-semibold">
                 <a href={budgetAppUrl}>
                   Start Managing My Finances <ArrowRight className="h-4 w-4" />
                 </a>
@@ -114,7 +114,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5 glow-primary sm:p-6">
+          <div className="glass-card rounded-2xl p-5 glow-accent sm:p-6">
             <div className="grid gap-4">
               {[
                 { label: "Budget", value: "Organized", icon: Wallet },
@@ -122,7 +122,7 @@ export default function Home() {
                 { label: "Legacy", value: "Prepared", icon: Layers3 },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-4 rounded-xl border border-border bg-secondary/60 p-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -162,7 +162,7 @@ export default function Home() {
                     <principle.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-display text-xl font-bold"><span className="text-primary">{principle.letter}</span> — {principle.word}</p>
+                    <p className="font-display text-xl font-bold"><span className="text-accent">{principle.letter}</span> — {principle.word}</p>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">{principle.description}</p>
                   </div>
                 </CardContent>
