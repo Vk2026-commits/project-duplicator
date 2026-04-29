@@ -391,9 +391,42 @@ export default function Home() {
                         {item.cta}
                       </Button>
                       {showNetworkInvite && (
-                        <p className="mt-4 rounded-lg border border-accent/20 bg-accent/10 p-4 text-sm leading-6 text-muted-foreground">
-                          Add your name to the list to join this network. Until then, please manage your finances and build your legacy so you can grow together with us and be invited to the trusted network to learn, invest, and build wealth through shared opportunities.
-                        </p>
+                        <div className="mt-4 rounded-lg border border-accent/20 bg-accent/10 p-4">
+                          <p className="text-sm leading-6 text-muted-foreground">
+                            Add your name to the list to join this network. Until then, please manage your finances and build your legacy so you can grow together with us and be invited to the trusted network to learn, invest, and build wealth through shared opportunities.
+                          </p>
+                          <form onSubmit={handleWaitlistSubmit} className="mt-5 space-y-3">
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <Input placeholder="First name" value={waitlistForm.firstName} onChange={(e) => setWaitlistForm({ ...waitlistForm, firstName: e.target.value })} required />
+                              <Input placeholder="Last name" value={waitlistForm.lastName} onChange={(e) => setWaitlistForm({ ...waitlistForm, lastName: e.target.value })} required />
+                            </div>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                              <Input type="email" placeholder="Email" className="pl-10" value={waitlistForm.email} onChange={(e) => setWaitlistForm({ ...waitlistForm, email: e.target.value })} required />
+                            </div>
+                            <div className="relative">
+                              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                              <Input placeholder="Phone (optional)" className="pl-10" value={waitlistForm.phone} onChange={(e) => setWaitlistForm({ ...waitlistForm, phone: e.target.value })} />
+                            </div>
+                            <div className="relative">
+                              <BriefcaseBusiness className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                              <Input placeholder="Occupation" className="pl-10" value={waitlistForm.occupation} onChange={(e) => setWaitlistForm({ ...waitlistForm, occupation: e.target.value })} required />
+                            </div>
+                            <Select value={waitlistForm.interestType} onValueChange={(value) => setWaitlistForm({ ...waitlistForm, interestType: value })}>
+                              <SelectTrigger><SelectValue placeholder="Interest type" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="learn">Learn</SelectItem>
+                                <SelectItem value="invest">Invest</SelectItem>
+                                <SelectItem value="build_wealth">Build Wealth</SelectItem>
+                                <SelectItem value="partnership">Partnership</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button type="submit" className="w-full gradient-accent text-accent-foreground" disabled={waitlistLoading}>
+                              {waitlistLoading ? "Joining..." : "Join Network Waitlist"}
+                            </Button>
+                          </form>
+                        </div>
                       )}
                     </>
                   ) : (
