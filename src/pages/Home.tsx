@@ -135,6 +135,12 @@ export default function Home() {
         applySessionPreference();
         toast.success("Signed in successfully!");
       }
+      const pendingInvite = sessionStorage.getItem("faithnancial-pending-network-invite");
+      if (pendingInvite) {
+        sessionStorage.removeItem("faithnancial-pending-network-invite");
+        navigate(pendingInvite);
+        return;
+      }
       navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.message);
