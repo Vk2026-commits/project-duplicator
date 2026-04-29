@@ -90,6 +90,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [showNetworkInvite, setShowNetworkInvite] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("signup") === "true") {
@@ -121,6 +122,8 @@ export default function Home() {
         });
         if (error) throw error;
         toast.success("Account created! You're now signed in.");
+        window.location.href = budgetAppUrl;
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -360,6 +363,17 @@ export default function Home() {
                     <Button variant="default" className="mt-6 w-full" onClick={showCreateAccount}>
                       {item.cta}
                     </Button>
+                  ) : item.title === "Grow Together" ? (
+                    <>
+                      <Button variant="outline" className="mt-6 w-full" onClick={() => setShowNetworkInvite(true)}>
+                        {item.cta}
+                      </Button>
+                      {showNetworkInvite && (
+                        <p className="mt-4 rounded-lg border border-accent/20 bg-accent/10 p-4 text-sm leading-6 text-muted-foreground">
+                          Add your name to the list to join this network. Until then, please manage your finances and build your legacy so you can grow together with us and be invited to the trusted network to learn, invest, and build wealth through shared opportunities.
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <Button asChild variant="outline" className="mt-6 w-full">
                       {item.href.startsWith("/") ? <Link to={item.href}>{item.cta}</Link> : <a href={item.href}>{item.cta}</a>}
