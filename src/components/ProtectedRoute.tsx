@@ -30,7 +30,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/#signin" replace />;
   }
 
   // Redirect to profile page if profile is incomplete (but don't redirect if already on profile page)

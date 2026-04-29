@@ -89,6 +89,20 @@
     @apply bg-card/60 backdrop-blur-xl border border-border/50;
   }
 
+  .faithnancial-public {
+    --background: 0 0% 100%;
+    --foreground: 152 44% 10%;
+    --card: 150 45% 98%;
+    --card-foreground: 152 44% 10%;
+    --secondary: 150 31% 94%;
+    --secondary-foreground: 152 44% 14%;
+    --muted: 150 31% 94%;
+    --muted-foreground: 152 15% 36%;
+    --border: 150 22% 86%;
+    --input: 150 22% 86%;
+    --ring: 160 84% 39%;
+  }
+
   .glow-primary {
     box-shadow: 0 0 20px hsl(217 91% 60% / 0.15), 0 0 60px hsl(217 91% 60% / 0.05);
   }

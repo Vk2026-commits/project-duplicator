@@ -1,6 +1,11 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   ArrowRight,
   BookOpen,
@@ -9,8 +14,9 @@ import {
   Handshake,
   HeartHandshake,
   Landmark,
-  Layers3,
+  Lock,
   LockKeyhole,
+  Mail,
   Map,
   Network,
   PiggyBank,
@@ -18,6 +24,7 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  UserPlus,
   Users,
   Wallet,
 } from "lucide-react";
@@ -59,7 +66,7 @@ const ecosystem = [
     title: "Grow Together",
     description: "Join a trusted network to learn, invest, and build wealth through shared opportunities.",
     cta: "Explore Network",
-    href: "/login",
+    href: "#signin",
     icon: Handshake,
   },
 ];
@@ -72,8 +79,41 @@ const trustBullets = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("signup") === "true");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } },
+        });
+        if (error) throw error;
+        toast.success("Account created! You're now signed in.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("Signed in successfully!");
+      }
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <main className="faithnancial-public min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/" className="font-display text-xl font-bold text-accent">
@@ -81,7 +121,7 @@ export default function Home() {
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
-              <Link to="/login">Sign In</Link>
+              <a href="#signin">Sign In</a>
             </Button>
             <Button asChild className="gradient-accent text-accent-foreground font-semibold">
               <a href={budgetAppUrl}>Start Free Trial</a>
@@ -114,24 +154,71 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5 glow-accent sm:p-6">
-            <div className="grid gap-4">
-              {[
-                { label: "Budget", value: "Organized", icon: Wallet },
-                { label: "Documents", value: "Protected", icon: FileLock2 },
-                { label: "Legacy", value: "Prepared", icon: Layers3 },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-4 rounded-xl border border-border bg-secondary/60 p-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                    <item.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{item.label}</p>
-                    <p className="font-display text-2xl font-semibold">{item.value}</p>
-                  </div>
-                </div>
-              ))}
+          <div id="signin" className="scroll-mt-24 rounded-2xl border border-accent/20 bg-card p-5 shadow-xl shadow-accent/10 sm:p-6">
+            <div className="mb-5">
+              <p className="text-sm font-semibold text-accent">Member access</p>
+              <h2 className="mt-1 font-display text-2xl font-bold">{isSignUp ? "Create your account" : "Sign in to Faithnancial"}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Private access for Faithnancial members and invited users.</p>
             </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="homeFullName" className="text-sm text-muted-foreground">Full Name</Label>
+                  <Input
+                    id="homeFullName"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="bg-background border-border"
+                    required
+                  />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="homeEmail" className="text-sm text-muted-foreground">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="homeEmail"
+                    type="email"
+                    placeholder="investor@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-background border-border pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="homePassword" className="text-sm text-muted-foreground">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="homePassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-background border-border pl-10"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
+              <Button className="w-full gradient-accent text-accent-foreground font-semibold" size="lg" disabled={loading}>
+                {loading ? "Please wait..." : isSignUp ? (
+                  <>Sign Up <UserPlus className="h-4 w-4" /></>
+                ) : (
+                  <>Sign In <ArrowRight className="h-4 w-4" /></>
+                )}
+              </Button>
+            </form>
+            <p className="mt-5 text-center text-sm text-muted-foreground">
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button className="font-semibold text-accent hover:underline" onClick={() => setIsSignUp(!isSignUp)}>
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </button>
+            </p>
           </div>
         </div>
       </section>

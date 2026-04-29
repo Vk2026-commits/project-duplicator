@@ -130,7 +130,7 @@ export default function Sidebar() {
               My Profile
             </Link>
             <button
-              onClick={async () => { await signOut(); navigate("/login", { replace: true }); closeSidebar(); }}
+              onClick={async () => { await signOut(); navigate("/#signin", { replace: true }); closeSidebar(); }}
               className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
             >
               <LogOut className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function Sidebar() {
         ) : !loading ? (
           <>
             <Link
-              to="/login"
+              to="/#signin"
               onClick={closeSidebar}
               className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all w-full"
             >
@@ -148,7 +148,7 @@ export default function Sidebar() {
               Sign In
             </Link>
             <Link
-              to="/login?signup=true"
+              to="/?signup=true#signin"
               onClick={closeSidebar}
               className="flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-all w-full"
             >
