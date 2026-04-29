@@ -26,6 +26,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      const shouldRemember = localStorage.getItem("faithnancial-remember-session") !== "false";
+      const activeSession = sessionStorage.getItem("faithnancial-active-session") === "true";
+
+      if (session && !shouldRemember && !activeSession) {
+        supabase.auth.signOut();
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);

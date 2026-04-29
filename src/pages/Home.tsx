@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -87,6 +89,12 @@ export default function Home() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+
+  const applySessionPreference = () => {
+    localStorage.setItem("faithnancial-remember-session", rememberMe ? "true" : "false");
+    sessionStorage.setItem("faithnancial-active-session", "true");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,12 +111,30 @@ export default function Home() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        applySessionPreference();
         toast.success("Signed in successfully!");
       }
       navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.message);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialSignIn = async (provider: "google" | "apple") => {
+    setLoading(true);
+    applySessionPreference();
+    try {
+      const result = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: `${window.location.origin}/dashboard`,
+      });
+
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message ?? `Unable to sign in with ${provider}.`);
       setLoading(false);
     }
   };
@@ -224,7 +250,11 @@ export default function Home() {
                 </div>
               </div>}
               {!isSignUp && !forgotPassword && (
-                <div className="flex justify-end">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="rememberMe" className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                    <Checkbox id="rememberMe" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} className="border-accent data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground" />
+                    Remember me
+                  </label>
                   <button type="button" className="text-sm font-semibold text-accent hover:underline" onClick={() => setForgotPassword(true)}>
                     Forgot password?
                   </button>
@@ -240,6 +270,23 @@ export default function Home() {
                 )}
               </Button>
             </form>
+            {!forgotPassword && (
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="h-px flex-1 bg-border" />
+                  Or continue with
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={() => handleSocialSignIn("google")}>
+                    Google
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={() => handleSocialSignIn("apple")}>
+                    Apple
+                  </Button>
+                </div>
+              </div>
+            )}
             <p className="mt-5 text-center text-sm text-muted-foreground">
               {forgotPassword ? "Remember your password?" : isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
               <button className="font-semibold text-accent hover:underline" onClick={() => forgotPassword ? setForgotPassword(false) : setIsSignUp(!isSignUp)}>
