@@ -48,8 +48,8 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
   const display = limit ? filtered.slice(0, limit) : filtered;
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden animate-fade-in">
-      <div className="p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div className="glass-card rounded-xl overflow-hidden animate-fade-in min-w-0">
+      <div className="p-4 sm:p-6 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="font-display font-semibold">Investors</h3>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -57,7 +57,7 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
           </p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:flex-initial">
+          <div className="relative flex-1 sm:flex-initial min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search investors..."
@@ -78,8 +78,8 @@ export default function InvestorTable({ limit }: InvestorTableProps) {
       ) : display.length === 0 ? (
         <p className="p-6 text-muted-foreground text-sm">No investors yet. Add investors to your startups to see them here.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[560px]">
             <thead>
               <tr className="border-b border-border">
                 <th className="text-left text-xs font-medium text-muted-foreground px-6 py-3">Investor</th>
