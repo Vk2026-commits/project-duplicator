@@ -54,7 +54,7 @@ const ecosystem = [
     title: "Manage Your Finances",
     description: "Track your budget, monitor your net worth, and organize your financial life in one place.",
     cta: "Start Free Trial",
-    href: budgetAppUrl,
+    href: "/?signup=true#signin",
     icon: Wallet,
   },
   {
@@ -406,10 +406,8 @@ export default function Home() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-muted-foreground">
             Faithnancial brings everything together so you, your family, and your future are protected.
           </p>
-          <Button size="lg" asChild className="mt-8 gradient-accent text-accent-foreground font-semibold">
-            <a href={budgetAppUrl}>
-              Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
-            </a>
+          <Button size="lg" className="mt-8 gradient-accent text-accent-foreground font-semibold" onClick={showCreateAccount}>
+            Start Your 30-Day Free Trial <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </section>
