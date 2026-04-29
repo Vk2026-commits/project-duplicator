@@ -76,14 +76,14 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link to="/" className="font-display text-xl font-bold text-gradient">
+          <Link to="/" className="font-display text-xl font-bold text-accent">
             Faithnancial
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button asChild className="gradient-primary text-primary-foreground font-semibold">
+            <Button asChild className="gradient-accent text-accent-foreground font-semibold">
               <a href={budgetAppUrl}>Start Free Trial</a>
             </Button>
           </div>
@@ -158,7 +158,7 @@ export default function Home() {
             {principles.map((principle) => (
               <Card key={`${principle.letter}-${principle.word}`} className="bg-background/70">
                 <CardContent className="flex min-h-32 gap-4 p-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <principle.icon className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -179,7 +179,7 @@ export default function Home() {
             {ecosystem.map((item) => (
               <Card key={item.title} className="bg-card">
                 <CardContent className="flex h-full flex-col p-6">
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
                     <item.icon className="h-6 w-6" />
                   </div>
                   <h3 className="font-display text-2xl font-semibold">{item.title}</h3>
