@@ -169,7 +169,7 @@ export default function Home() {
         navigate(pendingInvite);
         return;
       }
-      navigate("/dashboard");
+      window.location.href = budgetAppUrl;
     } catch (err: any) {
       toast.error(err.message);
     } finally {
