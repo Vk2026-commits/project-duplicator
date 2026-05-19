@@ -182,12 +182,12 @@ export default function Home() {
     applySessionPreference();
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: `${window.location.origin}/dashboard`,
+        redirect_uri: budgetAppUrl,
       });
 
       if (result.error) throw result.error;
       if (result.redirected) return;
-      navigate("/dashboard");
+      window.location.href = budgetAppUrl;
     } catch (err: any) {
       toast.error(err.message ?? `Unable to sign in with ${provider}.`);
       setLoading(false);
