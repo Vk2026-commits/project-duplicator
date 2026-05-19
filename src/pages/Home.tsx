@@ -155,6 +155,12 @@ export default function Home() {
         });
         if (error) throw error;
         toast.success("Account created! You're now signed in.");
+        const pendingInviteSignup = sessionStorage.getItem("faithnancial-pending-network-invite");
+        if (pendingInviteSignup) {
+          sessionStorage.removeItem("faithnancial-pending-network-invite");
+          navigate(pendingInviteSignup);
+          return;
+        }
         window.location.href = budgetAppUrl;
         return;
       } else {
@@ -181,12 +187,21 @@ export default function Home() {
     setLoading(true);
     applySessionPreference();
     try {
+      const pendingInviteOAuth = sessionStorage.getItem("faithnancial-pending-network-invite");
+      const oauthRedirect = pendingInviteOAuth
+        ? `${window.location.origin}${pendingInviteOAuth}`
+        : budgetAppUrl;
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: budgetAppUrl,
+        redirect_uri: oauthRedirect,
       });
 
       if (result.error) throw result.error;
       if (result.redirected) return;
+      if (pendingInviteOAuth) {
+        sessionStorage.removeItem("faithnancial-pending-network-invite");
+        navigate(pendingInviteOAuth);
+        return;
+      }
       window.location.href = budgetAppUrl;
     } catch (err: any) {
       toast.error(err.message ?? `Unable to sign in with ${provider}.`);
