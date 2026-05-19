@@ -155,6 +155,12 @@ export default function Home() {
         });
         if (error) throw error;
         toast.success("Account created! You're now signed in.");
+        const pendingInviteSignup = sessionStorage.getItem("faithnancial-pending-network-invite");
+        if (pendingInviteSignup) {
+          sessionStorage.removeItem("faithnancial-pending-network-invite");
+          navigate(pendingInviteSignup);
+          return;
+        }
         window.location.href = budgetAppUrl;
         return;
       } else {
