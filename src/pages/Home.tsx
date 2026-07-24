@@ -151,12 +151,11 @@ export default function Home() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
+          options: { data: { full_name: fullName }, emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
+        applySessionPreference();
         toast.success("Account created! You're now signed in.");
-        window.location.href = budgetAppUrl;
-        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
